@@ -1,0 +1,74 @@
+$font-hei: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica, "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN", "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti", SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
+$font-kai: Baskerville, Georgia, "Liberation Serif", "Kaiti SC", STKaiti, "AR PL UKai CN", "AR PL UKai HK", "AR PL UKai TW", "AR PL UKai TW MBE", "AR PL KaitiM GB", KaiTi, KaiTi_GB2312, DFKai-SB, "TW\-Kai", serif;
+$font-song: Georgia, "Nimbus Roman No9 L", "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", STSong, "AR PL New Sung", "AR PL SungtiL GB", NSimSun, SimSun, "TW\-Sung", "WenQuanYi Bitmap Song", "AR PL UMing CN", "AR PL UMing HK", "AR PL UMing TW", "AR PL UMing TW MBE", PMingLiU, MingLiU, serif;
+
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black: #000 !default;
+$golden: rgb(203, 176, 91);
+
+$color-type-1: rgb(114, 163, 159);
+$color-type-2: rgb(93, 122, 170);
+$color-type-3: rgb(174, 112, 155);
+$color-type-4: rgb(227, 98, 131);
+$color-type-5: rgb(101, 151, 164);
+$color-type-6: rgb(240, 130, 69);
+$color-type-7: rgb(245, 136, 62);
+$color-type-8: rgb(150, 107, 93);
+$color-type-9: rgb(146, 136, 147);
+$color-type-10: rgb(66, 152, 77);
+$color-type-11: rgb(205, 174, 94);
+$color-type-12: rgb(61, 82, 139);
+$color-type-13: rgb(167, 168, 72);
+$color-type-14: rgb(96, 161, 106);
+$color-type-15: rgb(217, 155, 179);
+$color-type-16: rgb(174, 151, 82);
+$color-type-17: rgb(116, 127, 57);
+$color-type-18: rgb(207, 76, 138);
+$color-type-19: rgb(217, 50, 105);
+$color-type-20: rgb(126, 182, 215);
+
+$colorArr: (
+        (background-color:$color-type-1),
+        (background-color:$color-type-2),
+        (background-color:$color-type-3),
+        (background-color:$color-type-4),
+        (background-color:$color-type-5),
+        (background-color:$color-type-6),
+        (background-color:$color-type-7),
+        (background-color:$color-type-8),
+        (background-color:$color-type-9),
+        (background-color:$color-type-10),
+        (background-color:$color-type-11),
+        (background-color:$color-type-12),
+        (background-color:$color-type-13),
+        (background-color:$color-type-14),
+        (background-color:$color-type-15),
+        (background-color:$color-type-16),
+        (background-color:$color-type-17),
+        (background-color:$color-type-18),
+        (background-color:$color-type-19),
+        (background-color:$color-type-20),
+);
+
+@function px($px) {
+  @return $px / 16 + rem;
+}
+
+%clearfix {
+  &::after {
+    content: "";
+    clear: both;
+    display: block;
+  }
+}
+
+
