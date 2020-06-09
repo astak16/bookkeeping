@@ -4,7 +4,7 @@ const {Sequelize, Model} = require("sequelize")
 class Tag extends Model {
   static async getAll() {
     const tags = await Tag.findAll()
-    console.log(tags)
+    return tags
   }
 }
 
