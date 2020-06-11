@@ -6,6 +6,7 @@ const {Tag} = require("../../models/tag")
 
 router.get("/", async (ctx) => {
   const tag = await Tag.getAll()
+  console.log(tag)
   ctx.body = tag
 })
 

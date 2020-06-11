@@ -1,6 +1,6 @@
 <template>
   <div class="turnover-day">
-    <Icon type="type" name="mark" class-prefix="mark"/>
+    <Icon id="type" name="mark" class-prefix="mark"/>
     <div class="right">
       <div>
         <span class="title">用餐</span>
@@ -13,11 +13,13 @@
 
 <script lang="ts">
   import Vue from 'vue';
-  import {Component} from 'vue-property-decorator';
+  import {Component, Prop} from 'vue-property-decorator';
+  
 
   @Component
   export default class TurnoverDay extends Vue {
-
+    @Prop({type: Number, required: true})
+    id!: ImgKey
   }
 </script>
 
