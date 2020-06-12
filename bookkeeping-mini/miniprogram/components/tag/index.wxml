@@ -1,0 +1,1 @@
+<view catch:tap="onClick">{{b}}-{{a}}</view>

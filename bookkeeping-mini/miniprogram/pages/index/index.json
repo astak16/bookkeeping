@@ -1,3 +1,5 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "u-tag": "/components/tag/index"
+  }
 }

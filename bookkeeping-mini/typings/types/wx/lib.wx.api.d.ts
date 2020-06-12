@@ -1,11 +1,23 @@
 /*! *****************************************************************************
-Copyright (c) 2019 Tencent, Inc. All rights reserved.
+Copyright (c) 2020 Tencent, Inc. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ***************************************************************************** */
 
 declare namespace WechatMiniprogram {
@@ -17,7 +29,7 @@ declare namespace WechatMiniprogram {
         errMsg: string
     }
     interface AccessOption {
-        /** 要判断是否存在的文件/目录路径 */
+        /** 要判断是否存在的文件/目录路径 (本地路径) */
         path: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: AccessCompleteCallback
@@ -138,6 +150,27 @@ declare namespace WechatMiniprogram {
         /** 工作电话 */
         workPhoneNumber?: string
     }
+    interface AddServiceOption {
+        /** 描述service的Object */
+        service: BLEPeripheralService
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: AddServiceCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: AddServiceFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: AddServiceSuccessCallback
+    }
+    /** 广播自定义参数 */
+    interface AdvertiseReqObj {
+        /** 当前Service是否可连接 */
+        connectable?: boolean
+        /** 广播中deviceName字段，默认为空 */
+        deviceName?: string
+        /** 广播的制造商信息, 仅安卓支持 */
+        manufacturerData?: ManufacturerData[]
+        /** 要广播的serviceUuid列表 */
+        serviceUuids?: string[]
+    }
     /** 动画效果 */
     interface AnimationOption {
         /** 动画变化时间，单位 ms */
@@ -164,7 +197,7 @@ declare namespace WechatMiniprogram {
     interface AppendFileOption {
         /** 要追加的文本或二进制数据 */
         data: string | ArrayBuffer
-        /** 要追加内容的文件路径 */
+        /** 要追加内容的文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: AppendFileCompleteCallback
@@ -233,8 +266,34 @@ declare namespace WechatMiniprogram {
     /** 设备特征值列表 */
     interface BLECharacteristic {
         /** 该特征值支持的操作类型 */
-        properties: Properties
+        properties: BLECharacteristicProperties
         /** 蓝牙设备特征值的 uuid */
+        uuid: string
+    }
+    /** 该特征值支持的操作类型 */
+    interface BLECharacteristicProperties {
+        /** 该特征值是否支持 indicate 操作 */
+        indicate: boolean
+        /** 该特征值是否支持 notify 操作 */
+        notify: boolean
+        /** 该特征值是否支持 read 操作 */
+        read: boolean
+        /** 该特征值是否支持 write 操作 */
+        write: boolean
+    }
+    interface BLEPeripheralServerCloseOption {
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: CloseCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: CloseFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: CloseSuccessCallback
+    }
+    /** 描述service的Object */
+    interface BLEPeripheralService {
+        /** characteristics列表 */
+        characteristics: Characteristic[]
+        /** service 的 uuid */
         uuid: string
     }
     /** 设备服务列表 */
@@ -245,20 +304,20 @@ declare namespace WechatMiniprogram {
         uuid: string
     }
     /** BackgroundAudioManager 实例，可通过 [wx.getBackgroundAudioManager](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.getBackgroundAudioManager.html) 获取。
-*
-* **示例代码**
-*
-*
-* ```js
-const backgroundAudioManager = wx.getBackgroundAudioManager()
+     *
+     * **示例代码**
+     *
+     *
+     * ```js
+     const backgroundAudioManager = wx.getBackgroundAudioManager()
 
-backgroundAudioManager.title = '此时此刻'
-backgroundAudioManager.epname = '此时此刻'
-backgroundAudioManager.singer = '许巍'
-backgroundAudioManager.coverImgUrl = 'http://y.gtimg.cn/music/photo_new/T002R300x300M000003rsKF44GyaSk.jpg?max_age=2592000'
-// 设置了 src 之后会自动播放
-backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb.mp3?guid=ffffffff82def4af4b12b3cd9337d5e7&uin=346897220&vkey=6292F51E1E384E061FF02C31F716658E5C81F5594D561F2E88B854E81CAAB7806D5E4F103E55D33C16F3FAC506D1AB172DE8600B37E43FAD&fromtag=46'
-``` */
+     backgroundAudioManager.title = '此时此刻'
+     backgroundAudioManager.epname = '此时此刻'
+     backgroundAudioManager.singer = '许巍'
+     backgroundAudioManager.coverImgUrl = 'http://y.gtimg.cn/music/photo_new/T002R300x300M000003rsKF44GyaSk.jpg?max_age=2592000'
+     // 设置了 src 之后会自动播放
+     backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb.mp3?guid=ffffffff82def4af4b12b3cd9337d5e7&uin=346897220&vkey=6292F51E1E384E061FF02C31F716658E5C81F5594D561F2E88B854E81CAAB7806D5E4F103E55D33C16F3FAC506D1AB172DE8600B37E43FAD&fromtag=46'
+     ``` */
     interface BackgroundAudioManager {
         /** 音频已缓冲的时间，仅保证当前播放时间点到此时间点内容已缓冲。（只读） */
         buffered: number
@@ -272,6 +331,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         epname: string
         /** 当前是否暂停或停止。（只读） */
         paused: boolean
+        /** 播放速度。范围 0.5-2.0，默认为 1。（Android 需要 6 及以上版本）
+         *
+         * 最低基础库： `2.11.0` */
+        playbackRate: number
         /** 音频协议。默认值为 'http'，设置 'hls' 可以支持播放 HLS 协议的直播音频。
          *
          * 最低基础库： `1.9.94` */
@@ -354,9 +417,9 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
     }
     interface CameraContextStartRecordOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: CameraContextStartRecordCompleteCallback
+        complete?: StartRecordCompleteCallback
         /** 接口调用失败的回调函数 */
-        fail?: CameraContextStartRecordFailCallback
+        fail?: StartRecordFailCallback
         /** 接口调用成功的回调函数 */
         success?: CameraContextStartRecordSuccessCallback
         /** 超过30s或页面 `onHide` 时会结束录像 */
@@ -364,29 +427,42 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
     }
     interface CameraContextStopRecordOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: CameraContextStopRecordCompleteCallback
+        complete?: StopRecordCompleteCallback
+        /** 启动视频压缩，压缩效果同`chooseVideo` */
+        compressed?: boolean
         /** 接口调用失败的回调函数 */
-        fail?: CameraContextStopRecordFailCallback
+        fail?: StopRecordFailCallback
         /** 接口调用成功的回调函数 */
         success?: CameraContextStopRecordSuccessCallback
     }
     interface CameraFrameListenerStartOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: CameraFrameListenerStartCompleteCallback
+        complete?: StartCompleteCallback
         /** 接口调用失败的回调函数 */
-        fail?: CameraFrameListenerStartFailCallback
+        fail?: StartFailCallback
         /** 接口调用成功的回调函数 */
-        success?: CameraFrameListenerStartSuccessCallback
+        success?: StartSuccessCallback
     }
-    interface CameraFrameListenerStopOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: CameraFrameListenerStopCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: CameraFrameListenerStopFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: CameraFrameListenerStopSuccessCallback
+    /** Canvas 实例，可通过 [SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) 获取。
+     *
+     * **示例代码**
+     *
+     *
+     *
+     * 2D Canvas 示例
+     * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/SHfgCmmq7UcM)
+     *
+     * WebGL 示例
+     * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/qEGUOqmf7T8z)
+     *
+     * 最低基础库： `2.7.0` */
+    interface Canvas {
+        /** 画布高度 */
+        height: number
+        /** 画布宽度 */
+        width: number
     }
-    /** canvas 组件的绘图上下文 */
+    /** canvas 组件的绘图上下文。CanvasContext 是旧版的接口， 新版 Canvas 2D 接口与 Web 一致。 */
     interface CanvasContext {
         /** 填充颜色。用法同 [CanvasContext.setFillStyle()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setFillStyle.html)。
          *
@@ -500,12 +576,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         success?: CanvasPutImageDataSuccessCallback
     }
     interface CanvasToTempFilePathOption {
+        /** 画布标识，传入 [canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) 组件实例 （canvas type="2d" 时使用该属性）。 */
+        canvas?: IAnyObject
         /** 画布标识，传入 [canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) 组件的 canvas-id */
-        canvasId: string
-        /** 图片的质量，目前仅对 jpg 有效。取值范围为 (0, 1]，不在范围内时当作 1.0 处理。
-         *
-         * 最低基础库： `1.7.0` */
-        quality: number
+        canvasId?: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: CanvasToTempFilePathCompleteCallback
         /** 输出的图片的高度
@@ -530,6 +604,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
          *
          * 最低基础库： `1.2.0` */
         height?: number
+        /** 图片的质量，目前仅对 jpg 有效。取值范围为 (0, 1]，不在范围内时当作 1.0 处理。
+         *
+         * 最低基础库： `1.7.0` */
+        quality?: number
         /** 接口调用成功的回调函数 */
         success?: CanvasToTempFilePathSuccessCallback
         /** 指定的画布区域的宽度
@@ -546,9 +624,44 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         y?: number
     }
     interface CanvasToTempFilePathSuccessCallbackResult {
-        /** 生成文件的临时路径 */
+        /** 生成文件的临时路径 (本地路径) */
         tempFilePath: string
         errMsg: string
+    }
+    /** characteristics列表 */
+    interface Characteristic {
+        /** Characteristic 的 uuid */
+        uuid: string
+        /** 描述符数据 */
+        descriptors?: Descriptor[]
+        /** 特征值权限 */
+        permission?: CharacteristicPermission
+        /** 特征值支持的操作 */
+        properties?: CharacteristicProperties
+        /** 特征值对应的二进制值 */
+        value?: ArrayBuffer
+    }
+    /** 特征值权限 */
+    interface CharacteristicPermission {
+        /** 加密读请求 */
+        readEncryptionRequired?: boolean
+        /** 可读 */
+        readable?: boolean
+        /** 加密写请求 */
+        writeEncryptionRequired?: boolean
+        /** 可写 */
+        writeable?: boolean
+    }
+    /** 特征值支持的操作 */
+    interface CharacteristicProperties {
+        /** 回包 */
+        indicate?: boolean
+        /** 订阅 */
+        notify?: boolean
+        /** 读 */
+        read?: boolean
+        /** 写 */
+        write?: boolean
     }
     interface CheckIsSoterEnrolledInDeviceOption {
         /** 认证方式
@@ -629,7 +742,7 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
     interface ChooseFile {
         /** 选择的文件名称 */
         name: string
-        /** 本地临时文件路径 */
+        /** 本地临时文件路径 (本地路径) */
         path: string
         /** 本地临时文件大小，单位 B */
         size: number
@@ -666,7 +779,7 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         success?: ChooseImageSuccessCallback
     }
     interface ChooseImageSuccessCallbackResult {
-        /** 图片的本地临时文件路径列表 */
+        /** 图片的本地临时文件路径列表 (本地路径) */
         tempFilePaths: string[]
         /** 图片的本地临时文件列表
          *
@@ -722,6 +835,14 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         complete?: ChooseLocationCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: ChooseLocationFailCallback
+        /** 目标地纬度
+         *
+         * 最低基础库： `2.9.0` */
+        latitude?: number
+        /** 目标地经度
+         *
+         * 最低基础库： `2.9.0` */
+        longitude?: number
         /** 接口调用成功的回调函数 */
         success?: ChooseLocationSuccessCallback
     }
@@ -734,6 +855,45 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         longitude: string
         /** 位置名称 */
         name: string
+        errMsg: string
+    }
+    interface ChooseMediaOption {
+        /** 仅在 sourceType 为 camera 时生效，使用前置或后置摄像头
+         *
+         * 可选值：
+         * - 'back': 使用后置摄像头;
+         * - 'front': 使用前置摄像头; */
+        camera?: 'back' | 'front'
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: ChooseMediaCompleteCallback
+        /** 最多可以选择的文件个数 */
+        count?: number
+        /** 接口调用失败的回调函数 */
+        fail?: ChooseMediaFailCallback
+        /** 拍摄视频最长拍摄时间，单位秒。时间范围为 3s 至 30s 之间 */
+        maxDuration?: number
+        /** 文件类型
+         *
+         * 可选值：
+         * - 'image': 只能拍摄图片或从相册选择图片;
+         * - 'video': 只能拍摄视频或从相册选择视频; */
+        mediaType?: Array<'image' | 'video'>
+        /** 仅对 mediaType 为 image 时有效，是否压缩所选文件 */
+        sizeType?: string[]
+        /** 图片和视频选择的来源
+         *
+         * 可选值：
+         * - 'album': 从相册选择;
+         * - 'camera': 使用相机拍摄; */
+        sourceType?: Array<'album' | 'camera'>
+        /** 接口调用成功的回调函数 */
+        success?: ChooseMediaSuccessCallback
+    }
+    interface ChooseMediaSuccessCallbackResult {
+        /** 本地临时文件列表 */
+        tempFiles: MediaFile[]
+        /** 文件类型，有效值有 image 、video */
+        type: string
         errMsg: string
     }
     interface ChooseMessageFileOption {
@@ -796,7 +956,7 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         height: number
         /** 选定视频的数据量大小 */
         size: number
-        /** 选定视频的临时文件路径 */
+        /** 选定视频的临时文件路径 (本地路径) */
         tempFilePath: string
         /** 返回选定视频的宽度 */
         width: number
@@ -835,18 +995,6 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         fail?: CloseBluetoothAdapterFailCallback
         /** 接口调用成功的回调函数 */
         success?: CloseBluetoothAdapterSuccessCallback
-    }
-    interface CloseOption {
-        /** 一个数字值表示关闭连接的状态号，表示连接被关闭的原因。 */
-        code?: number
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: CloseCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: CloseFailCallback
-        /** 一个可读的字符串，表示连接被关闭的原因。这个字符串必须是不长于 123 字节的 UTF-8 文本（不是字符）。 */
-        reason?: string
-        /** 接口调用成功的回调函数 */
-        success?: CloseSuccessCallback
     }
     interface CloseSocketOption {
         /** 一个数字值表示关闭连接的状态号，表示连接被关闭的原因。 */
@@ -1022,7 +1170,7 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
      * | YellowGreen          | #9ACD32 | */
     interface Color {}
     interface CompressImageOption {
-        /** 图片路径，图片的路径，可以是相对路径、临时文件路径、存储文件路径 */
+        /** 图片路径，图片的路径，支持本地路径、代码包路径 */
         src: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: CompressImageCompleteCallback
@@ -1034,7 +1182,37 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         success?: CompressImageSuccessCallback
     }
     interface CompressImageSuccessCallbackResult {
-        /** 压缩后图片的临时文件路径 */
+        /** 压缩后图片的临时文件路径 (本地路径) */
+        tempFilePath: string
+        errMsg: string
+    }
+    interface CompressVideoOption {
+        /** 码率，单位 kbps */
+        bitrate: number
+        /** 帧率 */
+        fps: number
+        /** 压缩质量
+         *
+         * 可选值：
+         * - 'low': 低;
+         * - 'medium': 中;
+         * - 'high': 高; */
+        quality: 'low' | 'medium' | 'high'
+        /** 相对于原视频的分辨率比例，取值范围(0, 1] */
+        resolution: number
+        /** 视频文件路径，可以是临时文件路径也可以是永久文件路径 */
+        src: string
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: CompressVideoCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: CompressVideoFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: CompressVideoSuccessCallback
+    }
+    interface CompressVideoSuccessCallbackResult {
+        /** 压缩后的大小，单位 kB */
+        size: string
+        /** 压缩后的临时文件地址 */
         tempFilePath: string
         errMsg: string
     }
@@ -1047,6 +1225,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         fail?: ConnectSocketFailCallback
         /** HTTP Header，Header 中不能设置 Referer */
         header?: IAnyObject
+        /** 是否开启压缩扩展
+         *
+         * 最低基础库： `2.8.0` */
+        perMessageDeflate?: boolean
         /** 子协议数组
          *
          * 最低基础库： `1.4.0` */
@@ -1057,6 +1239,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
          *
          * 最低基础库： `2.4.0` */
         tcpNoDelay?: boolean
+        /** 超时时间，单位为毫秒
+         *
+         * 最低基础库： `2.10.0` */
+        timeout?: number
     }
     interface ConnectWifiOption {
         /** Wi-Fi 设备 SSID */
@@ -1081,13 +1267,14 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
          *
          * 可选值：
          * - 'fail permission denied, copyFile ${srcPath} -> ${destPath}': 指定目标文件路径没有写权限;
-         * - 'fail no such file or directory, copyFile ${srcPath} -> ${destPath}': 源文件不存在，或目标文件路径的上层目录不存在; */
+         * - 'fail no such file or directory, copyFile ${srcPath} -> ${destPath}': 源文件不存在，或目标文件路径的上层目录不存在;
+         * - 'fail the maximum size of the file storage limit is exceeded': 存储空间不足; */
         errMsg: string
     }
     interface CopyFileOption {
-        /** 目标文件路径 */
+        /** 目标文件路径，支持本地路径 */
         destPath: string
-        /** 源文件路径，只可以是普通文件 */
+        /** 源文件路径，支持本地路径 */
         srcPath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: CopyFileCompleteCallback
@@ -1095,31 +1282,6 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         fail?: CopyFileFailCallback
         /** 接口调用成功的回调函数 */
         success?: CopyFileSuccessCallback
-    }
-    interface CreateAnimationOption {
-        /** 动画延迟时间，单位 ms */
-        delay?: number
-        /** 动画持续时间，单位 ms */
-        duration?: number
-        /** 动画的效果
-         *
-         * 可选值：
-         * - 'linear': 动画从头到尾的速度是相同的;
-         * - 'ease': 动画以低速开始，然后加快，在结束前变慢;
-         * - 'ease-in': 动画以低速开始;
-         * - 'ease-in-out': 动画以低速开始和结束;
-         * - 'ease-out': 动画以低速结束;
-         * - 'step-start': 动画第一帧就跳至结束状态直到结束;
-         * - 'step-end': 动画一直保持开始状态，最后一帧跳到结束状态; */
-        timingFunction?:
-            | 'linear'
-            | 'ease'
-            | 'ease-in'
-            | 'ease-in-out'
-            | 'ease-out'
-            | 'step-start'
-            | 'step-end'
-        transformOrigin?: string
     }
     interface CreateBLEConnectionOption {
         /** 用于区分设备的 id */
@@ -1132,6 +1294,21 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         success?: CreateBLEConnectionSuccessCallback
         /** 超时时间，单位ms，不填表示不会超时 */
         timeout?: number
+    }
+    interface CreateBLEPeripheralServerOption {
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: CreateBLEPeripheralServerCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: CreateBLEPeripheralServerFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: CreateBLEPeripheralServerSuccessCallback
+    }
+    interface CreateBLEPeripheralServerSuccessCallbackResult {
+        /** [BLEPeripheralServer](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/BLEPeripheralServer.html)
+         *
+         * 外围设备的服务端。 */
+        server: BLEPeripheralServer
+        errMsg: string
     }
     /** 选项 */
     interface CreateIntersectionObserverOption {
@@ -1147,6 +1324,16 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
     interface CreateInterstitialAdOption {
         /** 广告单元 id */
         adUnitId: string
+    }
+    interface CreateMediaRecorderOption {
+        /** 指定录制的时长（s)，到达自动停止。最大 7200，最小 5 */
+        duration?: number
+        /** 视频 fps */
+        fps?: number
+        /** 视频关键帧间隔 */
+        gop?: number
+        /** 视频比特率（kbps），最小值 600，最大值 3000 */
+        videoBitsPerSecond?: number
     }
     interface CreateRewardedVideoAdOption {
         /** 广告单元 id */
@@ -1172,6 +1359,22 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         /** 字体粗细，可选值为 normal / bold / 100 / 200../ 900 */
         weight?: string
     }
+    /** 描述符数据 */
+    interface Descriptor {
+        /** Descriptor 的 uuid */
+        uuid: string
+        /** 描述符的权限 */
+        permission?: DescriptorPermission
+        /** 描述符数据 */
+        value?: ArrayBuffer
+    }
+    /** 描述符的权限 */
+    interface DescriptorPermission {
+        /** 读 */
+        read?: boolean
+        /** 写 */
+        write?: boolean
+    }
     /** 指定 marker 移动到的目标点 */
     interface DestinationOption {
         /** 纬度 */
@@ -1186,7 +1389,7 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         complete?: DownloadFileCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: DownloadFileFailCallback
-        /** 指定文件下载后存储的路径
+        /** 指定文件下载后存储的路径 (本地路径)
          *
          * 最低基础库： `1.8.0` */
         filePath?: string
@@ -1194,19 +1397,76 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         header?: IAnyObject
         /** 接口调用成功的回调函数 */
         success?: DownloadFileSuccessCallback
+        /** 超时时间，单位为毫秒
+         *
+         * 最低基础库： `2.10.0` */
+        timeout?: number
     }
     interface DownloadFileSuccessCallbackResult {
-        /** 用户文件路径。传入 filePath 时会返回，跟传入的 filePath 一致 */
+        /** 用户文件路径 (本地路径)。传入 filePath 时会返回，跟传入的 filePath 一致 */
         filePath: string
+        /** 网络请求过程中一些调试信息
+         *
+         * 最低基础库： `2.10.4` */
+        profile: DownloadProfile
         /** 开发者服务器返回的 HTTP 状态码 */
         statusCode: number
-        /** 临时文件路径。没传入 filePath 指定文件存储路径时会返回，下载后的文件会存储到一个临时文件 */
+        /** 临时文件路径 (本地路径)。没传入 filePath 指定文件存储路径时会返回，下载后的文件会存储到一个临时文件 */
         tempFilePath: string
         errMsg: string
     }
-    interface DownloadTaskOnHeadersReceivedCallbackResult {
-        /** 开发者服务器返回的 HTTP Response Header */
-        header: IAnyObject
+    /** 网络请求过程中一些调试信息
+     *
+     * 最低基础库： `2.10.4` */
+    interface DownloadProfile {
+        /** SSL建立完成的时间,如果不是安全连接,则值为 0 */
+        SSLconnectionEnd: number
+        /** SSL建立连接的时间,如果不是安全连接,则值为 0 */
+        SSLconnectionStart: number
+        /** HTTP（TCP） 完成建立连接的时间（完成握手），如果是持久连接，则与 fetchStart 值相等。注意如果在传输层发生了错误且重新建立连接，则这里显示的是新建立的连接完成的时间。注意这里握手结束，包括安全连接建立完成、SOCKS 授权通过 */
+        connectEnd: number
+        /** HTTP（TCP） 开始建立连接的时间，如果是持久连接，则与 fetchStart 值相等。注意如果在传输层发生了错误且重新建立连接，则这里显示的是新建立的连接开始的时间 */
+        connectStart: number
+        /** DNS 域名查询完成的时间，如果使用了本地缓存（即无 DNS 查询）或持久连接，则与 fetchStart 值相等 */
+        domainLookupEnd: number
+        /** DNS 域名查询开始的时间，如果使用了本地缓存（即无 DNS 查询）或持久连接，则与 fetchStart 值相等 */
+        domainLookupStart: number
+        /** 评估当前网络下载的kbps */
+        downstreamThroughputKbpsEstimate: number
+        /** 评估的网络状态 slow 2g/2g/3g/4g */
+        estimate_nettype: string
+        /** 组件准备好使用 HTTP 请求抓取资源的时间，这发生在检查本地缓存之前 */
+        fetchStart: number
+        /** 协议层根据多个请求评估当前网络的 rtt（仅供参考） */
+        httpRttEstimate: number
+        /** 当前请求的IP */
+        peerIP: string
+        /** 当前请求的端口 */
+        port: number
+        /** 收到字节数 */
+        receivedBytedCount: number
+        /** 最后一个 HTTP 重定向完成时的时间。有跳转且是同域名内部的重定向才算，否则值为 0 */
+        redirectEnd: number
+        /** 第一个 HTTP 重定向发生时的时间。有跳转且是同域名内的重定向才算，否则值为 0 */
+        redirectStart: number
+        /** HTTP请求读取真实文档结束的时间 */
+        requestEnd: number
+        /** HTTP请求读取真实文档开始的时间（完成建立连接），包括从本地读取缓存。连接错误重连时，这里显示的也是新建立连接的时间 */
+        requestStart: number
+        /** HTTP 响应全部接收完成的时间（获取到最后一个字节），包括从本地读取缓存 */
+        responseEnd: number
+        /** HTTP 开始接收响应的时间（获取到第一个字节），包括从本地读取缓存 */
+        responseStart: number
+        /** 当次请求连接过程中实时 rtt */
+        rtt: number
+        /** 发送的字节数 */
+        sendBytesCount: number
+        /** 是否复用连接 */
+        socketReused: boolean
+        /** 当前网络的实际下载kbps */
+        throughputKbps: number
+        /** 传输层根据多个请求评估的当前网络的 rtt（仅供参考） */
+        transportRttEstimate: number
     }
     interface DownloadTaskOnProgressUpdateCallbackResult {
         /** 下载进度百分比 */
@@ -1224,9 +1484,17 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         /** 接口调用成功的回调函数 */
         success?: ExitFullScreenSuccessCallback
     }
-    interface ExtInfo {
-        /** 第三方平台自定义的数据 */
-        extConfig: IAnyObject
+    interface ExitPictureInPictureOption {
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: ExitPictureInPictureCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: ExitPictureInPictureFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: ExitPictureInPictureSuccessCallback
+    }
+    interface ExtractDataSourceOption {
+        /** 视频源地址，只支持本地文件 */
+        source: string
     }
     interface Fields {
         /** 指定样式名列表，返回节点对应样式名的当前值
@@ -1257,10 +1525,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         size?: boolean
     }
     interface FileSystemManagerGetFileInfoOption {
-        /** 要读取的文件路径 */
+        /** 要读取的文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: FileSystemManagerGetFileInfoCompleteCallback
+        complete?: GetFileInfoCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: FileSystemManagerGetFileInfoFailCallback
         /** 接口调用成功的回调函数 */
@@ -1273,9 +1541,9 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
     }
     interface FileSystemManagerGetSavedFileListOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: FileSystemManagerGetSavedFileListCompleteCallback
+        complete?: GetSavedFileListCompleteCallback
         /** 接口调用失败的回调函数 */
-        fail?: FileSystemManagerGetSavedFileListFailCallback
+        fail?: GetSavedFileListFailCallback
         /** 接口调用成功的回调函数 */
         success?: FileSystemManagerGetSavedFileListSuccessCallback
     }
@@ -1288,36 +1556,36 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
     interface FileSystemManagerGetSavedFileListSuccessCallbackResultFileItem {
         /** 文件保存时的时间戳，从1970/01/01 08:00:00 到当前时间的秒数 */
         createTime: number
-        /** 本地路径 */
+        /** 文件路径 (本地路径) */
         filePath: string
         /** 本地文件大小，以字节为单位 */
         size: number
     }
     interface FileSystemManagerRemoveSavedFileOption {
-        /** 需要删除的文件路径 */
+        /** 需要删除的文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: FileSystemManagerRemoveSavedFileCompleteCallback
+        complete?: RemoveSavedFileCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: FileSystemManagerRemoveSavedFileFailCallback
         /** 接口调用成功的回调函数 */
-        success?: FileSystemManagerRemoveSavedFileSuccessCallback
+        success?: RemoveSavedFileSuccessCallback
     }
     interface FileSystemManagerSaveFileOption {
-        /** 临时存储文件路径 */
+        /** 临时存储文件路径 (本地路径) */
         tempFilePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: FileSystemManagerSaveFileCompleteCallback
+        complete?: SaveFileCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: FileSystemManagerSaveFileFailCallback
-        /** 要存储的文件路径 */
+        /** 要存储的文件路径 (本地路径) */
         filePath?: string
         /** 接口调用成功的回调函数 */
         success?: FileSystemManagerSaveFileSuccessCallback
     }
     interface FileSystemManagerSaveFileSuccessCallbackResult {
-        /** 存储后的文件路径 */
-        savedFilePath: number
+        /** 存储后的文件路径 (本地路径) */
+        savedFilePath: string
         errMsg: string
     }
     interface GetAvailableAudioSourcesOption {
@@ -1346,7 +1614,8 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
             | 'mic'
             | 'camcorder'
             | 'voice_communication'
-            | 'voice_recognition'>
+            | 'voice_recognition'
+            >
         errMsg: string
     }
     interface GetBLEDeviceCharacteristicsOption {
@@ -1364,6 +1633,21 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
     interface GetBLEDeviceCharacteristicsSuccessCallbackResult {
         /** 设备特征值列表 */
         characteristics: BLECharacteristic[]
+        errMsg: string
+    }
+    interface GetBLEDeviceRSSIOption {
+        /** 蓝牙设备 id */
+        deviceId: string
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: GetBLEDeviceRSSICompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: GetBLEDeviceRSSIFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: GetBLEDeviceRSSISuccessCallback
+    }
+    interface GetBLEDeviceRSSISuccessCallbackResult {
+        /** 信号强度 */
+        RSSI: number
         errMsg: string
     }
     interface GetBLEDeviceServicesOption {
@@ -1569,6 +1853,15 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         /** 接口调用成功的回调函数 */
         success?: GetContentsSuccessCallback
     }
+    interface GetContentsSuccessCallbackResult {
+        /** 表示内容的delta对象 */
+        delta: IAnyObject
+        /** 带标签的HTML内容 */
+        html: string
+        /** 纯文本内容 */
+        text: string
+        errMsg: string
+    }
     interface GetExtConfigOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: GetExtConfigCompleteCallback
@@ -1598,7 +1891,7 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         success?: GetHCEStateSuccessCallback
     }
     interface GetImageInfoOption {
-        /** 图片的路径，可以是相对路径、临时文件路径、存储文件路径、网络图片路径 */
+        /** 图片的路径，支持网络路径、本地路径、代码包路径 */
         src: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: GetImageInfoCompleteCallback
@@ -1651,6 +1944,14 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         complete?: GetLocationCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: GetLocationFailCallback
+        /** 高精度定位超时时间(ms)，指定时间内返回最高精度，该值3000ms以上高精度定位才有效果
+         *
+         * 最低基础库： `2.9.0` */
+        highAccuracyExpireTime?: number
+        /** 开启高精度定位
+         *
+         * 最低基础库： `2.9.0` */
+        isHighAccuracy?: boolean
         /** 接口调用成功的回调函数 */
         success?: GetLocationSuccessCallback
         /** wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标 */
@@ -1701,9 +2002,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
          * - '2g': 2g 网络;
          * - '3g': 3g 网络;
          * - '4g': 4g 网络;
+         * - '5g': 5g 网络;
          * - 'unknown': Android 下不常见的网络类型;
          * - 'none': 无网络; */
-        networkType: 'wifi' | '2g' | '3g' | '4g' | 'unknown' | 'none'
+        networkType: 'wifi' | '2g' | '3g' | '4g' | '5g' | 'unknown' | 'none'
         errMsg: string
     }
     interface GetRegionOption {
@@ -1735,7 +2037,7 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         errMsg: string
     }
     interface GetSavedFileInfoOption {
-        /** 文件路径 */
+        /** 文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: GetSavedFileInfoCompleteCallback
@@ -1791,6 +2093,19 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         start: number
         errMsg: string
     }
+    interface GetSelectionTextOption {
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: GetSelectionTextCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: GetSelectionTextFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: GetSelectionTextSuccessCallback
+    }
+    interface GetSelectionTextSuccessCallbackResult {
+        /** 纯文本内容 */
+        text: string
+        errMsg: string
+    }
     interface GetSettingOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: GetSettingCompleteCallback
@@ -1798,12 +2113,22 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         fail?: GetSettingFailCallback
         /** 接口调用成功的回调函数 */
         success?: GetSettingSuccessCallback
+        /** 是否同时获取用户订阅消息的订阅状态，默认不获取。注意：withSubscriptions 只返回用户勾选过订阅面板中的“总是保持以上选择，不再询问”的订阅消息。
+         *
+         * 最低基础库： `2.10.1` */
+        withSubscriptions?: boolean
     }
     interface GetSettingSuccessCallbackResult {
         /** [AuthSetting](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/setting/AuthSetting.html)
          *
          * 用户授权结果 */
         authSetting: AuthSetting
+        /** [SubscriptionsSetting](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/setting/SubscriptionsSetting.html)
+         *
+         * 用户订阅消息设置，接口参数`withSubscriptions`值为`true`时才会返回。
+         *
+         * 最低基础库： `2.10.1` */
+        subscriptionsSetting: SubscriptionsSetting
         errMsg: string
     }
     interface GetShareInfoOption {
@@ -1975,6 +2300,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         statusBarHeight: number
         /** 操作系统及版本 */
         system: string
+        /** 系统当前主题，取值为`light`或`dark`，全局配置`"darkmode":true`时才能获取，否则为 undefined （不支持小游戏）
+         *
+         * 最低基础库： `2.11.0` */
+        theme: string
         /** 微信版本号 */
         version: string
         /** Wi-Fi 的系统开关
@@ -2055,7 +2384,7 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         /** 在竖屏正方向下的安全区域
          *
          * 最低基础库： `2.7.0` */
-        safeArea: GetSystemInfoSyncResultSafeAreaResult
+        safeArea: SafeAreaResult
         /** 屏幕高度，单位px
          *
          * 最低基础库： `1.1.0` */
@@ -2070,6 +2399,10 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         statusBarHeight: number
         /** 操作系统及版本 */
         system: string
+        /** 系统当前主题，取值为`light`或`dark`，全局配置`"darkmode":true`时才能获取，否则为 undefined （不支持小游戏）
+         *
+         * 最低基础库： `2.11.0` */
+        theme: string
         /** 微信版本号 */
         version: string
         /** Wi-Fi 的系统开关
@@ -2080,23 +2413,6 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         windowHeight: number
         /** 可使用窗口宽度，单位px */
         windowWidth: number
-    }
-    /** 在竖屏正方向下的安全区域
-     *
-     * 最低基础库： `2.7.0` */
-    interface GetSystemInfoSyncResultSafeAreaResult {
-        /** 安全区域右下角纵坐标 */
-        bottom: number
-        /** 安全区域的高度，单位逻辑像素 */
-        height: number
-        /** 安全区域左上角横坐标 */
-        left: number
-        /** 安全区域右下角横坐标 */
-        right: number
-        /** 安全区域左上角纵坐标 */
-        top: number
-        /** 安全区域的宽度，单位逻辑像素 */
-        width: number
     }
     interface GetUserInfoOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
@@ -2132,6 +2448,53 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
          *
          * 用户信息对象，不包含 openid 等敏感信息 */
         userInfo: UserInfo
+        errMsg: string
+    }
+    interface GetVideoInfoOption {
+        /** 视频文件路径，可以是临时文件路径也可以是永久文件路径 */
+        src: string
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: GetVideoInfoCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: GetVideoInfoFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: GetVideoInfoSuccessCallback
+    }
+    interface GetVideoInfoSuccessCallbackResult {
+        /** 视频码率，单位 kbps */
+        bitrate: number
+        /** 视频长度 */
+        duration: number
+        /** 视频帧率 */
+        fps: number
+        /** 视频的长，单位 px */
+        height: number
+        /** 画面方向
+         *
+         * 可选值：
+         * - 'up': 默认;
+         * - 'down': 180度旋转;
+         * - 'left': 逆时针旋转90度;
+         * - 'right': 顺时针旋转90度;
+         * - 'up-mirrored': 同up，但水平翻转;
+         * - 'down-mirrored': 同down，但水平翻转;
+         * - 'left-mirrored': 同left，但垂直翻转;
+         * - 'right-mirrored': 同right，但垂直翻转; */
+        orientation:
+            | 'up'
+            | 'down'
+            | 'left'
+            | 'right'
+            | 'up-mirrored'
+            | 'down-mirrored'
+            | 'left-mirrored'
+            | 'right-mirrored'
+        /** 视频大小，单位 kB */
+        size: number
+        /** 视频格式 */
+        type: string
+        /** 视频的宽，单位 px */
+        width: number
         errMsg: string
     }
     interface GetWeRunDataOption {
@@ -2253,16 +2616,27 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         onerror: (...args: any[]) => any
         /** 图片加载完成后触发的回调函数 */
         onload: (...args: any[]) => any
-        /** 图片的 URL */
+        /** 图片的 URL。v2.11.0 起支持传递 base64 Data URI */
         src: string
         /** 图片的真实宽度 */
+        width: number
+    }
+    /** ImageData 对象
+     *
+     * 最低基础库： `2.9.0` */
+    interface ImageData {
+        /** 一维数组，包含以 RGBA 顺序的数据，数据使用 0 至 255（包含）的整数表示 */
+        data: Uint8ClampedArray
+        /** 使用像素描述 ImageData 的实际高度 */
+        height: number
+        /** 使用像素描述 ImageData 的实际宽度 */
         width: number
     }
     /** 图片的本地临时文件列表
      *
      * 最低基础库： `1.2.0` */
     interface ImageFile {
-        /** 本地临时文件路径 */
+        /** 本地临时文件路径 (本地路径) */
         path: string
         /** 本地临时文件大小，单位 B */
         size: number
@@ -2280,40 +2654,40 @@ backgroundAudioManager.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb
         success?: IncludePointsSuccessCallback
     }
     /** InnerAudioContext 实例，可通过 [wx.createInnerAudioContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.createInnerAudioContext.html) 接口获取实例。
-*
-* **支持格式**
-*
-*
-* | 格式 | iOS  | Android |
-* | ---- | ---- | ------- |
-* | flac | x    | √       |
-* | m4a  | √    | √       |
-* | ogg  | x    | √       |
-* | ape  | x    | √       |
-* | amr  | x    | √       |
-* | wma  | x    | √       |
-* | wav  | √    | √       |
-* | mp3  | √    | √       |
-* | mp4  | x    | √       |
-* | aac  | √    | √       |
-* | aiff | √    | x       |
-* | caf  | √    | x       |
-*
-* **示例代码**
-*
-*
-* ```js
-const innerAudioContext = wx.createInnerAudioContext()
-innerAudioContext.autoplay = true
-innerAudioContext.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb.mp3?guid=ffffffff82def4af4b12b3cd9337d5e7&uin=346897220&vkey=6292F51E1E384E061FF02C31F716658E5C81F5594D561F2E88B854E81CAAB7806D5E4F103E55D33C16F3FAC506D1AB172DE8600B37E43FAD&fromtag=46'
-innerAudioContext.onPlay(() => {
+     *
+     * **支持格式**
+     *
+     *
+     * | 格式 | iOS  | Android |
+     * | ---- | ---- | ------- |
+     * | flac | x    | √       |
+     * | m4a  | √    | √       |
+     * | ogg  | x    | √       |
+     * | ape  | x    | √       |
+     * | amr  | x    | √       |
+     * | wma  | x    | √       |
+     * | wav  | √    | √       |
+     * | mp3  | √    | √       |
+     * | mp4  | x    | √       |
+     * | aac  | √    | √       |
+     * | aiff | √    | x       |
+     * | caf  | √    | x       |
+     *
+     * **示例代码**
+     *
+     *
+     * ```js
+     const innerAudioContext = wx.createInnerAudioContext()
+     innerAudioContext.autoplay = true
+     innerAudioContext.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb.mp3?guid=ffffffff82def4af4b12b3cd9337d5e7&uin=346897220&vkey=6292F51E1E384E061FF02C31F716658E5C81F5594D561F2E88B854E81CAAB7806D5E4F103E55D33C16F3FAC506D1AB172DE8600B37E43FAD&fromtag=46'
+     innerAudioContext.onPlay(() => {
   console.log('开始播放')
 })
-innerAudioContext.onError((res) => {
+     innerAudioContext.onError((res) => {
   console.log(res.errMsg)
   console.log(res.errCode)
 })
-``` */
+     ``` */
     interface InnerAudioContext {
         /** 是否自动开始播放，默认为 `false` */
         autoplay: boolean
@@ -2329,6 +2703,10 @@ innerAudioContext.onError((res) => {
         obeyMuteSwitch: boolean
         /** 当前是是否暂停或停止状态（只读） */
         paused: boolean
+        /** 播放速度。范围 0.5-2.0，默认为 1。（Android 需要 6 及以上版本）
+         *
+         * 最低基础库： `2.11.0` */
+        playbackRate: number
         /** 音频资源的地址，用于直接播放。[2.2.3](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html) 开始支持云文件ID */
         src: string
         /** 开始播放的位置（单位：s），默认为 0 */
@@ -2422,31 +2800,16 @@ innerAudioContext.onError((res) => {
     }
     /** 启动参数 */
     interface LaunchOptionsApp {
-        /** 启动小程序的路径 */
+        /** 启动小程序的路径 (代码包路径) */
         path: string
         /** 启动小程序的 query 参数 */
         query: IAnyObject
         /** 来源信息。从另一个小程序、公众号或 App 进入小程序时返回。否则返回 `{}`。(参见后文注意) */
-        referrerInfo: LaunchOptionsAppReferrerInfo
+        referrerInfo: ReferrerInfo
         /** 启动小程序的[场景值](https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/scene.html) */
         scene: number
         /** shareTicket，详见[获取更多转发信息](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/share.html) */
-        shareTicket: string
-    }
-    /** 来源信息。从另一个小程序、公众号或 App 进入小程序时返回。否则返回 `{}`。(参见后文注意) */
-    interface LaunchOptionsAppReferrerInfo {
-        /** 来源小程序、公众号或 App 的 appId */
-        appId: string
-        /** 来源小程序传过来的数据，scene=1037或1038时支持 */
-        extraData: IAnyObject
-    }
-    interface LivePlayerContextPauseOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePlayerContextPauseCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePlayerContextPauseFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePlayerContextPauseSuccessCallback
+        shareTicket?: string
     }
     interface LivePlayerContextRequestFullScreenOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
@@ -2463,75 +2826,7 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: RequestFullScreenSuccessCallback
     }
-    interface LivePlayerContextResumeOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePlayerContextResumeCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePlayerContextResumeFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePlayerContextResumeSuccessCallback
-    }
-    interface LivePlayerContextSnapshotOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePlayerContextSnapshotCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePlayerContextSnapshotFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePlayerContextSnapshotSuccessCallback
-    }
-    interface LivePlayerContextStopOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePlayerContextStopCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePlayerContextStopFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePlayerContextStopSuccessCallback
-    }
-    interface LivePusherContextPauseOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePusherContextPauseCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePusherContextPauseFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePusherContextPauseSuccessCallback
-    }
-    interface LivePusherContextResumeOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePusherContextResumeCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePusherContextResumeFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePusherContextResumeSuccessCallback
-    }
-    interface LivePusherContextSnapshotOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePusherContextSnapshotCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePusherContextSnapshotFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePusherContextSnapshotSuccessCallback
-    }
-    interface LivePusherContextStartOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePusherContextStartCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePusherContextStartFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePusherContextStartSuccessCallback
-    }
-    interface LivePusherContextStopOption {
-        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: LivePusherContextStopCompleteCallback
-        /** 接口调用失败的回调函数 */
-        fail?: LivePusherContextStopFailCallback
-        /** 接口调用成功的回调函数 */
-        success?: LivePusherContextStopSuccessCallback
-    }
     interface LoadFontFaceCompleteCallbackResult {
-        /** 加载字体结果 */
-        status: string
-    }
-    interface LoadFontFaceFailCallbackResult {
         /** 加载字体结果 */
         status: string
     }
@@ -2546,12 +2841,12 @@ innerAudioContext.onError((res) => {
         desc?: DescOption
         /** 接口调用失败的回调函数 */
         fail?: LoadFontFaceFailCallback
+        /** 是否全局生效
+         *
+         * 最低基础库： `2.10.0` */
+        global?: boolean
         /** 接口调用成功的回调函数 */
         success?: LoadFontFaceSuccessCallback
-    }
-    interface LoadFontFaceSuccessCallbackResult {
-        /** 加载字体结果 */
-        status: string
     }
     interface LoginOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
@@ -2580,6 +2875,13 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: MakePhoneCallSuccessCallback
     }
+    /** 广播的制造商信息, 仅安卓支持 */
+    interface ManufacturerData {
+        /** 制造商ID，0x 开头的十六进制 */
+        manufacturerId: string
+        /** 制造商信息 */
+        manufacturerSpecificData?: ArrayBuffer
+    }
     /** 要显示在可视区域内的坐标点列表 */
     interface MapPostion {
         /** 纬度 */
@@ -2587,10 +2889,66 @@ innerAudioContext.onError((res) => {
         /** 经度 */
         longitude: number
     }
+    /** 用来扩展（或收缩）参照节点布局区域的边界 */
+    interface Margins {
+        /** 节点布局区域的下边界 */
+        bottom?: number
+        /** 节点布局区域的左边界 */
+        left?: number
+        /** 节点布局区域的右边界 */
+        right?: number
+        /** 节点布局区域的上边界 */
+        top?: number
+    }
+    /** 本地临时文件列表 */
+    interface MediaFile {
+        /** 视频的时间长度 */
+        duration: number
+        /** 视频的高度 */
+        height: number
+        /** 本地临时文件大小，单位 B */
+        size: number
+        /** 本地临时文件路径 (本地路径) */
+        tempFilePath: string
+        /** 视频缩略图临时文件路径 */
+        thumbTempFilePath: string
+        /** 视频的宽度 */
+        width: number
+    }
+    /** 可通过 [MediaContainer.extractDataSource](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaContainer.extractDataSource.html) 返回。
+     *
+     * [MediaTrack](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaTrack.html) 音频或视频轨道，可以对轨道进行一些操作
+     *
+     * 最低基础库： `2.9.0` */
+    interface MediaTrack {
+        /** 轨道长度，只读 */
+        duration: number
+        /** 轨道类型，只读
+         *
+         * 可选值：
+         * - 'audio': 音频轨道;
+         * - 'video': 视频轨道; */
+        kind: 'audio' | 'video'
+        /** 音量，音频轨道下有效，可写 */
+        volume: number
+    }
     /** 小程序帐号信息 */
     interface MiniProgram {
         /** 小程序 appId */
         appId: string
+        /** 小程序版本
+         *
+         * 可选值：
+         * - 'develop': 开发版;
+         * - 'trial': 体验版;
+         * - 'release': 正式版;
+         *
+         * 最低基础库： `2.10.0` */
+        envVersion: 'develop' | 'trial' | 'release'
+        /** 线上小程序版本号
+         *
+         * 最低基础库： `2.10.2` */
+        version: string
     }
     interface MkdirFailCallbackResult {
         /** 错误信息
@@ -2602,7 +2960,7 @@ innerAudioContext.onError((res) => {
         errMsg: string
     }
     interface MkdirOption {
-        /** 创建的目录路径 */
+        /** 创建的目录路径 (本地路径) */
         dirPath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: MkdirCompleteCallback
@@ -2681,7 +3039,7 @@ innerAudioContext.onError((res) => {
         success?: NavigateToMiniProgramSuccessCallback
     }
     interface NavigateToOption {
-        /** 需要跳转的应用内非 tabBar 的页面的路径, 路径后可以带参数。参数与路径之间使用 `?` 分隔，参数键与参数值用 `=` 相连，不同参数用 `&` 分隔；如 'path?key=value&key2=value2' */
+        /** 需要跳转的应用内非 tabBar 的页面的路径 (代码包路径), 路径后可以带参数。参数与路径之间使用 `?` 分隔，参数键与参数值用 `=` 相连，不同参数用 `&` 分隔；如 'path?key=value&key2=value2' */
         url: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: NavigateToCompleteCallback
@@ -2740,16 +3098,16 @@ innerAudioContext.onError((res) => {
         z: number
     }
     interface OnAppShowCallbackResult {
-        /** 小程序切前台的路径 */
+        /** 小程序切前台的路径 (代码包路径) */
         path: string
         /** 小程序切前台的 query 参数 */
         query: IAnyObject
         /** 来源信息。从另一个小程序、公众号或 App 进入小程序时返回。否则返回 `{}`。(参见后文注意) */
-        referrerInfo: ResultReferrerInfo
+        referrerInfo: ReferrerInfo
         /** 小程序切前台的[场景值](https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/scene.html) */
         scene: number
         /** shareTicket，详见[获取更多转发信息](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/share.html) */
-        shareTicket: string
+        shareTicket?: string
     }
     interface OnBLECharacteristicValueChangeCallbackResult {
         /** 蓝牙特征值的 uuid */
@@ -2766,6 +3124,14 @@ innerAudioContext.onError((res) => {
         connected: boolean
         /** 蓝牙设备ID */
         deviceId: string
+    }
+    interface OnBLEPeripheralConnectionStateChangedCallbackResult {
+        /** 连接目前状态 */
+        connected: boolean
+        /** 连接状态变化的设备 id */
+        deviceId: string
+        /** server 的 uuid */
+        serverId: string
     }
     interface OnBackgroundFetchDataOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
@@ -2802,6 +3168,24 @@ innerAudioContext.onError((res) => {
         height: number
         /** 图像数据矩形的宽度 */
         width: number
+    }
+    interface OnCharacteristicReadRequestCallbackResult {
+        /** 唯一标识码，调用 writeCharacteristicValue 时使用 */
+        callbackId: number
+        /** characteristic对应的uuid */
+        characteristicId: string
+        /** service对应的uuid */
+        serviceId: string
+    }
+    interface OnCharacteristicWriteRequestCallbackResult {
+        /** 唯一标识码，调用 writeCharacteristicValue 时使用 */
+        callbackId: number
+        /** characteristic对应的uuid */
+        characteristicId: string
+        /** service对应的uuid */
+        serviceId: string
+        /** 请求写入的特征值数据 */
+        value: ArrayBuffer
     }
     interface OnCheckForUpdateCallbackResult {
         /** 是否有新版本 */
@@ -2853,6 +3237,10 @@ innerAudioContext.onError((res) => {
         /** `messageType=2` 时，原因 */
         reason: number
     }
+    interface OnHeadersReceivedCallbackResult {
+        /** 开发者服务器返回的 HTTP Response Header */
+        header: IAnyObject
+    }
     interface OnKeyboardHeightChangeCallbackResult {
         /** 键盘高度 */
         height: number
@@ -2868,12 +3256,6 @@ innerAudioContext.onError((res) => {
         serviceType: string
     }
     interface OnLocalServiceLostCallbackResult {
-        /** 服务的名称 */
-        serviceName: string
-        /** 服务的类型 */
-        serviceType: string
-    }
-    interface OnLocalServiceResolveFailCallbackResult {
         /** 服务的名称 */
         serviceName: string
         /** 服务的类型 */
@@ -2929,22 +3311,18 @@ innerAudioContext.onError((res) => {
          *
          * 最低基础库： `2.0.0` */
         header: IAnyObject
+        /** 网络请求过程中一些调试信息
+         *
+         * 最低基础库： `2.10.4` */
+        profile: SocketProfile
     }
     interface OnPageNotFoundCallbackResult {
         /** 是否本次启动的首个页面（例如从分享等入口进来，首个页面是开发者配置的分享页面） */
         isEntryPage: boolean
-        /** 不存在页面的路径 */
+        /** 不存在页面的路径 (代码包路径) */
         path: string
         /** 打开不存在页面的 query 参数 */
         query: IAnyObject
-    }
-    interface OnSocketCloseCallbackResult {
-        code: number
-        reason: string
-    }
-    interface OnSocketMessageCallbackResult {
-        /** 服务器返回的消息 */
-        data: string | ArrayBuffer
     }
     interface OnSocketOpenCallbackResult {
         /** 连接成功的 HTTP 响应 Header
@@ -2957,8 +3335,18 @@ innerAudioContext.onError((res) => {
         duration: number
         /** 录音文件大小，单位：Byte */
         fileSize: number
-        /** 录音文件的临时路径 */
+        /** 录音文件的临时路径 (本地路径) */
         tempFilePath: string
+    }
+    interface OnThemeChangeCallbackResult {
+        /** 系统当前的主题，取值为`light`或`dark` */
+        theme: string
+    }
+    interface OnUnhandledRejectionCallbackResult {
+        /** 被拒绝的 Promise 对象 */
+        promise: Promise<any>
+        /** 拒绝原因，一般是一个 Error 对象 */
+        reason: string
     }
     interface OnWifiConnectedCallbackResult {
         /** [WifiInfo](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/WifiInfo.html)
@@ -2974,6 +3362,14 @@ innerAudioContext.onError((res) => {
         complete?: OpenBluetoothAdapterCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: OpenBluetoothAdapterFailCallback
+        /** 蓝牙模式，可作为主/从设备，仅 iOS 需要。
+         *
+         * 可选值：
+         * - 'central': 主机模式;
+         * - 'peripheral': 丛机模式;
+         *
+         * 最低基础库： `2.10.0` */
+        mode?: 'central' | 'peripheral'
         /** 接口调用成功的回调函数 */
         success?: OpenBluetoothAdapterSuccessCallback
     }
@@ -2995,7 +3391,7 @@ innerAudioContext.onError((res) => {
         code: string
     }
     interface OpenDocumentOption {
-        /** 文件路径，可通过 downloadFile 获得 */
+        /** 文件路径 (本地路径) ，可通过 downloadFile 获得 */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: OpenDocumentCompleteCallback
@@ -3014,6 +3410,10 @@ innerAudioContext.onError((res) => {
          *
          * 最低基础库： `1.4.0` */
         fileType?: 'doc' | 'docx' | 'xls' | 'xlsx' | 'ppt' | 'pptx' | 'pdf'
+        /** 是否显示右上角菜单
+         *
+         * 最低基础库： `2.11.0` */
+        showMenu?: boolean
         /** 接口调用成功的回调函数 */
         success?: OpenDocumentSuccessCallback
     }
@@ -3042,12 +3442,24 @@ innerAudioContext.onError((res) => {
         fail?: OpenSettingFailCallback
         /** 接口调用成功的回调函数 */
         success?: OpenSettingSuccessCallback
+        /** 是否同时获取用户订阅消息的订阅状态，默认不获取。注意：withSubscriptions 只返回用户勾选过订阅面板中的“总是保持以上选择，不再询问”的订阅消息。
+         *
+         * - 注意：[2.3.0](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html) 版本开始，用户发生点击行为后，才可以跳转打开设置页，管理授权信息。[详情](https://developers.weixin.qq.com/community/develop/doc/000cea2305cc5047af5733de751008)
+         *
+         * 最低基础库： `2.10.3` */
+        withSubscriptions?: boolean
     }
     interface OpenSettingSuccessCallbackResult {
         /** [AuthSetting](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/setting/AuthSetting.html)
          *
          * 用户授权结果 */
         authSetting: AuthSetting
+        /** [SubscriptionsSetting](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/setting/SubscriptionsSetting.html)
+         *
+         * 用户订阅消息设置，接口参数`withSubscriptions`值为`true`时才会返回。
+         *
+         * 最低基础库： `2.10.3` */
+        subscriptionsSetting: SubscriptionsSetting
         errMsg: string
     }
     interface PageScrollToOption {
@@ -3066,6 +3478,10 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: PageScrollToSuccessCallback
     }
+    /** Canvas 2D API 的接口 Path2D 用来声明路径，此路径稍后会被CanvasRenderingContext2D 对象使用。CanvasRenderingContext2D 接口的 路径方法 也存在于 Path2D 这个接口中，允许你在 canvas 中根据需要创建可以保留并重用的路径。
+     *
+     * 最低基础库： `2.11.0` */
+    interface Path2D {}
     interface PauseBGMOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: PauseBGMCompleteCallback
@@ -3082,6 +3498,14 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: PauseBackgroundAudioSuccessCallback
     }
+    interface PauseOption {
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: PauseCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: PauseFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: PauseSuccessCallback
+    }
     interface PauseVoiceOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: PauseVoiceCompleteCallback
@@ -3089,6 +3513,13 @@ innerAudioContext.onError((res) => {
         fail?: PauseVoiceFailCallback
         /** 接口调用成功的回调函数 */
         success?: PauseVoiceSuccessCallback
+    }
+    /** PerformanceObserver 对象， 用于监听性能相关事件
+     *
+     * 最低基础库： `2.11.0` */
+    interface PerformanceObserver {
+        /** 获取当前支持的所有性能指标类型 */
+        supportedEntryTypes: any[]
     }
     interface PlayBGMOption {
         /** 加入背景混音的资源地址 */
@@ -3123,7 +3554,7 @@ innerAudioContext.onError((res) => {
         success?: PlaySuccessCallback
     }
     interface PlayVoiceOption {
-        /** 需要播放的语音文件的文件路径 */
+        /** 需要播放的语音文件的文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: PlayVoiceCompleteCallback
@@ -3155,19 +3586,8 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: PreviewImageSuccessCallback
     }
-    /** 该特征值支持的操作类型 */
-    interface Properties {
-        /** 该特征值是否支持 indicate 操作 */
-        indicate: boolean
-        /** 该特征值是否支持 notify 操作 */
-        notify: boolean
-        /** 该特征值是否支持 read 操作 */
-        read: boolean
-        /** 该特征值是否支持 write 操作 */
-        write: boolean
-    }
     interface ReLaunchOption {
-        /** 需要跳转的应用内页面路径，路径后可以带参数。参数与路径之间使用?分隔，参数键与参数值用=相连，不同参数用&分隔；如 'path?key=value&key2=value2' */
+        /** 需要跳转的应用内页面路径 (代码包路径)，路径后可以带参数。参数与路径之间使用?分隔，参数键与参数值用=相连，不同参数用&分隔；如 'path?key=value&key2=value2' */
         url: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: ReLaunchCompleteCallback
@@ -3199,7 +3619,7 @@ innerAudioContext.onError((res) => {
         errMsg: string
     }
     interface ReadFileOption {
-        /** 要读取的文件的路径 */
+        /** 要读取的文件的路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: ReadFileCompleteCallback
@@ -3231,6 +3651,14 @@ innerAudioContext.onError((res) => {
             | 'latin1'
         /** 接口调用失败的回调函数 */
         fail?: ReadFileFailCallback
+        /** 指定文件的长度，如果不指定，则读到文件末尾。有效范围：[1, fileLength]。单位：byte
+         *
+         * 最低基础库： `2.10.0` */
+        length?: string
+        /** 从文件指定位置开始读，如果不指定，则从文件头开始读。读取的范围应该是左闭右开区间 [position, position+length)。有效范围：[0, fileLength - 1]。单位：byte
+         *
+         * 最低基础库： `2.10.0` */
+        position?: string
         /** 接口调用成功的回调函数 */
         success?: ReadFileSuccessCallback
     }
@@ -3249,7 +3677,7 @@ innerAudioContext.onError((res) => {
         errMsg: string
     }
     interface ReaddirOption {
-        /** 要读取的目录路径 */
+        /** 要读取的目录路径 (本地路径) */
         dirPath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: ReaddirCompleteCallback
@@ -3261,10 +3689,6 @@ innerAudioContext.onError((res) => {
     interface ReaddirSuccessCallbackResult {
         /** 指定目录下的文件名数组。 */
         files: string[]
-        errMsg: string
-    }
-    interface RecorderManagerOnErrorCallbackResult {
-        /** 错误信息 */
         errMsg: string
     }
     interface RecorderManagerStartOption {
@@ -3296,8 +3720,10 @@ innerAudioContext.onError((res) => {
          *
          * 可选值：
          * - 'mp3': mp3 格式;
-         * - 'aac': aac 格式; */
-        format?: 'mp3' | 'aac'
+         * - 'aac': aac 格式;
+         * - 'wav': wav 格式;
+         * - 'PCM': pcm 格式; */
+        format?: 'mp3' | 'aac' | 'wav' | 'PCM'
         /** 指定帧大小，单位 KB。传入 frameSize 后，每录制指定帧大小的内容后，会回调录制的文件内容，不指定则不会回调。暂仅支持 mp3 格式。 */
         frameSize?: number
         /** 录音通道数
@@ -3345,7 +3771,7 @@ innerAudioContext.onError((res) => {
         width: number
     }
     interface RedirectToOption {
-        /** 需要跳转的应用内非 tabBar 的页面的路径, 路径后可以带参数。参数与路径之间使用 `?` 分隔，参数键与参数值用 `=` 相连，不同参数用 `&` 分隔；如 'path?key=value&key2=value2' */
+        /** 需要跳转的应用内非 tabBar 的页面的路径 (代码包路径), 路径后可以带参数。参数与路径之间使用 `?` 分隔，参数键与参数值用 `=` 相连，不同参数用 `&` 分隔；如 'path?key=value&key2=value2' */
         url: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: RedirectToCompleteCallback
@@ -3362,6 +3788,13 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: RedoSuccessCallback
     }
+    /** 来源信息。从另一个小程序、公众号或 App 进入小程序时返回。否则返回 `{}`。(参见后文注意) */
+    interface ReferrerInfo {
+        /** 来源小程序、公众号或 App 的 appId */
+        appId: string
+        /** 来源小程序传过来的数据，scene=1037或1038时支持 */
+        extraData: IAnyObject
+    }
     /** 参照区域的边界 */
     interface RelativeRectResult {
         /** 下边界 */
@@ -3372,28 +3805,6 @@ innerAudioContext.onError((res) => {
         right: number
         /** 上边界 */
         top: number
-    }
-    /** 用来扩展（或收缩）参照节点布局区域的边界 */
-    interface RelativeToMargins {
-        /** 节点布局区域的下边界 */
-        bottom?: number
-        /** 节点布局区域的左边界 */
-        left?: number
-        /** 节点布局区域的右边界 */
-        right?: number
-        /** 节点布局区域的上边界 */
-        top?: number
-    }
-    /** 用来扩展（或收缩）参照节点布局区域的边界 */
-    interface RelativeToViewportMargins {
-        /** 节点布局区域的下边界 */
-        bottom?: number
-        /** 节点布局区域的左边界 */
-        left?: number
-        /** 节点布局区域的右边界 */
-        right?: number
-        /** 节点布局区域的上边界 */
-        top?: number
     }
     /** 消息来源的结构化信息 */
     interface RemoteInfo {
@@ -3420,6 +3831,16 @@ innerAudioContext.onError((res) => {
          * 可选值：
          * - 'fail file not exist': 指定的 tempFilePath 找不到文件; */
         errMsg: string
+    }
+    interface RemoveServiceOption {
+        /** service 的 uuid */
+        serviceId: string
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: RemoveServiceCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: RemoveServiceFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: RemoveServiceSuccessCallback
     }
     interface RemoveStorageOption {
         /** 本地缓存中指定的 key */
@@ -3450,9 +3871,9 @@ innerAudioContext.onError((res) => {
         errMsg: string
     }
     interface RenameOption {
-        /** 新文件路径 */
+        /** 新文件路径，支持本地路径 */
         newPath: string
-        /** 源文件路径，可以是普通文件或目录 */
+        /** 源文件路径，支持本地路径 */
         oldPath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: RenameCompleteCallback
@@ -3462,7 +3883,19 @@ innerAudioContext.onError((res) => {
         success?: RenameSuccessCallback
     }
     /** Canvas 绘图上下文。
-     *     - 通过 Canvas.getContext('webgl') 或 OffscreenCanvas.getContext('webgl') 接口可以获取 WebGLRenderingContext 对象，实现了 [WebGL 1.0](https://www.khronos.org/registry/webgl/specs/latest/1.0/) 定义的所有属性、方法、常量。 */
+     *
+     * ****
+     *
+     * - 通过 Canvas.getContext('2d') 接口可以获取 CanvasRenderingContext2D 对象，实现了 [HTML Canvas 2D Context](https://www.w3.org/TR/2dcontext/) 定义的属性、方法。
+     * - 通过 Canvas.getContext('webgl') 或 OffscreenCanvas.getContext('webgl') 接口可以获取 WebGLRenderingContext 对象，实现了 [WebGL 1.0](https://www.khronos.org/registry/webgl/specs/latest/1.0/) 定义的所有属性、方法、常量。
+     * - CanvasRenderingContext2D 的 drawImage 方法 2.10.0 起支持传入通过 [SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) 获取的 video 对象
+     *
+     * **示例代码**
+     *
+     *
+     *
+     * video 画到 2D Canvas 示例
+     * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/tJTak7mU7sfX) */
     interface RenderingContext {}
     interface RequestOption {
         /** 开发者服务器接口地址 */
@@ -3477,6 +3910,18 @@ innerAudioContext.onError((res) => {
          * - 'json': 返回的数据为 JSON，返回后会对返回的数据进行一次 JSON.parse;
          * - '其他': 不对返回的内容进行 JSON.parse; */
         dataType?: 'json' | '其他'
+        /** 开启 cache
+         *
+         * 最低基础库： `2.10.4` */
+        enableCache?: boolean
+        /** 开启 http2
+         *
+         * 最低基础库： `2.10.4` */
+        enableHttp2?: boolean
+        /** 开启 quic
+         *
+         * 最低基础库： `2.10.4` */
+        enableQuic?: boolean
         /** 接口调用失败的回调函数 */
         fail?: RequestFailCallback
         /** 设置请求的 header，header 中不能设置 Referer。
@@ -3513,6 +3958,10 @@ innerAudioContext.onError((res) => {
         responseType?: 'text' | 'arraybuffer'
         /** 接口调用成功的回调函数 */
         success?: RequestSuccessCallback
+        /** 超时时间，单位为毫秒
+         *
+         * 最低基础库： `2.10.0` */
+        timeout?: number
     }
     interface RequestPaymentOption {
         /** 随机字符串，长度为32个字符以下 */
@@ -3536,27 +3985,99 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: RequestPaymentSuccessCallback
     }
+    /** 网络请求过程中一些调试信息
+     *
+     * 最低基础库： `2.10.4` */
+    interface RequestProfile {
+        /** SSL建立完成的时间,如果不是安全连接,则值为 0 */
+        SSLconnectionEnd: number
+        /** SSL建立连接的时间,如果不是安全连接,则值为 0 */
+        SSLconnectionStart: number
+        /** HTTP（TCP） 完成建立连接的时间（完成握手），如果是持久连接，则与 fetchStart 值相等。注意如果在传输层发生了错误且重新建立连接，则这里显示的是新建立的连接完成的时间。注意这里握手结束，包括安全连接建立完成、SOCKS 授权通过 */
+        connectEnd: number
+        /** HTTP（TCP） 开始建立连接的时间，如果是持久连接，则与 fetchStart 值相等。注意如果在传输层发生了错误且重新建立连接，则这里显示的是新建立的连接开始的时间 */
+        connectStart: number
+        /** DNS 域名查询完成的时间，如果使用了本地缓存（即无 DNS 查询）或持久连接，则与 fetchStart 值相等 */
+        domainLookupEnd: number
+        /** DNS 域名查询开始的时间，如果使用了本地缓存（即无 DNS 查询）或持久连接，则与 fetchStart 值相等 */
+        domainLookupStart: number
+        /** 评估当前网络下载的kbps */
+        downstreamThroughputKbpsEstimate: number
+        /** 评估的网络状态 slow 2g/2g/3g/4g */
+        estimate_nettype: string
+        /** 组件准备好使用 HTTP 请求抓取资源的时间，这发生在检查本地缓存之前 */
+        fetchStart: number
+        /** 协议层根据多个请求评估当前网络的 rtt（仅供参考） */
+        httpRttEstimate: number
+        /** 当前请求的IP */
+        peerIP: string
+        /** 当前请求的端口 */
+        port: number
+        /** 收到字节数 */
+        receivedBytedCount: number
+        /** 最后一个 HTTP 重定向完成时的时间。有跳转且是同域名内部的重定向才算，否则值为 0 */
+        redirectEnd: number
+        /** 第一个 HTTP 重定向发生时的时间。有跳转且是同域名内的重定向才算，否则值为 0 */
+        redirectStart: number
+        /** HTTP请求读取真实文档结束的时间 */
+        requestEnd: number
+        /** HTTP请求读取真实文档开始的时间（完成建立连接），包括从本地读取缓存。连接错误重连时，这里显示的也是新建立连接的时间 */
+        requestStart: number
+        /** HTTP 响应全部接收完成的时间（获取到最后一个字节），包括从本地读取缓存 */
+        responseEnd: number
+        /** HTTP 开始接收响应的时间（获取到第一个字节），包括从本地读取缓存 */
+        responseStart: number
+        /** 当次请求连接过程中实时 rtt */
+        rtt: number
+        /** 发送的字节数 */
+        sendBytesCount: number
+        /** 是否复用连接 */
+        socketReused: boolean
+        /** 当前网络的实际下载kbps */
+        throughputKbps: number
+        /** 传输层根据多个请求评估的当前网络的 rtt（仅供参考） */
+        transportRttEstimate: number
+    }
+    interface RequestSubscribeMessageFailCallbackResult {
+        /** 接口调用失败错误码 */
+        errCode: number
+        /** 接口调用失败错误信息 */
+        errMsg: string
+    }
+    interface RequestSubscribeMessageOption {
+        /** 需要订阅的消息模板的id的集合，一次调用最多可订阅3条消息（注意：iOS客户端7.0.6版本、Android客户端7.0.7版本之后的一次性订阅/长期订阅才支持多个模板消息，iOS客户端7.0.5版本、Android客户端7.0.6版本之前的一次订阅只支持一个模板消息）消息模板id在[微信公众平台(mp.weixin.qq.com)-功能-订阅消息]中配置 */
+        tmplIds: any[]
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: RequestSubscribeMessageCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: RequestSubscribeMessageFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: RequestSubscribeMessageSuccessCallback
+    }
+    interface RequestSubscribeMessageSuccessCallbackResult {
+        /** [TEMPLATE_ID]是动态的键，即模板id，值包括'accept'、'reject'、'ban'。'accept'表示用户同意订阅该条id对应的模板消息，'reject'表示用户拒绝订阅该条id对应的模板消息，'ban'表示已被后台封禁。例如 { errMsg: "requestSubscribeMessage:ok", zun-LzcQyW-edafCVvzPkK4de2Rllr1fFpw2A_x0oXE: "accept"} 表示用户同意订阅zun-LzcQyW-edafCVvzPkK4de2Rllr1fFpw2A_x0oXE这条消息 */
+        TEMPLATE_ID: string
+        /** 接口调用成功时errMsg值为'requestSubscribeMessage:ok' */
+        errMsg: string
+    }
     interface RequestSuccessCallbackResult {
+        /** 开发者服务器返回的 cookies，格式为字符串数组
+         *
+         * 最低基础库： `2.10.0` */
+        cookies: string[]
         /** 开发者服务器返回的数据 */
         data: string | IAnyObject | ArrayBuffer
         /** 开发者服务器返回的 HTTP Response Header
          *
          * 最低基础库： `1.2.0` */
         header: IAnyObject
+        /** 网络请求过程中一些调试信息
+         *
+         * 最低基础库： `2.10.4` */
+        profile: RequestProfile
         /** 开发者服务器返回的 HTTP 状态码 */
         statusCode: number
         errMsg: string
-    }
-    interface RequestTaskOnHeadersReceivedCallbackResult {
-        /** 开发者服务器返回的 HTTP Response Header */
-        header: IAnyObject
-    }
-    /** 来源信息。从另一个小程序、公众号或 App 进入小程序时返回。否则返回 `{}`。(参见后文注意) */
-    interface ResultReferrerInfo {
-        /** 来源小程序、公众号或 App 的 appId */
-        appId: string
-        /** 来源小程序传过来的数据，scene=1037或1038时支持 */
-        extraData: IAnyObject
     }
     interface ResumeBGMOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
@@ -3565,6 +4086,14 @@ innerAudioContext.onError((res) => {
         fail?: ResumeBGMFailCallback
         /** 接口调用成功的回调函数 */
         success?: ResumeBGMSuccessCallback
+    }
+    interface ResumeOption {
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: ResumeCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: ResumeFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: ResumeSuccessCallback
     }
     interface RewardedVideoAdOnCloseCallbackResult {
         /** 视频是否是在用户完整观看的情况下被关闭的
@@ -3601,7 +4130,7 @@ innerAudioContext.onError((res) => {
         errMsg: string
     }
     interface RmdirOption {
-        /** 要删除的目录路径 */
+        /** 要删除的目录路径 (本地路径) */
         dirPath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: RmdirCompleteCallback
@@ -3637,11 +4166,22 @@ innerAudioContext.onError((res) => {
          * 可选值：
          * - 'fail tempFilePath file not exist': 指定的 tempFilePath 找不到文件;
          * - 'fail permission denied, open "${filePath}"': 指定的 filePath 路径没有写权限;
-         * - 'fail no such file or directory "${dirPath}"': 上级目录不存在; */
+         * - 'fail no such file or directory "${dirPath}"': 上级目录不存在;
+         * - 'fail the maximum size of the file storage limit is exceeded': 存储空间不足; */
         errMsg: string
     }
+    interface SaveFileToDiskOption {
+        /** 待保存文件路径 */
+        filePath: string
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: SaveFileToDiskCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: SaveFileToDiskFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: SaveFileToDiskSuccessCallback
+    }
     interface SaveImageToPhotosAlbumOption {
-        /** 图片文件路径，可以是临时文件路径或永久文件路径，不支持网络图片路径 */
+        /** 图片文件路径，可以是临时文件路径或永久文件路径 (本地路径) ，不支持网络路径 */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: SaveImageToPhotosAlbumCompleteCallback
@@ -3651,7 +4191,7 @@ innerAudioContext.onError((res) => {
         success?: SaveImageToPhotosAlbumSuccessCallback
     }
     interface SaveVideoToPhotosAlbumOption {
-        /** 视频文件路径，可以是临时文件路径也可以是永久文件路径 */
+        /** 视频文件路径，可以是临时文件路径也可以是永久文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: SaveVideoToPhotosAlbumCompleteCallback
@@ -3785,6 +4325,19 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: SetBGMVolumeSuccessCallback
     }
+    interface SetBLEMTUOption {
+        /** 用于区分设备的 id */
+        deviceId: string
+        /** 最大传输单元(22,512) 区间内，单位 bytes
+         * ``` */
+        mtu: number
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: SetBLEMTUCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: SetBLEMTUFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: SetBLEMTUSuccessCallback
+    }
     interface SetBackgroundColorOption {
         /** 窗口的背景色，必须为十六进制颜色值 */
         backgroundColor?: string
@@ -3822,6 +4375,16 @@ innerAudioContext.onError((res) => {
         fail?: SetBackgroundTextStyleFailCallback
         /** 接口调用成功的回调函数 */
         success?: SetBackgroundTextStyleSuccessCallback
+    }
+    interface SetCenterOffsetOption {
+        /** 偏移量，两位数组 */
+        offset: number[]
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: SetCenterOffsetCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: SetCenterOffsetFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: SetCenterOffsetSuccessCallback
     }
     interface SetClipboardDataOption {
         /** 剪贴板的内容 */
@@ -3876,6 +4439,16 @@ innerAudioContext.onError((res) => {
         fail?: SetKeepScreenOnFailCallback
         /** 接口调用成功的回调函数 */
         success?: SetKeepScreenOnSuccessCallback
+    }
+    interface SetMICVolumeOption {
+        /** 音量大小，范围是 0.0-1.0 */
+        volume: number
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: SetMICVolumeCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: SetMICVolumeFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: SetMICVolumeSuccessCallback
     }
     interface SetNavigationBarColorOption {
         /** 背景颜色值，有效值为十六进制颜色 */
@@ -3987,6 +4560,33 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: SetWifiListSuccessCallback
     }
+    interface SetWindowSizeOption {
+        /** 窗口高度，以像素为单位 */
+        height: number
+        /** 窗口宽度，以像素为单位 */
+        width: number
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: SetWindowSizeCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: SetWindowSizeFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: SetWindowSizeSuccessCallback
+    }
+    interface SetZoomOption {
+        /** 缩放级别，范围[1, maxZoom]。zoom 可取小数，精确到小数后一位。maxZoom 可在 bindinitdone 返回值中获取。 */
+        zoom: number
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: SetZoomCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: SetZoomFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: SetZoomSuccessCallback
+    }
+    interface SetZoomSuccessCallbackResult {
+        /** 实际设置的缩放级别。由于系统限制，某些机型可能无法设置成指定值，会改用最接近的可设值。 */
+        zoom: number
+        errMsg: string
+    }
     interface ShowActionSheetOption {
         /** 按钮的文字数组，数组长度最大为 6 */
         itemList: string[]
@@ -4055,6 +4655,16 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: ShowNavigationBarLoadingSuccessCallback
     }
+    interface ShowRedPackageOption {
+        /** 封面地址 */
+        url: string
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: ShowRedPackageCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: ShowRedPackageFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: ShowRedPackageSuccessCallback
+    }
     interface ShowShareMenuOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: ShowShareMenuCompleteCallback
@@ -4116,22 +4726,44 @@ innerAudioContext.onError((res) => {
         /** 变化后的窗口宽度，单位 px */
         windowWidth: number
     }
-    interface SnapshotSuccessCallbackResult {
-        /** 图片的高度 */
-        height: string
-        /** 图片文件的临时路径 */
-        tempImagePath: string
-        /** 图片的宽度 */
-        width: string
-        errMsg: string
+    /** 网络请求过程中一些调试信息
+     *
+     * 最低基础库： `2.10.4` */
+    interface SocketProfile {
+        /** 完成建立连接的时间（完成握手），如果是持久连接，则与 fetchStart 值相等。注意如果在传输层发生了错误且重新建立连接，则这里显示的是新建立的连接完成的时间。注意这里握手结束，包括安全连接建立完成、SOCKS 授权通过 */
+        connectEnd: number
+        /** 开始建立连接的时间，如果是持久连接，则与 fetchStart 值相等。注意如果在传输层发生了错误且重新建立连接，则这里显示的是新建立的连接开始的时间 */
+        connectStart: number
+        /** 上层请求到返回的耗时 */
+        cost: number
+        /** DNS 域名查询完成的时间，如果使用了本地缓存（即无 DNS 查询）或持久连接，则与 fetchStart 值相等 */
+        domainLookupEnd: number
+        /** DNS 域名查询开始的时间，如果使用了本地缓存（即无 DNS 查询）或持久连接，则与 fetchStart 值相等 */
+        domainLookupStart: number
+        /** 组件准备好使用 SOCKET 建立请求的时间，这发生在检查本地缓存之前 */
+        fetchStart: number
+        /** 握手耗时 */
+        handshakeCost: number
+        /** 单次连接的耗时，包括 connect ，tls */
+        rtt: number
+    }
+    interface SocketTaskCloseOption {
+        /** 一个数字值表示关闭连接的状态号，表示连接被关闭的原因。 */
+        code?: number
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: CloseCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: CloseFailCallback
+        /** 一个可读的字符串，表示连接被关闭的原因。这个字符串必须是不长于 123 字节的 UTF-8 文本（不是字符）。 */
+        reason?: string
+        /** 接口调用成功的回调函数 */
+        success?: CloseSuccessCallback
     }
     interface SocketTaskOnCloseCallbackResult {
+        /** 一个数字值表示关闭连接的状态号，表示连接被关闭的原因。 */
         code: number
+        /** 一个可读的字符串，表示连接被关闭的原因。 */
         reason: string
-    }
-    interface SocketTaskOnErrorCallbackResult {
-        /** 错误信息 */
-        errMsg: string
     }
     interface SocketTaskOnMessageCallbackResult {
         /** 服务器返回的消息 */
@@ -4163,6 +4795,17 @@ innerAudioContext.onError((res) => {
         interval?: 'game' | 'ui' | 'normal'
         /** 接口调用成功的回调函数 */
         success?: StartAccelerometerSuccessCallback
+    }
+    interface StartAdvertisingObject {
+        /** 广播自定义参数 */
+        advertiseRequest: AdvertiseReqObj
+        /** 广播功率
+         *
+         * 可选值：
+         * - 'low': 功率低;
+         * - 'medium': 功率适中;
+         * - 'high': 功率高; */
+        powerLevel?: 'low' | 'medium' | 'high'
     }
     interface StartBeaconDiscoveryOption {
         /** iBeacon 设备广播的 uuid 列表 */
@@ -4289,14 +4932,14 @@ innerAudioContext.onError((res) => {
         success?: StartPullDownRefreshSuccessCallback
     }
     interface StartRecordSuccessCallbackResult {
-        /** 录音文件的临时路径 */
+        /** 录音文件的临时路径 (本地路径) */
         tempFilePath: string
         errMsg: string
     }
     interface StartRecordTimeoutCallbackResult {
-        /** 封面图片文件的临时路径 */
+        /** 封面图片文件的临时路径 (本地路径) */
         tempThumbPath: string
-        /** 视频的文件的临时路径 */
+        /** 视频的文件的临时路径 (本地路径) */
         tempVideoPath: string
     }
     interface StartSoterAuthenticationOption {
@@ -4347,7 +4990,7 @@ innerAudioContext.onError((res) => {
         errMsg: string
     }
     interface StatOption {
-        /** 文件/目录路径 */
+        /** 文件/目录路径 (本地路径) */
         path: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: StatCompleteCallback
@@ -4410,6 +5053,14 @@ innerAudioContext.onError((res) => {
         fail?: StopAccelerometerFailCallback
         /** 接口调用成功的回调函数 */
         success?: StopAccelerometerSuccessCallback
+    }
+    interface StopAdvertisingOption {
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: StopAdvertisingCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: StopAdvertisingFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: StopAdvertisingSuccessCallback
     }
     interface StopBGMOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
@@ -4498,6 +5149,14 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: StopLocationUpdateSuccessCallback
     }
+    interface StopOption {
+        /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+        complete?: StopCompleteCallback
+        /** 接口调用失败的回调函数 */
+        fail?: StopFailCallback
+        /** 接口调用成功的回调函数 */
+        success?: StopSuccessCallback
+    }
     interface StopPreviewOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: StopPreviewCompleteCallback
@@ -4515,9 +5174,9 @@ innerAudioContext.onError((res) => {
         success?: StopPullDownRefreshSuccessCallback
     }
     interface StopRecordSuccessCallbackResult {
-        /** 封面图片文件的临时路径 */
+        /** 封面图片文件的临时路径 (本地路径) */
         tempThumbPath: string
-        /** 视频的文件的临时路径 */
+        /** 视频的文件的临时路径 (本地路径) */
         tempVideoPath: string
         errMsg: string
     }
@@ -4537,6 +5196,13 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: StopWifiSuccessCallback
     }
+    /** 订阅消息设置 */
+    interface SubscriptionsSetting {
+        /** 每一项订阅消息的订阅状态。itemSettings对象的键为**一次性订阅消息的模板id**或**系统订阅消息的类型**，值为'accept'、'reject'、'ban'中的其中一种。'accept'表示用户同意订阅这条消息，'reject'表示用户拒绝订阅这条消息，'ban'表示已被后台封禁。一次性订阅消息使用方法详见 [wx.requestSubscribeMessage](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/subscribe-message/wx.requestSubscribeMessage.html)，永久订阅消息（仅小游戏可用）使用方法详见[wx.requestSubscribeSystemMessage](/minigame/dev/api/open-api/subscribe-message/wx.requestSubscribeSystemMessage.html) */
+        itemSettings: IAnyObject
+        /** 订阅消息总开关，true为开启，false为关闭 */
+        mainSwitch: boolean
+    }
     interface SwitchCameraOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: SwitchCameraCompleteCallback
@@ -4546,7 +5212,7 @@ innerAudioContext.onError((res) => {
         success?: SwitchCameraSuccessCallback
     }
     interface SwitchTabOption {
-        /** 需要跳转的 tabBar 页面的路径（需在 app.json 的 [tabBar](https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/app.html#tabbar) 字段定义的页面），路径后不能带参数。 */
+        /** 需要跳转的 tabBar 页面的路径 (代码包路径)（需在 app.json 的 [tabBar](https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/app.html#tabbar) 字段定义的页面），路径后不能带参数。 */
         url: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: SwitchTabCompleteCallback
@@ -4571,7 +5237,7 @@ innerAudioContext.onError((res) => {
         success?: TakePhotoSuccessCallback
     }
     interface TakePhotoSuccessCallbackResult {
-        /** 照片文件的临时路径，安卓是jpg图片格式，ios是png */
+        /** 照片文件的临时路径 (本地路径)，安卓是jpg图片格式，ios是png */
         tempImagePath: string
         errMsg: string
     }
@@ -4618,7 +5284,7 @@ innerAudioContext.onError((res) => {
         remoteInfo: RemoteInfo
     }
     interface UDPSocketSendOption {
-        /** 要发消息的地址。可以是一个和本机同网段的 IP 地址，也可以是在安全域名列表内的域名地址 */
+        /** 要发消息的地址。在基础库 2.9.3 及之前版本可以是一个和本机同网段的 IP 地址，也可以是在安全域名列表内的域名地址；在基础库 2.9.4 及之后版本，可以是任意 IP 和域名 */
         address: string
         /** 要发送的数据 */
         message: string | ArrayBuffer
@@ -4647,7 +5313,7 @@ innerAudioContext.onError((res) => {
         errMsg: string
     }
     interface UnlinkOption {
-        /** 要删除的文件路径 */
+        /** 要删除的文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: UnlinkCompleteCallback
@@ -4665,9 +5331,9 @@ innerAudioContext.onError((res) => {
         errMsg: string
     }
     interface UnzipOption {
-        /** 目标目录路径 */
+        /** 目标目录路径, 支持本地路径 */
         targetPath: string
-        /** 源文件路径，只可以是 zip 压缩文件 */
+        /** 源文件路径，支持本地路径, 只可以是 zip 压缩文件 */
         zipFilePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: UnzipCompleteCallback
@@ -4709,11 +5375,15 @@ innerAudioContext.onError((res) => {
          *
          * 最低基础库： `2.4.0` */
         templateInfo?: UpdatableMessageFrontEndTemplateInfo
+        /** 群待办消息的id，通过toDoActivityId可以把多个群待办消息聚合为同一个。通过 [updatableMessage.createActivityId](https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/updatable-message/updatableMessage.createActivityId.html) 接口获取。详见[群待办消息](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/share.html)
+         *
+         * 最低基础库： `2.11.0` */
+        toDoActivityId?: string
         /** 是否使用带 shareTicket 的转发[详情](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/share.html) */
         withShareTicket?: boolean
     }
     interface UploadFileOption {
-        /** 要上传文件资源的路径 */
+        /** 要上传文件资源的路径 (本地路径) */
         filePath: string
         /** 文件对应的 key，开发者在服务端可以通过这个 key 获取文件的二进制内容 */
         name: string
@@ -4729,6 +5399,10 @@ innerAudioContext.onError((res) => {
         header?: IAnyObject
         /** 接口调用成功的回调函数 */
         success?: UploadFileSuccessCallback
+        /** 超时时间，单位为毫秒
+         *
+         * 最低基础库： `2.10.0` */
+        timeout?: number
     }
     interface UploadFileSuccessCallbackResult {
         /** 开发者服务器返回的数据 */
@@ -4736,10 +5410,6 @@ innerAudioContext.onError((res) => {
         /** 开发者服务器返回的 HTTP 状态码 */
         statusCode: number
         errMsg: string
-    }
-    interface UploadTaskOnHeadersReceivedCallbackResult {
-        /** 开发者服务器返回的 HTTP Response Header */
-        header: IAnyObject
     }
     interface UploadTaskOnProgressUpdateCallbackResult {
         /** 上传进度百分比 */
@@ -4803,6 +5473,12 @@ innerAudioContext.onError((res) => {
          * 最低基础库： `1.7.0` */
         direction?: 0 | 90 | -90
     }
+    interface VideoDecoderStartOption {
+        /** 需要解码的视频源文件，只支持本地路径 */
+        source: string
+        /** 解码模式。0：按 pts 解码；1：以最快速度解码 */
+        mode?: number
+    }
     /** 提供预设的 Wi-Fi 信息列表 */
     interface WifiData {
         /** Wi-Fi 的 BSSID */
@@ -4843,18 +5519,31 @@ innerAudioContext.onError((res) => {
         /** 接口调用成功的回调函数 */
         success?: WriteBLECharacteristicValueSuccessCallback
     }
+    interface WriteCharacteristicValueObject {
+        /** characteristic对应的uuid */
+        characteristicId: string
+        /** 是否需要通知主机value已更新 */
+        needNotify: boolean
+        /** service 的 uuid */
+        serviceId: string
+        /** 特征值对应的二进制值 */
+        value: ArrayBuffer
+        /** 可选，处理回包时使用 */
+        callbackId?: number
+    }
     interface WriteFileFailCallbackResult {
         /** 错误信息
          *
          * 可选值：
          * - 'fail no such file or directory, open ${filePath}': 指定的 filePath 所在目录不存在;
-         * - 'fail permission denied, open ${dirPath}': 指定的 filePath 路径没有写权限; */
+         * - 'fail permission denied, open ${dirPath}': 指定的 filePath 路径没有写权限;
+         * - 'fail the maximum size of the file storage limit is exceeded': 存储空间不足; */
         errMsg: string
     }
     interface WriteFileOption {
         /** 要写入的文本或二进制数据 */
         data: string | ArrayBuffer
-        /** 要写入的文件路径 */
+        /** 要写入的文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
         complete?: WriteFileCompleteCallback
@@ -4890,10 +5579,10 @@ innerAudioContext.onError((res) => {
         success?: WriteFileSuccessCallback
     }
     interface WxGetFileInfoOption {
-        /** 本地文件路径 */
+        /** 本地文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: WxGetFileInfoCompleteCallback
+        complete?: GetFileInfoCompleteCallback
         /** 计算文件摘要的算法
          *
          * 可选值：
@@ -4914,9 +5603,9 @@ innerAudioContext.onError((res) => {
     }
     interface WxGetSavedFileListOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: WxGetSavedFileListCompleteCallback
+        complete?: GetSavedFileListCompleteCallback
         /** 接口调用失败的回调函数 */
-        fail?: WxGetSavedFileListFailCallback
+        fail?: GetSavedFileListFailCallback
         /** 接口调用成功的回调函数 */
         success?: WxGetSavedFileListSuccessCallback
     }
@@ -4929,58 +5618,59 @@ innerAudioContext.onError((res) => {
     interface WxGetSavedFileListSuccessCallbackResultFileItem {
         /** 文件保存时的时间戳，从1970/01/01 08:00:00 到当前时间的秒数 */
         createTime: number
-        /** 本地路径 */
+        /** 文件路径 (本地路径) */
         filePath: string
         /** 本地文件大小，以字节为单位 */
         size: number
     }
     interface WxRemoveSavedFileOption {
-        /** 需要删除的文件路径 */
+        /** 需要删除的文件路径 (本地路径) */
         filePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: WxRemoveSavedFileCompleteCallback
+        complete?: RemoveSavedFileCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: WxRemoveSavedFileFailCallback
         /** 接口调用成功的回调函数 */
-        success?: WxRemoveSavedFileSuccessCallback
+        success?: RemoveSavedFileSuccessCallback
     }
     interface WxSaveFileOption {
-        /** 需要保存的文件的临时路径 */
+        /** 需要保存的文件的临时路径 (本地路径) */
         tempFilePath: string
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: WxSaveFileCompleteCallback
+        complete?: SaveFileCompleteCallback
         /** 接口调用失败的回调函数 */
         fail?: WxSaveFileFailCallback
         /** 接口调用成功的回调函数 */
         success?: WxSaveFileSuccessCallback
     }
     interface WxSaveFileSuccessCallbackResult {
-        /** 存储后的文件路径 */
+        /** 存储后的文件路径 (本地路径) */
         savedFilePath: number
         errMsg: string
     }
     interface WxStartRecordOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: WxStartRecordCompleteCallback
+        complete?: StartRecordCompleteCallback
         /** 接口调用失败的回调函数 */
-        fail?: WxStartRecordFailCallback
+        fail?: StartRecordFailCallback
         /** 接口调用成功的回调函数 */
         success?: WxStartRecordSuccessCallback
     }
     interface WxStopRecordOption {
         /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-        complete?: WxStopRecordCompleteCallback
+        complete?: StopRecordCompleteCallback
         /** 接口调用失败的回调函数 */
-        fail?: WxStopRecordFailCallback
+        fail?: StopRecordFailCallback
         /** 接口调用成功的回调函数 */
         success?: WxStopRecordSuccessCallback
     }
-    interface envObj {
-        /** 文件系统中的用户目录路径 */
+    /** 环境变量 */
+    interface env {
+        /** 文件系统中的用户目录路径 (本地路径) */
         USER_DATA_PATH: string
     }
     interface Animation {
-        /** [Array.<Object> Animation.export()](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.export.html)
+        /** [Array.&lt;Object&gt; Animation.export()](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.export.html)
          *
          * 导出动画队列。**export 方法每次调用后会清掉之前的动画操作。** */
         export(): IAnyObject[]
@@ -4989,28 +5679,28 @@ innerAudioContext.onError((res) => {
          * 设置背景色 */
         backgroundColor(
             /** 颜色值 */
-            value: string,
+            value: string
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.bottom(number|string value)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.bottom.html)
          *
          * 设置 bottom 值 */
         bottom(
             /** 长度值，如果传入 number 则默认使用 px，可传入其他自定义单位的长度值 */
-            value: number | string,
+            value: number | string
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.height(number|string value)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.height.html)
          *
          * 设置高度 */
         height(
             /** 长度值，如果传入 number 则默认使用 px，可传入其他自定义单位的长度值 */
-            value: number | string,
+            value: number | string
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.left(number|string value)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.left.html)
          *
          * 设置 left 值 */
         left(
             /** 长度值，如果传入 number 则默认使用 px，可传入其他自定义单位的长度值 */
-            value: number | string,
+            value: number | string
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.matrix()](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.matrix.html)
          *
@@ -5025,25 +5715,25 @@ innerAudioContext.onError((res) => {
          * 设置透明度 */
         opacity(
             /** 透明度，范围 0-1 */
-            value: number,
+            value: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.right(number|string value)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.right.html)
          *
          * 设置 right 值 */
         right(
             /** 长度值，如果传入 number 则默认使用 px，可传入其他自定义单位的长度值 */
-            value: number | string,
+            value: number | string
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.rotate(number angle)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.rotate.html)
          *
          * 从原点顺时针旋转一个角度 */
         rotate(
             /** 旋转的角度。范围 [-180, 180] */
-            angle: number,
+            angle: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.rotate3d(number x, number y, number z, number angle)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.rotate3d.html)
          *
-         * 从 X 轴顺时针旋转一个角度 */
+         * 从 固定 轴顺时针旋转一个角度 */
         rotate3d(
             /** 旋转轴的 x 坐标 */
             x: number,
@@ -5052,28 +5742,28 @@ innerAudioContext.onError((res) => {
             /** 旋转轴的 z 坐标 */
             z: number,
             /** 旋转的角度。范围 [-180, 180] */
-            angle: number,
+            angle: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.rotateX(number angle)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.rotateX.html)
          *
          * 从 X 轴顺时针旋转一个角度 */
         rotateX(
             /** 旋转的角度。范围 [-180, 180] */
-            angle: number,
+            angle: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.rotateY(number angle)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.rotateY.html)
          *
          * 从 Y 轴顺时针旋转一个角度 */
         rotateY(
             /** 旋转的角度。范围 [-180, 180] */
-            angle: number,
+            angle: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.rotateZ(number angle)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.rotateZ.html)
          *
          * 从 Z 轴顺时针旋转一个角度 */
         rotateZ(
             /** 旋转的角度。范围 [-180, 180] */
-            angle: number,
+            angle: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.scale(number sx, number sy)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.scale.html)
          *
@@ -5082,7 +5772,7 @@ innerAudioContext.onError((res) => {
             /** 当仅有 sx 参数时，表示在 X 轴、Y 轴同时缩放sx倍数 */
             sx: number,
             /** 在 Y 轴缩放 sy 倍数 */
-            sy?: number,
+            sy?: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.scale3d(number sx, number sy, number sz)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.scale3d.html)
          *
@@ -5093,28 +5783,28 @@ innerAudioContext.onError((res) => {
             /** y 轴的缩放倍数 */
             sy: number,
             /** z 轴的缩放倍数 */
-            sz: number,
+            sz: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.scaleX(number scale)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.scaleX.html)
          *
          * 缩放 X 轴 */
         scaleX(
             /** X 轴的缩放倍数 */
-            scale: number,
+            scale: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.scaleY(number scale)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.scaleY.html)
          *
          * 缩放 Y 轴 */
         scaleY(
             /** Y 轴的缩放倍数 */
-            scale: number,
+            scale: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.scaleZ(number scale)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.scaleZ.html)
          *
          * 缩放 Z 轴 */
         scaleZ(
             /** Z 轴的缩放倍数 */
-            scale: number,
+            scale: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.skew(number ax, number ay)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.skew.html)
          *
@@ -5123,21 +5813,21 @@ innerAudioContext.onError((res) => {
             /** 对 X 轴坐标倾斜的角度，范围 [-180, 180] */
             ax: number,
             /** 对 Y 轴坐标倾斜的角度，范围 [-180, 180] */
-            ay: number,
+            ay: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.skewX(number angle)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.skewX.html)
          *
          * 对 X 轴坐标进行倾斜 */
         skewX(
             /** 倾斜的角度，范围 [-180, 180] */
-            angle: number,
+            angle: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.skewY(number angle)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.skewY.html)
          *
          * 对 Y 轴坐标进行倾斜 */
         skewY(
             /** 倾斜的角度，范围 [-180, 180] */
-            angle: number,
+            angle: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.step(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.step.html)
          *
@@ -5148,7 +5838,7 @@ innerAudioContext.onError((res) => {
          * 设置 top 值 */
         top(
             /** 长度值，如果传入 number 则默认使用 px，可传入其他自定义单位的长度值 */
-            value: number | string,
+            value: number | string
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.translate(number tx, number ty)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.translate.html)
          *
@@ -5157,7 +5847,7 @@ innerAudioContext.onError((res) => {
             /** 当仅有该参数时表示在 X 轴偏移 tx，单位 px */
             tx?: number,
             /** 在 Y 轴平移的距离，单位为 px */
-            ty?: number,
+            ty?: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.translate3d(number tx, number ty, number tz)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.translate3d.html)
          *
@@ -5168,35 +5858,35 @@ innerAudioContext.onError((res) => {
             /** 在 Y 轴平移的距离，单位为 px */
             ty?: number,
             /** 在 Z 轴平移的距离，单位为 px */
-            tz?: number,
+            tz?: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.translateX(number translation)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.translateX.html)
          *
          * 对 X 轴平移 */
         translateX(
             /** 在 X 轴平移的距离，单位为 px */
-            translation: number,
+            translation: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.translateY(number translation)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.translateY.html)
          *
          * 对 Y 轴平移 */
         translateY(
             /** 在 Y 轴平移的距离，单位为 px */
-            translation: number,
+            translation: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.translateZ(number translation)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.translateZ.html)
          *
          * 对 Z 轴平移 */
         translateZ(
             /** 在 Z 轴平移的距离，单位为 px */
-            translation: number,
+            translation: number
         ): Animation
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) Animation.width(number|string value)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.width.html)
          *
          * 设置宽度 */
         width(
             /** 长度值，如果传入 number 则默认使用 px，可传入其他自定义单位的长度值 */
-            value: number | string,
+            value: number | string
         ): Animation
     }
     interface AudioContext {
@@ -5213,15 +5903,89 @@ innerAudioContext.onError((res) => {
          * 跳转到指定位置。 */
         seek(
             /** 跳转位置，单位 s */
-            position: number,
+            position: number
         ): void
         /** [AudioContext.setSrc(string src)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/AudioContext.setSrc.html)
          *
          * 设置音频地址 */
         setSrc(
             /** 音频地址 */
-            src: string,
+            src: string
         ): void
+    }
+    interface BLEPeripheralServer {
+        /** [BLEPeripheralServer.addService(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/BLEPeripheralServer.addService.html)
+         *
+         * 添加服务。
+         *
+         * 最低基础库： `2.10.3` */
+        addService(option: AddServiceOption): void
+        /** [BLEPeripheralServer.close(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/BLEPeripheralServer.close.html)
+         *
+         * 关闭当前服务端。
+         *
+         * 最低基础库： `2.10.3` */
+        close(option?: BLEPeripheralServerCloseOption): void
+        /** [BLEPeripheralServer.offCharacteristicReadRequest(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-peripheral/BLEPeripheralServer.offCharacteristicReadRequest.html)
+         *
+         * 取消监听已连接的设备请求读当前外围设备的特征值事件
+         *
+         * 最低基础库： `2.10.3` */
+        offCharacteristicReadRequest(
+            /** 已连接的设备请求读当前外围设备的特征值事件的回调函数 */
+            callback: OffCharacteristicReadRequestCallback
+        ): void
+        /** [BLEPeripheralServer.offCharacteristicWriteRequest(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-peripheral/BLEPeripheralServer.offCharacteristicWriteRequest.html)
+         *
+         * 取消监听已连接的设备请求写当前外围设备的特征值事件
+         *
+         * 最低基础库： `2.10.3` */
+        offCharacteristicWriteRequest(
+            /** 已连接的设备请求写当前外围设备的特征值事件的回调函数 */
+            callback: OffCharacteristicWriteRequestCallback
+        ): void
+        /** [BLEPeripheralServer.onCharacteristicReadRequest(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-peripheral/BLEPeripheralServer.onCharacteristicReadRequest.html)
+         *
+         * 监听已连接的设备请求读当前外围设备的特征值事件。收到该消息后需要立刻调用 `writeCharacteristicValue` 写回数据，否则主机不会收到响应。
+         *
+         * 最低基础库： `2.10.3` */
+        onCharacteristicReadRequest(
+            /** 已连接的设备请求读当前外围设备的特征值事件的回调函数 */
+            callback: OnCharacteristicReadRequestCallback
+        ): void
+        /** [BLEPeripheralServer.onCharacteristicWriteRequest(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-peripheral/BLEPeripheralServer.onCharacteristicWriteRequest.html)
+         *
+         * 监听已连接的设备请求写当前外围设备的特征值事件。收到该消息后需要立刻调用 `writeCharacteristicValue` 写回数据，否则主机不会收到响应。
+         *
+         * 最低基础库： `2.10.3` */
+        onCharacteristicWriteRequest(
+            /** 已连接的设备请求写当前外围设备的特征值事件的回调函数 */
+            callback: OnCharacteristicWriteRequestCallback
+        ): void
+        /** [BLEPeripheralServer.removeService(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/BLEPeripheralServer.removeService.html)
+         *
+         * 移除服务。
+         *
+         * 最低基础库： `2.10.3` */
+        removeService(option: RemoveServiceOption): void
+        /** [BLEPeripheralServer.startAdvertising(Object Object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/BLEPeripheralServer.startAdvertising.html)
+         *
+         * 开始广播本地创建的外围设备。
+         *
+         * 最低基础库： `2.10.3` */
+        startAdvertising(Object: StartAdvertisingObject): void
+        /** [BLEPeripheralServer.stopAdvertising(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/BLEPeripheralServer.stopAdvertising.html)
+         *
+         * 停止广播。
+         *
+         * 最低基础库： `2.10.3` */
+        stopAdvertising(option?: StopAdvertisingOption): void
+        /** [BLEPeripheralServer.writeCharacteristicValue(Object Object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/BLEPeripheralServer.writeCharacteristicValue.html)
+         *
+         * 往指定特征值写入数据，并通知已连接的主机，从机的特征值已发生变化，该接口会处理是走回包还是走订阅。
+         *
+         * 最低基础库： `2.10.3` */
+        writeCharacteristicValue(Object: WriteCharacteristicValueObject): void
     }
     interface BackgroundAudioError {
         /** 错误信息
@@ -5249,84 +6013,84 @@ innerAudioContext.onError((res) => {
          * 监听背景音频进入可播放状态事件。 但不保证后面可以流畅播放 */
         onCanplay(
             /** 背景音频进入可播放状态事件的回调函数 */
-            callback: BackgroundAudioManagerOnCanplayCallback,
+            callback: BackgroundAudioManagerOnCanplayCallback
         ): void
         /** [BackgroundAudioManager.onEnded(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onEnded.html)
          *
          * 监听背景音频自然播放结束事件 */
         onEnded(
             /** 背景音频自然播放结束事件的回调函数 */
-            callback: BackgroundAudioManagerOnEndedCallback,
+            callback: BackgroundAudioManagerOnEndedCallback
         ): void
         /** [BackgroundAudioManager.onError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onError.html)
          *
          * 监听背景音频播放错误事件 */
         onError(
             /** 背景音频播放错误事件的回调函数 */
-            callback: BackgroundAudioManagerOnErrorCallback,
+            callback: BackgroundAudioManagerOnErrorCallback
         ): void
         /** [BackgroundAudioManager.onNext(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onNext.html)
          *
          * 监听用户在系统音乐播放面板点击下一曲事件（仅iOS） */
         onNext(
             /** 用户在系统音乐播放面板点击下一曲事件的回调函数 */
-            callback: OnNextCallback,
+            callback: OnNextCallback
         ): void
         /** [BackgroundAudioManager.onPause(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onPause.html)
          *
          * 监听背景音频暂停事件 */
         onPause(
             /** 背景音频暂停事件的回调函数 */
-            callback: BackgroundAudioManagerOnPauseCallback,
+            callback: BackgroundAudioManagerOnPauseCallback
         ): void
         /** [BackgroundAudioManager.onPlay(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onPlay.html)
          *
          * 监听背景音频播放事件 */
         onPlay(
             /** 背景音频播放事件的回调函数 */
-            callback: BackgroundAudioManagerOnPlayCallback,
+            callback: BackgroundAudioManagerOnPlayCallback
         ): void
         /** [BackgroundAudioManager.onPrev(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onPrev.html)
          *
          * 监听用户在系统音乐播放面板点击上一曲事件（仅iOS） */
         onPrev(
             /** 用户在系统音乐播放面板点击上一曲事件的回调函数 */
-            callback: OnPrevCallback,
+            callback: OnPrevCallback
         ): void
         /** [BackgroundAudioManager.onSeeked(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onSeeked.html)
          *
          * 监听背景音频完成跳转操作事件 */
         onSeeked(
             /** 背景音频完成跳转操作事件的回调函数 */
-            callback: BackgroundAudioManagerOnSeekedCallback,
+            callback: BackgroundAudioManagerOnSeekedCallback
         ): void
         /** [BackgroundAudioManager.onSeeking(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onSeeking.html)
          *
          * 监听背景音频开始跳转操作事件 */
         onSeeking(
             /** 背景音频开始跳转操作事件的回调函数 */
-            callback: BackgroundAudioManagerOnSeekingCallback,
+            callback: BackgroundAudioManagerOnSeekingCallback
         ): void
         /** [BackgroundAudioManager.onStop(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onStop.html)
          *
          * 监听背景音频停止事件 */
         onStop(
             /** 背景音频停止事件的回调函数 */
-            callback: BackgroundAudioManagerOnStopCallback,
+            callback: BackgroundAudioManagerOnStopCallback
         ): void
         /** [BackgroundAudioManager.onTimeUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onTimeUpdate.html)
          *
          * 监听背景音频播放进度更新事件，只有小程序在前台时会回调。 */
         onTimeUpdate(
             /** 背景音频播放进度更新事件的回调函数 */
-            callback: BackgroundAudioManagerOnTimeUpdateCallback,
+            callback: BackgroundAudioManagerOnTimeUpdateCallback
         ): void
         /** [BackgroundAudioManager.onWaiting(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.onWaiting.html)
          *
          * 监听音频加载中事件。当音频因为数据不足，需要停下来加载时会触发 */
         onWaiting(
             /** 音频加载中事件的回调函数 */
-            callback: BackgroundAudioManagerOnWaitingCallback,
+            callback: OnWaitingCallback
         ): void
         /** [BackgroundAudioManager.pause()](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.pause.html)
          *
@@ -5341,7 +6105,7 @@ innerAudioContext.onError((res) => {
          * 跳转到指定位置 */
         seek(
             /** 跳转的位置，单位 s。精确到小数点后 3 位，即支持 ms 级别精确度 */
-            currentTime: number,
+            currentTime: number
         ): void
         /** [BackgroundAudioManager.stop()](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.stop.html)
          *
@@ -5385,6 +6149,12 @@ innerAudioContext.onError((res) => {
          * | 10013 | invalid_data | 连接 deviceId 为空或者是格式不正确 | */ errCode: number
     }
     interface CameraContext {
+        /** [CameraContext.setZoom(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/camera/CameraContext.setZoom.html)
+         *
+         * 设置缩放级别
+         *
+         * 最低基础库： `2.10.0` */
+        setZoom(option: SetZoomOption): void
         /** [CameraContext.startRecord(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/camera/CameraContext.startRecord.html)
          *
          * 开始录像 */
@@ -5392,34 +6162,34 @@ innerAudioContext.onError((res) => {
         /** [CameraContext.stopRecord(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/camera/CameraContext.stopRecord.html)
          *
          * 结束录像 */
-        stopRecord(option?: CameraContextStopRecordOption): void
+        stopRecord(option: CameraContextStopRecordOption): void
         /** [CameraContext.takePhoto(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/camera/CameraContext.takePhoto.html)
          *
          * 拍摄照片 */
         takePhoto(option: TakePhotoOption): void
         /** [[CameraFrameListener](https://developers.weixin.qq.com/miniprogram/dev/api/media/camera/CameraFrameListener.html) CameraContext.onCameraFrame(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/camera/CameraContext.onCameraFrame.html)
-*
-* 获取 Camera 实时帧数据
-*
-* ****
-*
-* 注： 使用该接口需同时在 [camera](https://developers.weixin.qq.com/miniprogram/dev/component/camera.html) 组件属性中指定 frame-size。
-*
-* **示例代码**
-*
-*
-* ```js
-const context = wx.createCameraContext()
-const listener = context.onCameraFrame((frame) => {
+         *
+         * 获取 Camera 实时帧数据
+         *
+         * ****
+         *
+         * 注： 使用该接口需同时在 [camera](https://developers.weixin.qq.com/miniprogram/dev/component/camera.html) 组件属性中指定 frame-size。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const context = wx.createCameraContext()
+         const listener = context.onCameraFrame((frame) => {
   console.log(frame.data instanceof ArrayBuffer, frame.width, frame.height)
 })
-listener.start()
-```
-*
-* 最低基础库： `2.7.0` */
+         listener.start()
+         ```
+         *
+         * 最低基础库： `2.7.0` */
         onCameraFrame(
             /** 回调函数 */
-            callback: OnCameraFrameCallback,
+            callback: OnCameraFrameCallback
         ): CameraFrameListener
     }
     interface CameraFrameListener {
@@ -5430,107 +6200,135 @@ listener.start()
         /** [CameraFrameListener.stop(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/camera/CameraFrameListener.stop.html)
          *
          * 停止监听帧数据 */
-        stop(option?: CameraFrameListenerStopOption): void
+        stop(option?: StopOption): void
     }
     interface Canvas {
         /** [Canvas.cancelAnimationFrame(number requestID)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Canvas.cancelAnimationFrame.html)
          *
-         * 取消由 requestAnimationFrame 添加到计划中的动画帧请求。（仅支持在 WebGL 中使用）
+         * 取消由 requestAnimationFrame 添加到计划中的动画帧请求。支持在 2D Canvas 和 WebGL Canvas 下使用, 但不支持混用 2D 和 WebGL 的方法。
          *
          * 最低基础库： `2.7.0` */
         cancelAnimationFrame(requestID: number): void
+        /** [[ImageData](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/ImageData.html) Canvas.createImageData()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Canvas.createImageData.html)
+         *
+         * 创建一个 ImageData 对象。仅支持在 2D Canvas 中使用。
+         *
+         * 最低基础库： `2.9.0` */
+        createImageData(): ImageData
         /** [[Image](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Image.html) Canvas.createImage()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Canvas.createImage.html)
          *
-         * 创建一个图片对象。（仅支持在 WebGL 中使用，暂不支持在 OffscreenCanvas 中使用。）
+         * 创建一个图片对象。 支持在 2D Canvas 和 WebGL Canvas 下使用, 但不支持混用 2D 和 WebGL 的方法。
          *
          * 最低基础库： `2.7.0` */
         createImage(): Image
+        /** [[Path2D](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Path2D.html) Canvas.createPath2D([Path2D](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Path2D.html) path)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Canvas.createPath2D.html)
+         *
+         * 创建 Path2D 对象
+         *
+         * 最低基础库： `2.11.0` */
+        createPath2D(
+            /** [Path2D](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Path2D.html)
+             *
+             *  */
+            path: Path2D
+        ): Path2D
         /** [[RenderingContext](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/RenderingContext.html) Canvas.getContext(string contextType)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Canvas.getContext.html)
          *
          * 该方法返回 Canvas 的绘图上下文
          *
          * ****
          *
-         * 当前仅支持获取 WebGL 绘图上下文
+         * 支持获取 2D 和 WebGL 绘图上下文
          *
          * 最低基础库： `2.7.0` */
-        getContext(contextType: string): RenderingContext
+        getContext(contextType: string): any
         /** [number Canvas.requestAnimationFrame(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Canvas.requestAnimationFrame.html)
          *
-         * 在下次进行重绘时执行。（仅支持在 WebGL 中使用）
+         * 在下次进行重绘时执行。 支持在 2D Canvas 和 WebGL Canvas 下使用, 但不支持混用 2D 和 WebGL 的方法。
          *
          * 最低基础库： `2.7.0` */
         requestAnimationFrame(
             /** 执行的 callback */
-            callback: (...args: any[]) => any,
+            callback: (...args: any[]) => any
         ): number
+        /** [string Canvas.toDataURL(string type, number encoderOptions)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/Canvas.toDataURL.html)
+         *
+         * 返回一个包含图片展示的 data URI 。可以使用 type 参数其类型，默认为 PNG 格式。
+         *
+         * 最低基础库： `2.11.0` */
+        toDataURL(
+            /** 图片格式，默认为 image/png */
+            type: string,
+            /** 在指定图片格式为 image/jpeg 或 image/webp的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 0.92。其他参数会被忽略。 */
+            encoderOptions: number
+        ): string
     }
     interface CanvasContext {
         /** [CanvasContext.arc(number x, number y, number r, number sAngle, number eAngle, boolean counterclockwise)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.arc.html)
-*
-* 创建一条弧线。
-*
-*   - 创建一个圆可以指定起始弧度为 0，终止弧度为 2 * Math.PI。
-*   - 用 `stroke` 或者 `fill` 方法来在 `canvas` 中画弧线。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 创建一条弧线。
+         *
+         *   - 创建一个圆可以指定起始弧度为 0，终止弧度为 2 * Math.PI。
+         *   - 用 `stroke` 或者 `fill` 方法来在 `canvas` 中画弧线。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-// Draw coordinates
-ctx.arc(100, 75, 50, 0, 2 * Math.PI)
-ctx.setFillStyle('#EEEEEE')
-ctx.fill()
+         // Draw coordinates
+         ctx.arc(100, 75, 50, 0, 2 * Math.PI)
+         ctx.setFillStyle('#EEEEEE')
+         ctx.fill()
 
-ctx.beginPath()
-ctx.moveTo(40, 75)
-ctx.lineTo(160, 75)
-ctx.moveTo(100, 15)
-ctx.lineTo(100, 135)
-ctx.setStrokeStyle('#AAAAAA')
-ctx.stroke()
+         ctx.beginPath()
+         ctx.moveTo(40, 75)
+         ctx.lineTo(160, 75)
+         ctx.moveTo(100, 15)
+         ctx.lineTo(100, 135)
+         ctx.setStrokeStyle('#AAAAAA')
+         ctx.stroke()
 
-ctx.setFontSize(12)
-ctx.setFillStyle('black')
-ctx.fillText('0', 165, 78)
-ctx.fillText('0.5*PI', 83, 145)
-ctx.fillText('1*PI', 15, 78)
-ctx.fillText('1.5*PI', 83, 10)
+         ctx.setFontSize(12)
+         ctx.setFillStyle('black')
+         ctx.fillText('0', 165, 78)
+         ctx.fillText('0.5*PI', 83, 145)
+         ctx.fillText('1*PI', 15, 78)
+         ctx.fillText('1.5*PI', 83, 10)
 
-// Draw points
-ctx.beginPath()
-ctx.arc(100, 75, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('lightgreen')
-ctx.fill()
+         // Draw points
+         ctx.beginPath()
+         ctx.arc(100, 75, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('lightgreen')
+         ctx.fill()
 
-ctx.beginPath()
-ctx.arc(100, 25, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('blue')
-ctx.fill()
+         ctx.beginPath()
+         ctx.arc(100, 25, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('blue')
+         ctx.fill()
 
-ctx.beginPath()
-ctx.arc(150, 75, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('red')
-ctx.fill()
+         ctx.beginPath()
+         ctx.arc(150, 75, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('red')
+         ctx.fill()
 
-// Draw arc
-ctx.beginPath()
-ctx.arc(100, 75, 50, 0, 1.5 * Math.PI)
-ctx.setStrokeStyle('#333333')
-ctx.stroke()
+         // Draw arc
+         ctx.beginPath()
+         ctx.arc(100, 75, 50, 0, 1.5 * Math.PI)
+         ctx.setStrokeStyle('#333333')
+         ctx.stroke()
 
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/arc.png)
-*
-* 针对 arc(100, 75, 50, 0, 1.5 * Math.PI)的三个关键坐标如下：
-*
-* - 绿色: 圆心 (100, 75)
-* - 红色: 起始弧度 (0)
-* - 蓝色: 终止弧度 (1.5 * Math.PI) */
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/arc.png)
+         *
+         * 针对 arc(100, 75, 50, 0, 1.5 * Math.PI)的三个关键坐标如下：
+         *
+         * - 绿色: 圆心 (100, 75)
+         * - 红色: 起始弧度 (0)
+         * - 蓝色: 终止弧度 (1.5 * Math.PI) */
         arc(
             /** 圆心的 x 坐标 */
             x: number,
@@ -5543,7 +6341,7 @@ ctx.draw()
             /** 终止弧度 */
             eAngle: number,
             /** 弧度的方向是否是逆时针 */
-            counterclockwise?: boolean,
+            counterclockwise?: boolean
         ): void
         /** [CanvasContext.arcTo(number x1, number y1, number x2, number y2, number radius)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.arcTo.html)
          *
@@ -5560,102 +6358,102 @@ ctx.draw()
             /** 第二个控制点的 y 轴坐标 */
             y2: number,
             /** 圆弧的半径 */
-            radius: number,
+            radius: number
         ): void
         /** [CanvasContext.beginPath()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.beginPath.html)
-*
-* 开始创建一个路径。需要调用 `fill` 或者 `stroke` 才会使用路径进行填充或描边
-*
-*   - 在最开始的时候相当于调用了一次 `beginPath`。
-*   - 同一个路径内的多次 `setFillStyle`、`setStrokeStyle`、`setLineWidth`等设置，以最后一次设置为准。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-// begin path
-ctx.rect(10, 10, 100, 30)
-ctx.setFillStyle('yellow')
-ctx.fill()
+         *
+         * 开始创建一个路径。需要调用 `fill` 或者 `stroke` 才会使用路径进行填充或描边
+         *
+         *   - 在最开始的时候相当于调用了一次 `beginPath`。
+         *   - 同一个路径内的多次 `setFillStyle`、`setStrokeStyle`、`setLineWidth`等设置，以最后一次设置为准。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         // begin path
+         ctx.rect(10, 10, 100, 30)
+         ctx.setFillStyle('yellow')
+         ctx.fill()
 
-// begin another path
-ctx.beginPath()
-ctx.rect(10, 40, 100, 30)
+         // begin another path
+         ctx.beginPath()
+         ctx.rect(10, 40, 100, 30)
 
-// only fill this rect, not in current path
-ctx.setFillStyle('blue')
-ctx.fillRect(10, 70, 100, 30)
+         // only fill this rect, not in current path
+         ctx.setFillStyle('blue')
+         ctx.fillRect(10, 70, 100, 30)
 
-ctx.rect(10, 100, 100, 30)
+         ctx.rect(10, 100, 100, 30)
 
-// it will fill current path
-ctx.setFillStyle('red')
-ctx.fill()
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/fill-path.png) */
+         // it will fill current path
+         ctx.setFillStyle('red')
+         ctx.fill()
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/fill-path.png) */
         beginPath(): void
         /** [CanvasContext.bezierCurveTo(number cp1x, number cp1y, number cp2x, number cp2y, number x, number y)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.bezierCurveTo.html)
-*
-* 创建三次方贝塞尔曲线路径。曲线的起始点为路径中前一个点。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 创建三次方贝塞尔曲线路径。曲线的起始点为路径中前一个点。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-// Draw points
-ctx.beginPath()
-ctx.arc(20, 20, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('red')
-ctx.fill()
+         // Draw points
+         ctx.beginPath()
+         ctx.arc(20, 20, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('red')
+         ctx.fill()
 
-ctx.beginPath()
-ctx.arc(200, 20, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('lightgreen')
-ctx.fill()
+         ctx.beginPath()
+         ctx.arc(200, 20, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('lightgreen')
+         ctx.fill()
 
-ctx.beginPath()
-ctx.arc(20, 100, 2, 0, 2 * Math.PI)
-ctx.arc(200, 100, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('blue')
-ctx.fill()
+         ctx.beginPath()
+         ctx.arc(20, 100, 2, 0, 2 * Math.PI)
+         ctx.arc(200, 100, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('blue')
+         ctx.fill()
 
-ctx.setFillStyle('black')
-ctx.setFontSize(12)
+         ctx.setFillStyle('black')
+         ctx.setFontSize(12)
 
-// Draw guides
-ctx.beginPath()
-ctx.moveTo(20, 20)
-ctx.lineTo(20, 100)
-ctx.lineTo(150, 75)
+         // Draw guides
+         ctx.beginPath()
+         ctx.moveTo(20, 20)
+         ctx.lineTo(20, 100)
+         ctx.lineTo(150, 75)
 
-ctx.moveTo(200, 20)
-ctx.lineTo(200, 100)
-ctx.lineTo(70, 75)
-ctx.setStrokeStyle('#AAAAAA')
-ctx.stroke()
+         ctx.moveTo(200, 20)
+         ctx.lineTo(200, 100)
+         ctx.lineTo(70, 75)
+         ctx.setStrokeStyle('#AAAAAA')
+         ctx.stroke()
 
-// Draw quadratic curve
-ctx.beginPath()
-ctx.moveTo(20, 20)
-ctx.bezierCurveTo(20, 100, 200, 100, 200, 20)
-ctx.setStrokeStyle('black')
-ctx.stroke()
+         // Draw quadratic curve
+         ctx.beginPath()
+         ctx.moveTo(20, 20)
+         ctx.bezierCurveTo(20, 100, 200, 100, 200, 20)
+         ctx.setStrokeStyle('black')
+         ctx.stroke()
 
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/bezier-curve.png)
-*
-* 针对 moveTo(20, 20) bezierCurveTo(20, 100, 200, 100, 200, 20) 的三个关键坐标如下：
-*
-* - 红色：起始点(20, 20)
-* - 蓝色：两个控制点(20, 100) (200, 100)
-* - 绿色：终止点(200, 20) */
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/bezier-curve.png)
+         *
+         * 针对 moveTo(20, 20) bezierCurveTo(20, 100, 200, 100, 200, 20) 的三个关键坐标如下：
+         *
+         * - 红色：起始点(20, 20)
+         * - 蓝色：两个控制点(20, 100) (200, 100)
+         * - 绿色：终止点(200, 20) */
         bezierCurveTo(
             /** 第一个贝塞尔控制点的 x 坐标 */
             cp1x: number,
@@ -5668,29 +6466,29 @@ ctx.draw()
             /** 结束点的 x 坐标 */
             x: number,
             /** 结束点的 y 坐标 */
-            y: number,
+            y: number
         ): void
         /** [CanvasContext.clearRect(number x, number y, number width, number height)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.clearRect.html)
-*
-* 清除画布上在该矩形区域内的内容
-*
-* **示例代码**
-*
-*
-* clearRect 并非画一个白色的矩形在地址区域，而是清空，为了有直观感受，对 canvas 加了一层背景色。
-* ```html
-* <canvas canvas-id="myCanvas" style="border: 1px solid; background: #123456;"/>
-* ```
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.setFillStyle('red')
-ctx.fillRect(0, 0, 150, 200)
-ctx.setFillStyle('blue')
-ctx.fillRect(150, 0, 150, 200)
-ctx.clearRect(10, 10, 150, 75)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/clear-rect.png) */
+         *
+         * 清除画布上在该矩形区域内的内容
+         *
+         * **示例代码**
+         *
+         *
+         * clearRect 并非画一个白色的矩形在地址区域，而是清空，为了有直观感受，对 canvas 加了一层背景色。
+         * ```html
+         * <canvas canvas-id="myCanvas" style="border: 1px solid; background: #123456;"/>
+         * ```
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.setFillStyle('red')
+         ctx.fillRect(0, 0, 150, 200)
+         ctx.setFillStyle('blue')
+         ctx.fillRect(150, 0, 150, 200)
+         ctx.clearRect(10, 10, 150, 75)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/clear-rect.png) */
         clearRect(
             /** 矩形路径左上角的横坐标 */
             x: number,
@@ -5699,19 +6497,19 @@ ctx.draw()
             /** 矩形路径的宽度 */
             width: number,
             /** 矩形路径的高度 */
-            height: number,
+            height: number
         ): void
         /** [CanvasContext.clip()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.clip.html)
-*
-* 从原始画布中剪切任意形状和尺寸。一旦剪切了某个区域，则所有之后的绘图都会被限制在被剪切的区域内（不能访问画布上的其他区域）。可以在使用 `clip` 方法前通过使用 `save` 方法对当前画布区域进行保存，并在以后的任意时间通过`restore`方法对其进行恢复。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 从原始画布中剪切任意形状和尺寸。一旦剪切了某个区域，则所有之后的绘图都会被限制在被剪切的区域内（不能访问画布上的其他区域）。可以在使用 `clip` 方法前通过使用 `save` 方法对当前画布区域进行保存，并在以后的任意时间通过`restore`方法对其进行恢复。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-wx.downloadFile({
+         wx.downloadFile({
   url: 'http://is5.mzstatic.com/image/thumb/Purple128/v4/75/3b/90/753b907c-b7fb-5877-215a-759bd73691a4/source/50x50bb.jpg',
   success: function(res) {
     ctx.save()
@@ -5723,52 +6521,52 @@ wx.downloadFile({
     ctx.draw()
   }
 })
-```
-* ![](@program/dev/image/canvas/clip.png)
-*
-* 最低基础库： `1.6.0` */
+         ```
+         * ![](@program/dev/image/canvas/clip.png)
+         *
+         * 最低基础库： `1.6.0` */
         clip(): void
         /** [CanvasContext.closePath()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.closePath.html)
-*
-* 关闭一个路径。会连接起点和终点。如果关闭路径后没有调用 `fill` 或者 `stroke` 并开启了新的路径，那之前的路径将不会被渲染。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.moveTo(10, 10)
-ctx.lineTo(100, 10)
-ctx.lineTo(100, 100)
-ctx.closePath()
-ctx.stroke()
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/close-line.png)
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-// begin path
-ctx.rect(10, 10, 100, 30)
-ctx.closePath()
+         *
+         * 关闭一个路径。会连接起点和终点。如果关闭路径后没有调用 `fill` 或者 `stroke` 并开启了新的路径，那之前的路径将不会被渲染。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.moveTo(10, 10)
+         ctx.lineTo(100, 10)
+         ctx.lineTo(100, 100)
+         ctx.closePath()
+         ctx.stroke()
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/close-line.png)
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         // begin path
+         ctx.rect(10, 10, 100, 30)
+         ctx.closePath()
 
-// begin another path
-ctx.beginPath()
-ctx.rect(10, 40, 100, 30)
+         // begin another path
+         ctx.beginPath()
+         ctx.rect(10, 40, 100, 30)
 
-// only fill this rect, not in current path
-ctx.setFillStyle('blue')
-ctx.fillRect(10, 70, 100, 30)
+         // only fill this rect, not in current path
+         ctx.setFillStyle('blue')
+         ctx.fillRect(10, 70, 100, 30)
 
-ctx.rect(10, 100, 100, 30)
+         ctx.rect(10, 100, 100, 30)
 
-// it will fill current path
-ctx.setFillStyle('red')
-ctx.fill()
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/close-path.png) */
+         // it will fill current path
+         ctx.setFillStyle('red')
+         ctx.fill()
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/close-path.png) */
         closePath(): void
         /** [CanvasContext.createPattern(string image, string repetition)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.createPattern.html)
          *
@@ -5776,7 +6574,7 @@ ctx.draw()
          *
          * 最低基础库： `1.9.90` */
         createPattern(
-            /** 重复的图像源，仅支持包内路径和临时路径 */
+            /** 重复的图像源，支持代码包路径和本地临时路径 (本地路径) */
             image: string,
             /** 如何重复图像
              *
@@ -5785,109 +6583,109 @@ ctx.draw()
              * - 'repeat-x': 水平方向重复;
              * - 'repeat-y': 竖直方向重复;
              * - 'no-repeat': 不重复; */
-            repetition: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat',
+            repetition: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat'
         ): void
         /** [CanvasContext.draw(boolean reserve, function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.draw.html)
-*
-* 将之前在绘图上下文中的描述（路径、变形、样式）画到 canvas 中。
-*
-* **示例代码**
-*
-*
-* 第二次 draw() reserve 为 true。所以保留了上一次的绘制结果，在上下文设置的 fillStyle 'red' 也变成了默认的 'black'。
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 将之前在绘图上下文中的描述（路径、变形、样式）画到 canvas 中。
+         *
+         * **示例代码**
+         *
+         *
+         * 第二次 draw() reserve 为 true。所以保留了上一次的绘制结果，在上下文设置的 fillStyle 'red' 也变成了默认的 'black'。
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.setFillStyle('red')
-ctx.fillRect(10, 10, 150, 100)
-ctx.draw()
-ctx.fillRect(50, 50, 150, 100)
-ctx.draw(true)
-```
-* ![](@program/dev/image/canvas/reserve.png)
-*
-* **示例代码**
-*
-*
-* 第二次 draw() reserve 为 false。所以没有保留了上一次的绘制结果和在上下文设置的 fillStyle 'red'。
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         ctx.setFillStyle('red')
+         ctx.fillRect(10, 10, 150, 100)
+         ctx.draw()
+         ctx.fillRect(50, 50, 150, 100)
+         ctx.draw(true)
+         ```
+         * ![](@program/dev/image/canvas/reserve.png)
+         *
+         * **示例代码**
+         *
+         *
+         * 第二次 draw() reserve 为 false。所以没有保留了上一次的绘制结果和在上下文设置的 fillStyle 'red'。
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.setFillStyle('red')
-ctx.fillRect(10, 10, 150, 100)
-ctx.draw()
-ctx.fillRect(50, 50, 150, 100)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/un-reserve.png) */
+         ctx.setFillStyle('red')
+         ctx.fillRect(10, 10, 150, 100)
+         ctx.draw()
+         ctx.fillRect(50, 50, 150, 100)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/un-reserve.png) */
         draw(
             /** 本次绘制是否接着上一次绘制。即 reserve 参数为 false，则在本次调用绘制之前 native 层会先清空画布再继续绘制；若 reserve 参数为 true，则保留当前画布上的内容，本次调用 drawCanvas 绘制的内容覆盖在上面，默认 false。 */
             reserve?: boolean,
             /** 绘制完成后执行的回调函数 */
-            callback?: (...args: any[]) => any,
+            callback?: (...args: any[]) => any
         ): void
         /** [CanvasContext.drawImage(string imageResource, number sx, number sy, number sWidth, number sHeight, number dx, number dy, number dWidth, number dHeight)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.drawImage.html)
-*
-* 绘制图像到画布
-*
-* **示例代码**
-*
-*
-*
-* 有三个版本的写法：
-*
-* - drawImage(imageResource, dx, dy)
-* - drawImage(imageResource, dx, dy, dWidth, dHeight)
-* - drawImage(imageResource, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) 从 1.9.0 起支持
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 绘制图像到画布
+         *
+         * **示例代码**
+         *
+         *
+         *
+         * 有三个版本的写法：
+         *
+         * - drawImage(imageResource, dx, dy)
+         * - drawImage(imageResource, dx, dy, dWidth, dHeight)
+         * - drawImage(imageResource, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) 从 1.9.0 起支持
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-wx.chooseImage({
+         wx.chooseImage({
   success: function(res){
     ctx.drawImage(res.tempFilePaths[0], 0, 0, 150, 100)
     ctx.draw()
   }
 })
 
-```
-* ![](@program/dev/image/canvas/draw-image.png) */
+         ```
+         * ![](@program/dev/image/canvas/draw-image.png) */
         drawImage(
             /** 所要绘制的图片资源（网络图片要通过 getImageInfo / downloadFile 先下载） */
             imageResource: string,
             /** imageResource的左上角在目标 canvas 上 x 轴的位置 */
             dx: number,
             /** imageResource的左上角在目标 canvas 上 y 轴的位置 */
-            dy: number,
+            dy: number
         ): void
         /** [CanvasContext.drawImage(string imageResource, number sx, number sy, number sWidth, number sHeight, number dx, number dy, number dWidth, number dHeight)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.drawImage.html)
-*
-* 绘制图像到画布
-*
-* **示例代码**
-*
-*
-*
-* 有三个版本的写法：
-*
-* - drawImage(imageResource, dx, dy)
-* - drawImage(imageResource, dx, dy, dWidth, dHeight)
-* - drawImage(imageResource, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) 从 1.9.0 起支持
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 绘制图像到画布
+         *
+         * **示例代码**
+         *
+         *
+         *
+         * 有三个版本的写法：
+         *
+         * - drawImage(imageResource, dx, dy)
+         * - drawImage(imageResource, dx, dy, dWidth, dHeight)
+         * - drawImage(imageResource, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) 从 1.9.0 起支持
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-wx.chooseImage({
+         wx.chooseImage({
   success: function(res){
     ctx.drawImage(res.tempFilePaths[0], 0, 0, 150, 100)
     ctx.draw()
   }
 })
 
-```
-* ![](@program/dev/image/canvas/draw-image.png) */
+         ```
+         * ![](@program/dev/image/canvas/draw-image.png) */
         drawImage(
             /** 所要绘制的图片资源（网络图片要通过 getImageInfo / downloadFile 先下载） */
             imageResource: string,
@@ -5898,34 +6696,34 @@ wx.chooseImage({
             /** 在目标画布上绘制imageResource的宽度，允许对绘制的imageResource进行缩放 */
             dWidth: number,
             /** 在目标画布上绘制imageResource的高度，允许对绘制的imageResource进行缩放 */
-            dHeight: number,
+            dHeight: number
         ): void
         /** [CanvasContext.drawImage(string imageResource, number sx, number sy, number sWidth, number sHeight, number dx, number dy, number dWidth, number dHeight)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.drawImage.html)
-*
-* 绘制图像到画布
-*
-* **示例代码**
-*
-*
-*
-* 有三个版本的写法：
-*
-* - drawImage(imageResource, dx, dy)
-* - drawImage(imageResource, dx, dy, dWidth, dHeight)
-* - drawImage(imageResource, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) 从 1.9.0 起支持
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 绘制图像到画布
+         *
+         * **示例代码**
+         *
+         *
+         *
+         * 有三个版本的写法：
+         *
+         * - drawImage(imageResource, dx, dy)
+         * - drawImage(imageResource, dx, dy, dWidth, dHeight)
+         * - drawImage(imageResource, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) 从 1.9.0 起支持
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-wx.chooseImage({
+         wx.chooseImage({
   success: function(res){
     ctx.drawImage(res.tempFilePaths[0], 0, 0, 150, 100)
     ctx.draw()
   }
 })
 
-```
-* ![](@program/dev/image/canvas/draw-image.png) */
+         ```
+         * ![](@program/dev/image/canvas/draw-image.png) */
         drawImage(
             /** 所要绘制的图片资源（网络图片要通过 getImageInfo / downloadFile 先下载） */
             imageResource: string,
@@ -5944,70 +6742,70 @@ wx.chooseImage({
             /** 在目标画布上绘制imageResource的宽度，允许对绘制的imageResource进行缩放 */
             dWidth: number,
             /** 在目标画布上绘制imageResource的高度，允许对绘制的imageResource进行缩放 */
-            dHeight: number,
+            dHeight: number
         ): void
         /** [CanvasContext.fill()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.fill.html)
-*
-* 对当前路径中的内容进行填充。默认的填充色为黑色。
-*
-* **示例代码**
-*
-*
-*
-* 如果当前路径没有闭合，fill() 方法会将起点和终点进行连接，然后填充。
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.moveTo(10, 10)
-ctx.lineTo(100, 10)
-ctx.lineTo(100, 100)
-ctx.fill()
-ctx.draw()
-```
-*
-* fill() 填充的的路径是从 beginPath() 开始计算，但是不会将 fillRect() 包含进去。
-*
-* ![](@program/dev/image/canvas/fill-line.png)
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-// begin path
-ctx.rect(10, 10, 100, 30)
-ctx.setFillStyle('yellow')
-ctx.fill()
+         *
+         * 对当前路径中的内容进行填充。默认的填充色为黑色。
+         *
+         * **示例代码**
+         *
+         *
+         *
+         * 如果当前路径没有闭合，fill() 方法会将起点和终点进行连接，然后填充。
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.moveTo(10, 10)
+         ctx.lineTo(100, 10)
+         ctx.lineTo(100, 100)
+         ctx.fill()
+         ctx.draw()
+         ```
+         *
+         * fill() 填充的的路径是从 beginPath() 开始计算，但是不会将 fillRect() 包含进去。
+         *
+         * ![](@program/dev/image/canvas/fill-line.png)
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         // begin path
+         ctx.rect(10, 10, 100, 30)
+         ctx.setFillStyle('yellow')
+         ctx.fill()
 
-// begin another path
-ctx.beginPath()
-ctx.rect(10, 40, 100, 30)
+         // begin another path
+         ctx.beginPath()
+         ctx.rect(10, 40, 100, 30)
 
-// only fill this rect, not in current path
-ctx.setFillStyle('blue')
-ctx.fillRect(10, 70, 100, 30)
+         // only fill this rect, not in current path
+         ctx.setFillStyle('blue')
+         ctx.fillRect(10, 70, 100, 30)
 
-ctx.rect(10, 100, 100, 30)
+         ctx.rect(10, 100, 100, 30)
 
-// it will fill current path
-ctx.setFillStyle('red')
-ctx.fill()
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/fill-path.png) */
+         // it will fill current path
+         ctx.setFillStyle('red')
+         ctx.fill()
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/fill-path.png) */
         fill(): void
         /** [CanvasContext.fillRect(number x, number y, number width, number height)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.fillRect.html)
-*
-* 填充一个矩形。用 [`setFillStyle`](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setFillStyle.html) 设置矩形的填充色，如果没设置默认是黑色。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.setFillStyle('red')
-ctx.fillRect(10, 10, 150, 75)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/fill-rect.png) */
+         *
+         * 填充一个矩形。用 [`setFillStyle`](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setFillStyle.html) 设置矩形的填充色，如果没设置默认是黑色。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.setFillStyle('red')
+         ctx.fillRect(10, 10, 150, 75)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/fill-rect.png) */
         fillRect(
             /** 矩形路径左上角的横坐标 */
             x: number,
@@ -6016,25 +6814,25 @@ ctx.draw()
             /** 矩形路径的宽度 */
             width: number,
             /** 矩形路径的高度 */
-            height: number,
+            height: number
         ): void
         /** [CanvasContext.fillText(string text, number x, number y, number maxWidth)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.fillText.html)
-*
-* 在画布上绘制被填充的文本
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 在画布上绘制被填充的文本
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.setFontSize(20)
-ctx.fillText('Hello', 20, 20)
-ctx.fillText('MINA', 100, 100)
+         ctx.setFontSize(20)
+         ctx.fillText('Hello', 20, 20)
+         ctx.fillText('MINA', 100, 100)
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/text.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/text.png) */
         fillText(
             /** 在画布上输出的文本 */
             text: string,
@@ -6043,108 +6841,108 @@ ctx.draw()
             /** 绘制文本的左上角 y 坐标位置 */
             y: number,
             /** 需要绘制的最大宽度，可选 */
-            maxWidth?: number,
+            maxWidth?: number
         ): void
         /** [CanvasContext.lineTo(number x, number y)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.lineTo.html)
-*
-* 增加一个新点，然后创建一条从上次指定点到目标点的线。用 `stroke` 方法来画线条
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.moveTo(10, 10)
-ctx.rect(10, 10, 100, 50)
-ctx.lineTo(110, 60)
-ctx.stroke()
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/line-to.png) */
+         *
+         * 增加一个新点，然后创建一条从上次指定点到目标点的线。用 `stroke` 方法来画线条
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.moveTo(10, 10)
+         ctx.rect(10, 10, 100, 50)
+         ctx.lineTo(110, 60)
+         ctx.stroke()
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/line-to.png) */
         lineTo(
             /** 目标位置的 x 坐标 */
             x: number,
             /** 目标位置的 y 坐标 */
-            y: number,
+            y: number
         ): void
         /** [CanvasContext.moveTo(number x, number y)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.moveTo.html)
-*
-* 把路径移动到画布中的指定点，不创建线条。用 `stroke` 方法来画线条
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.moveTo(10, 10)
-ctx.lineTo(100, 10)
+         *
+         * 把路径移动到画布中的指定点，不创建线条。用 `stroke` 方法来画线条
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.moveTo(10, 10)
+         ctx.lineTo(100, 10)
 
-ctx.moveTo(10, 50)
-ctx.lineTo(100, 50)
-ctx.stroke()
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/move-to.png) */
+         ctx.moveTo(10, 50)
+         ctx.lineTo(100, 50)
+         ctx.stroke()
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/move-to.png) */
         moveTo(
             /** 目标位置的 x 坐标 */
             x: number,
             /** 目标位置的 y 坐标 */
-            y: number,
+            y: number
         ): void
         /** [CanvasContext.quadraticCurveTo(number cpx, number cpy, number x, number y)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.quadraticCurveTo.html)
-*
-* 创建二次贝塞尔曲线路径。曲线的起始点为路径中前一个点。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 创建二次贝塞尔曲线路径。曲线的起始点为路径中前一个点。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-// Draw points
-ctx.beginPath()
-ctx.arc(20, 20, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('red')
-ctx.fill()
+         // Draw points
+         ctx.beginPath()
+         ctx.arc(20, 20, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('red')
+         ctx.fill()
 
-ctx.beginPath()
-ctx.arc(200, 20, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('lightgreen')
-ctx.fill()
+         ctx.beginPath()
+         ctx.arc(200, 20, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('lightgreen')
+         ctx.fill()
 
-ctx.beginPath()
-ctx.arc(20, 100, 2, 0, 2 * Math.PI)
-ctx.setFillStyle('blue')
-ctx.fill()
+         ctx.beginPath()
+         ctx.arc(20, 100, 2, 0, 2 * Math.PI)
+         ctx.setFillStyle('blue')
+         ctx.fill()
 
-ctx.setFillStyle('black')
-ctx.setFontSize(12)
+         ctx.setFillStyle('black')
+         ctx.setFontSize(12)
 
-// Draw guides
-ctx.beginPath()
-ctx.moveTo(20, 20)
-ctx.lineTo(20, 100)
-ctx.lineTo(200, 20)
-ctx.setStrokeStyle('#AAAAAA')
-ctx.stroke()
+         // Draw guides
+         ctx.beginPath()
+         ctx.moveTo(20, 20)
+         ctx.lineTo(20, 100)
+         ctx.lineTo(200, 20)
+         ctx.setStrokeStyle('#AAAAAA')
+         ctx.stroke()
 
-// Draw quadratic curve
-ctx.beginPath()
-ctx.moveTo(20, 20)
-ctx.quadraticCurveTo(20, 100, 200, 20)
-ctx.setStrokeStyle('black')
-ctx.stroke()
+         // Draw quadratic curve
+         ctx.beginPath()
+         ctx.moveTo(20, 20)
+         ctx.quadraticCurveTo(20, 100, 200, 20)
+         ctx.setStrokeStyle('black')
+         ctx.stroke()
 
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/quadratic-curve-to.png)
-*
-* 针对 moveTo(20, 20) quadraticCurveTo(20, 100, 200, 20) 的三个关键坐标如下：
-*
-* - 红色：起始点(20, 20)
-* - 蓝色：控制点(20, 100)
-* - 绿色：终止点(200, 20) */
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/quadratic-curve-to.png)
+         *
+         * 针对 moveTo(20, 20) quadraticCurveTo(20, 100, 200, 20) 的三个关键坐标如下：
+         *
+         * - 红色：起始点(20, 20)
+         * - 蓝色：控制点(20, 100)
+         * - 绿色：终止点(200, 20) */
         quadraticCurveTo(
             /** 贝塞尔控制点的 x 坐标 */
             cpx: number,
@@ -6153,23 +6951,23 @@ ctx.draw()
             /** 结束点的 x 坐标 */
             x: number,
             /** 结束点的 y 坐标 */
-            y: number,
+            y: number
         ): void
         /** [CanvasContext.rect(number x, number y, number width, number height)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.rect.html)
-*
-* 创建一个矩形路径。需要用 [`fill`](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.fill.html) 或者 [`stroke`](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.stroke.html) 方法将矩形真正的画到 `canvas` 中
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.rect(10, 10, 150, 75)
-ctx.setFillStyle('red')
-ctx.fill()
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/fill-rect.png) */
+         *
+         * 创建一个矩形路径。需要用 [`fill`](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.fill.html) 或者 [`stroke`](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.stroke.html) 方法将矩形真正的画到 `canvas` 中
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.rect(10, 10, 150, 75)
+         ctx.setFillStyle('red')
+         ctx.fill()
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/fill-rect.png) */
         rect(
             /** 矩形路径左上角的横坐标 */
             x: number,
@@ -6178,209 +6976,209 @@ ctx.draw()
             /** 矩形路径的宽度 */
             width: number,
             /** 矩形路径的高度 */
-            height: number,
+            height: number
         ): void
         /** [CanvasContext.restore()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.restore.html)
-*
-* 恢复之前保存的绘图上下文。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 恢复之前保存的绘图上下文。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-// save the default fill style
-ctx.save()
-ctx.setFillStyle('red')
-ctx.fillRect(10, 10, 150, 100)
+         // save the default fill style
+         ctx.save()
+         ctx.setFillStyle('red')
+         ctx.fillRect(10, 10, 150, 100)
 
-// restore to the previous saved state
-ctx.restore()
-ctx.fillRect(50, 50, 150, 100)
+         // restore to the previous saved state
+         ctx.restore()
+         ctx.fillRect(50, 50, 150, 100)
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/save-restore.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/save-restore.png) */
         restore(): void
         /** [CanvasContext.rotate(number rotate)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.rotate.html)
-*
-* 以原点为中心顺时针旋转当前坐标轴。多次调用旋转的角度会叠加。原点可以用 `translate` 方法修改。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 以原点为中心顺时针旋转当前坐标轴。多次调用旋转的角度会叠加。原点可以用 `translate` 方法修改。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.strokeRect(100, 10, 150, 100)
-ctx.rotate(20 * Math.PI / 180)
-ctx.strokeRect(100, 10, 150, 100)
-ctx.rotate(20 * Math.PI / 180)
-ctx.strokeRect(100, 10, 150, 100)
+         ctx.strokeRect(100, 10, 150, 100)
+         ctx.rotate(20 * Math.PI / 180)
+         ctx.strokeRect(100, 10, 150, 100)
+         ctx.rotate(20 * Math.PI / 180)
+         ctx.strokeRect(100, 10, 150, 100)
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/rotate.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/rotate.png) */
         rotate(
             /** 旋转角度，以弧度计 degrees * Math.PI/180；degrees 范围为 0-360 */
-            rotate: number,
+            rotate: number
         ): void
         /** [CanvasContext.save()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.save.html)
-*
-* 保存绘图上下文。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 保存绘图上下文。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-// save the default fill style
-ctx.save()
-ctx.setFillStyle('red')
-ctx.fillRect(10, 10, 150, 100)
+         // save the default fill style
+         ctx.save()
+         ctx.setFillStyle('red')
+         ctx.fillRect(10, 10, 150, 100)
 
-// restore to the previous saved state
-ctx.restore()
-ctx.fillRect(50, 50, 150, 100)
+         // restore to the previous saved state
+         ctx.restore()
+         ctx.fillRect(50, 50, 150, 100)
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/save-restore.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/save-restore.png) */
         save(): void
         /** [CanvasContext.scale(number scaleWidth, number scaleHeight)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.scale.html)
-*
-* 在调用后，之后创建的路径其横纵坐标会被缩放。多次调用倍数会相乘。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 在调用后，之后创建的路径其横纵坐标会被缩放。多次调用倍数会相乘。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.strokeRect(10, 10, 25, 15)
-ctx.scale(2, 2)
-ctx.strokeRect(10, 10, 25, 15)
-ctx.scale(2, 2)
-ctx.strokeRect(10, 10, 25, 15)
+         ctx.strokeRect(10, 10, 25, 15)
+         ctx.scale(2, 2)
+         ctx.strokeRect(10, 10, 25, 15)
+         ctx.scale(2, 2)
+         ctx.strokeRect(10, 10, 25, 15)
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/scale.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/scale.png) */
         scale(
             /** 横坐标缩放的倍数 (1 = 100%，0.5 = 50%，2 = 200%) */
             scaleWidth: number,
             /** 纵坐标轴缩放的倍数 (1 = 100%，0.5 = 50%，2 = 200%) */
-            scaleHeight: number,
+            scaleHeight: number
         ): void
         /** [CanvasContext.setFillStyle(string|[CanvasGradient](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.html) color)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setFillStyle.html)
-*
-* 设置填充色。
-*
-* **代码示例**
-*
-*
-* ```js
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.setFillStyle('red')
-ctx.fillRect(10, 10, 150, 75)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/fill-rect.png) */
+         *
+         * 设置填充色。
+         *
+         * **代码示例**
+         *
+         *
+         * ```js
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.setFillStyle('red')
+         ctx.fillRect(10, 10, 150, 75)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/fill-rect.png) */
         setFillStyle(
             /** 填充的颜色，默认颜色为 black。 */
-            color: string | CanvasGradient,
+            color: string | CanvasGradient
         ): void
         /** [CanvasContext.setFontSize(number fontSize)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setFontSize.html)
-*
-* 设置字体的字号
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 设置字体的字号
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.setFontSize(20)
-ctx.fillText('20', 20, 20)
-ctx.setFontSize(30)
-ctx.fillText('30', 40, 40)
-ctx.setFontSize(40)
-ctx.fillText('40', 60, 60)
-ctx.setFontSize(50)
-ctx.fillText('50', 90, 90)
+         ctx.setFontSize(20)
+         ctx.fillText('20', 20, 20)
+         ctx.setFontSize(30)
+         ctx.fillText('30', 40, 40)
+         ctx.setFontSize(40)
+         ctx.fillText('40', 60, 60)
+         ctx.setFontSize(50)
+         ctx.fillText('50', 90, 90)
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/font-size.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/font-size.png) */
         setFontSize(
             /** 字体的字号 */
-            fontSize: number,
+            fontSize: number
         ): void
         /** [CanvasContext.setGlobalAlpha(number alpha)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setGlobalAlpha.html)
-*
-* 设置全局画笔透明度。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 设置全局画笔透明度。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.setFillStyle('red')
-ctx.fillRect(10, 10, 150, 100)
-ctx.setGlobalAlpha(0.2)
-ctx.setFillStyle('blue')
-ctx.fillRect(50, 50, 150, 100)
-ctx.setFillStyle('yellow')
-ctx.fillRect(100, 100, 150, 100)
+         ctx.setFillStyle('red')
+         ctx.fillRect(10, 10, 150, 100)
+         ctx.setGlobalAlpha(0.2)
+         ctx.setFillStyle('blue')
+         ctx.fillRect(50, 50, 150, 100)
+         ctx.setFillStyle('yellow')
+         ctx.fillRect(100, 100, 150, 100)
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/global-alpha.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/global-alpha.png) */
         setGlobalAlpha(
             /** 透明度。范围 0-1，0 表示完全透明，1 表示完全不透明。 */
-            alpha: number,
+            alpha: number
         ): void
         /** [CanvasContext.setLineCap(string lineCap)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setLineCap.html)
-*
-* 设置线条的端点样式
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.beginPath()
-ctx.moveTo(10, 10)
-ctx.lineTo(150, 10)
-ctx.stroke()
+         *
+         * 设置线条的端点样式
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.beginPath()
+         ctx.moveTo(10, 10)
+         ctx.lineTo(150, 10)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineCap('butt')
-ctx.setLineWidth(10)
-ctx.moveTo(10, 30)
-ctx.lineTo(150, 30)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineCap('butt')
+         ctx.setLineWidth(10)
+         ctx.moveTo(10, 30)
+         ctx.lineTo(150, 30)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineCap('round')
-ctx.setLineWidth(10)
-ctx.moveTo(10, 50)
-ctx.lineTo(150, 50)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineCap('round')
+         ctx.setLineWidth(10)
+         ctx.moveTo(10, 50)
+         ctx.lineTo(150, 50)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineCap('square')
-ctx.setLineWidth(10)
-ctx.moveTo(10, 70)
-ctx.lineTo(150, 70)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineCap('square')
+         ctx.setLineWidth(10)
+         ctx.moveTo(10, 70)
+         ctx.lineTo(150, 70)
+         ctx.stroke()
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/line-cap.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/line-cap.png) */
         setLineCap(
             /** 线条的结束端点样式
              *
@@ -6388,78 +7186,78 @@ ctx.draw()
              * - 'butt': 向线条的每个末端添加平直的边缘。;
              * - 'round': 向线条的每个末端添加圆形线帽。;
              * - 'square': 向线条的每个末端添加正方形线帽。; */
-            lineCap: 'butt' | 'round' | 'square',
+            lineCap: 'butt' | 'round' | 'square'
         ): void
-        /** [CanvasContext.setLineDash(Array.<number> pattern, number offset)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setLineDash.html)
-*
-* 设置虚线样式。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+        /** [CanvasContext.setLineDash(Array.&lt;number&gt; pattern, number offset)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setLineDash.html)
+         *
+         * 设置虚线样式。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.setLineDash([10, 20], 5);
+         ctx.setLineDash([10, 20], 5);
 
-ctx.beginPath();
-ctx.moveTo(0,100);
-ctx.lineTo(400, 100);
-ctx.stroke();
+         ctx.beginPath();
+         ctx.moveTo(0,100);
+         ctx.lineTo(400, 100);
+         ctx.stroke();
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/set-line-dash.png)
-*
-* 最低基础库： `1.6.0` */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/set-line-dash.png)
+         *
+         * 最低基础库： `1.6.0` */
         setLineDash(
             /** 一组描述交替绘制线段和间距（坐标空间单位）长度的数字 */
             pattern: number[],
             /** 虚线偏移量 */
-            offset: number,
+            offset: number
         ): void
         /** [CanvasContext.setLineJoin(string lineJoin)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setLineJoin.html)
-*
-* 设置线条的交点样式
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.beginPath()
-ctx.moveTo(10, 10)
-ctx.lineTo(100, 50)
-ctx.lineTo(10, 90)
-ctx.stroke()
+         *
+         * 设置线条的交点样式
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.beginPath()
+         ctx.moveTo(10, 10)
+         ctx.lineTo(100, 50)
+         ctx.lineTo(10, 90)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineJoin('bevel')
-ctx.setLineWidth(10)
-ctx.moveTo(50, 10)
-ctx.lineTo(140, 50)
-ctx.lineTo(50, 90)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineJoin('bevel')
+         ctx.setLineWidth(10)
+         ctx.moveTo(50, 10)
+         ctx.lineTo(140, 50)
+         ctx.lineTo(50, 90)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineJoin('round')
-ctx.setLineWidth(10)
-ctx.moveTo(90, 10)
-ctx.lineTo(180, 50)
-ctx.lineTo(90, 90)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineJoin('round')
+         ctx.setLineWidth(10)
+         ctx.moveTo(90, 10)
+         ctx.lineTo(180, 50)
+         ctx.lineTo(90, 90)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineJoin('miter')
-ctx.setLineWidth(10)
-ctx.moveTo(130, 10)
-ctx.lineTo(220, 50)
-ctx.lineTo(130, 90)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineJoin('miter')
+         ctx.setLineWidth(10)
+         ctx.moveTo(130, 10)
+         ctx.lineTo(220, 50)
+         ctx.lineTo(130, 90)
+         ctx.stroke()
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/line-join.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/line-join.png) */
         setLineJoin(
             /** 线条的结束交点样式
              *
@@ -6467,115 +7265,115 @@ ctx.draw()
              * - 'bevel': 斜角;
              * - 'round': 圆角;
              * - 'miter': 尖角; */
-            lineJoin: 'bevel' | 'round' | 'miter',
+            lineJoin: 'bevel' | 'round' | 'miter'
         ): void
         /** [CanvasContext.setLineWidth(number lineWidth)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setLineWidth.html)
-*
-* 设置线条的宽度
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.beginPath()
-ctx.moveTo(10, 10)
-ctx.lineTo(150, 10)
-ctx.stroke()
+         *
+         * 设置线条的宽度
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.beginPath()
+         ctx.moveTo(10, 10)
+         ctx.lineTo(150, 10)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineWidth(5)
-ctx.moveTo(10, 30)
-ctx.lineTo(150, 30)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineWidth(5)
+         ctx.moveTo(10, 30)
+         ctx.lineTo(150, 30)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineWidth(10)
-ctx.moveTo(10, 50)
-ctx.lineTo(150, 50)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineWidth(10)
+         ctx.moveTo(10, 50)
+         ctx.lineTo(150, 50)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineWidth(15)
-ctx.moveTo(10, 70)
-ctx.lineTo(150, 70)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineWidth(15)
+         ctx.moveTo(10, 70)
+         ctx.lineTo(150, 70)
+         ctx.stroke()
 
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/line-width.png) */
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/line-width.png) */
         setLineWidth(
             /** 线条的宽度，单位px */
-            lineWidth: number,
+            lineWidth: number
         ): void
         /** [CanvasContext.setMiterLimit(number miterLimit)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setMiterLimit.html)
-*
-* 设置最大斜接长度。斜接长度指的是在两条线交汇处内角和外角之间的距离。当 [CanvasContext.setLineJoin()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setLineJoin.html) 为 miter 时才有效。超过最大倾斜长度的，连接处将以 lineJoin 为 bevel 来显示。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.beginPath()
-ctx.setLineWidth(10)
-ctx.setLineJoin('miter')
-ctx.setMiterLimit(1)
-ctx.moveTo(10, 10)
-ctx.lineTo(100, 50)
-ctx.lineTo(10, 90)
-ctx.stroke()
+         *
+         * 设置最大斜接长度。斜接长度指的是在两条线交汇处内角和外角之间的距离。当 [CanvasContext.setLineJoin()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setLineJoin.html) 为 miter 时才有效。超过最大倾斜长度的，连接处将以 lineJoin 为 bevel 来显示。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.beginPath()
+         ctx.setLineWidth(10)
+         ctx.setLineJoin('miter')
+         ctx.setMiterLimit(1)
+         ctx.moveTo(10, 10)
+         ctx.lineTo(100, 50)
+         ctx.lineTo(10, 90)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineWidth(10)
-ctx.setLineJoin('miter')
-ctx.setMiterLimit(2)
-ctx.moveTo(50, 10)
-ctx.lineTo(140, 50)
-ctx.lineTo(50, 90)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineWidth(10)
+         ctx.setLineJoin('miter')
+         ctx.setMiterLimit(2)
+         ctx.moveTo(50, 10)
+         ctx.lineTo(140, 50)
+         ctx.lineTo(50, 90)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineWidth(10)
-ctx.setLineJoin('miter')
-ctx.setMiterLimit(3)
-ctx.moveTo(90, 10)
-ctx.lineTo(180, 50)
-ctx.lineTo(90, 90)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineWidth(10)
+         ctx.setLineJoin('miter')
+         ctx.setMiterLimit(3)
+         ctx.moveTo(90, 10)
+         ctx.lineTo(180, 50)
+         ctx.lineTo(90, 90)
+         ctx.stroke()
 
-ctx.beginPath()
-ctx.setLineWidth(10)
-ctx.setLineJoin('miter')
-ctx.setMiterLimit(4)
-ctx.moveTo(130, 10)
-ctx.lineTo(220, 50)
-ctx.lineTo(130, 90)
-ctx.stroke()
+         ctx.beginPath()
+         ctx.setLineWidth(10)
+         ctx.setLineJoin('miter')
+         ctx.setMiterLimit(4)
+         ctx.moveTo(130, 10)
+         ctx.lineTo(220, 50)
+         ctx.lineTo(130, 90)
+         ctx.stroke()
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/miter-limit.png) */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/miter-limit.png) */
         setMiterLimit(
             /** 最大斜接长度 */
-            miterLimit: number,
+            miterLimit: number
         ): void
         /** [CanvasContext.setShadow(number offsetX, number offsetY, number blur, string color)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setShadow.html)
-*
-* 设定阴影样式。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.setFillStyle('red')
-ctx.setShadow(10, 50, 50, 'blue')
-ctx.fillRect(10, 10, 150, 75)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/shadow.png) */
+         *
+         * 设定阴影样式。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.setFillStyle('red')
+         ctx.setShadow(10, 50, 50, 'blue')
+         ctx.fillRect(10, 10, 150, 75)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/shadow.png) */
         setShadow(
             /** 阴影相对于形状在水平方向的偏移，默认值为 0。 */
             offsetX: number,
@@ -6584,58 +7382,58 @@ ctx.draw()
             /** 阴影的模糊级别，数值越大越模糊。范围 0- 100。，默认值为 0。 */
             blur: number,
             /** 阴影的颜色。默认值为 black。 */
-            color: string,
+            color: string
         ): void
         /** [CanvasContext.setStrokeStyle(string|[CanvasGradient](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.html) color)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setStrokeStyle.html)
-*
-* 设置描边颜色。
-*
-* **代码示例**
-*
-*
-* ```js
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.setStrokeStyle('red')
-ctx.strokeRect(10, 10, 150, 75)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/stroke-rect.png) */
+         *
+         * 设置描边颜色。
+         *
+         * **代码示例**
+         *
+         *
+         * ```js
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.setStrokeStyle('red')
+         ctx.strokeRect(10, 10, 150, 75)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/stroke-rect.png) */
         setStrokeStyle(
             /** 描边的颜色，默认颜色为 black。 */
-            color: string | CanvasGradient,
+            color: string | CanvasGradient
         ): void
         /** [CanvasContext.setTextAlign(string align)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setTextAlign.html)
-*
-* 设置文字的对齐
-*
-* **示例代码**
-*
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 设置文字的对齐
+         *
+         * **示例代码**
+         *
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.setStrokeStyle('red')
-ctx.moveTo(150, 20)
-ctx.lineTo(150, 170)
-ctx.stroke()
+         ctx.setStrokeStyle('red')
+         ctx.moveTo(150, 20)
+         ctx.lineTo(150, 170)
+         ctx.stroke()
 
-ctx.setFontSize(15)
-ctx.setTextAlign('left')
-ctx.fillText('textAlign=left', 150, 60)
+         ctx.setFontSize(15)
+         ctx.setTextAlign('left')
+         ctx.fillText('textAlign=left', 150, 60)
 
-ctx.setTextAlign('center')
-ctx.fillText('textAlign=center', 150, 80)
+         ctx.setTextAlign('center')
+         ctx.fillText('textAlign=center', 150, 80)
 
-ctx.setTextAlign('right')
-ctx.fillText('textAlign=right', 150, 100)
+         ctx.setTextAlign('right')
+         ctx.fillText('textAlign=right', 150, 100)
 
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/set-text-align.png)
-*
-* 最低基础库： `1.1.0` */
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/set-text-align.png)
+         *
+         * 最低基础库： `1.1.0` */
         setTextAlign(
             /** 文字的对齐方式
              *
@@ -6643,42 +7441,42 @@ ctx.draw()
              * - 'left': 左对齐;
              * - 'center': 居中对齐;
              * - 'right': 右对齐; */
-            align: 'left' | 'center' | 'right',
+            align: 'left' | 'center' | 'right'
         ): void
         /** [CanvasContext.setTextBaseline(string textBaseline)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setTextBaseline.html)
-*
-* 设置文字的竖直对齐
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 设置文字的竖直对齐
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.setStrokeStyle('red')
-ctx.moveTo(5, 75)
-ctx.lineTo(295, 75)
-ctx.stroke()
+         ctx.setStrokeStyle('red')
+         ctx.moveTo(5, 75)
+         ctx.lineTo(295, 75)
+         ctx.stroke()
 
-ctx.setFontSize(20)
+         ctx.setFontSize(20)
 
-ctx.setTextBaseline('top')
-ctx.fillText('top', 5, 75)
+         ctx.setTextBaseline('top')
+         ctx.fillText('top', 5, 75)
 
-ctx.setTextBaseline('middle')
-ctx.fillText('middle', 50, 75)
+         ctx.setTextBaseline('middle')
+         ctx.fillText('middle', 50, 75)
 
-ctx.setTextBaseline('bottom')
-ctx.fillText('bottom', 120, 75)
+         ctx.setTextBaseline('bottom')
+         ctx.fillText('bottom', 120, 75)
 
-ctx.setTextBaseline('normal')
-ctx.fillText('normal', 200, 75)
+         ctx.setTextBaseline('normal')
+         ctx.fillText('normal', 200, 75)
 
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/set-text-baseline.png)
-*
-* 最低基础库： `1.4.0` */
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/set-text-baseline.png)
+         *
+         * 最低基础库： `1.4.0` */
         setTextBaseline(
             /** 文字的竖直对齐方式
              *
@@ -6687,9 +7485,9 @@ ctx.draw()
              * - 'bottom': 底部对齐;
              * - 'middle': 居中对齐;
              * - 'normal': ; */
-            textBaseline: 'top' | 'bottom' | 'middle' | 'normal',
+            textBaseline: 'top' | 'bottom' | 'middle' | 'normal'
         ): void
-        /** [CanvasContext.setTransform(number scaleX, number scaleY, number skewX, number skewY, number translateX, number translateY)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setTransform.html)
+        /** [CanvasContext.setTransform(number scaleX, number skewX, number skewY, number scaleY, number translateX, number translateY)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setTransform.html)
          *
          * 使用矩阵重新设置（覆盖）当前变换的方法
          *
@@ -6697,75 +7495,75 @@ ctx.draw()
         setTransform(
             /** 水平缩放 */
             scaleX: number,
-            /** 垂直缩放 */
-            scaleY: number,
             /** 水平倾斜 */
             skewX: number,
             /** 垂直倾斜 */
             skewY: number,
+            /** 垂直缩放 */
+            scaleY: number,
             /** 水平移动 */
             translateX: number,
             /** 垂直移动 */
-            translateY: number,
+            translateY: number
         ): void
         /** [CanvasContext.stroke()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.stroke.html)
-*
-* 画出当前路径的边框。默认颜色色为黑色。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.moveTo(10, 10)
-ctx.lineTo(100, 10)
-ctx.lineTo(100, 100)
-ctx.stroke()
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/stroke-line.png)
-*
-* stroke() 描绘的的路径是从 beginPath() 开始计算，但是不会将 strokeRect() 包含进去。
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-// begin path
-ctx.rect(10, 10, 100, 30)
-ctx.setStrokeStyle('yellow')
-ctx.stroke()
+         *
+         * 画出当前路径的边框。默认颜色色为黑色。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.moveTo(10, 10)
+         ctx.lineTo(100, 10)
+         ctx.lineTo(100, 100)
+         ctx.stroke()
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/stroke-line.png)
+         *
+         * stroke() 描绘的的路径是从 beginPath() 开始计算，但是不会将 strokeRect() 包含进去。
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         // begin path
+         ctx.rect(10, 10, 100, 30)
+         ctx.setStrokeStyle('yellow')
+         ctx.stroke()
 
-// begin another path
-ctx.beginPath()
-ctx.rect(10, 40, 100, 30)
+         // begin another path
+         ctx.beginPath()
+         ctx.rect(10, 40, 100, 30)
 
-// only stoke this rect, not in current path
-ctx.setStrokeStyle('blue')
-ctx.strokeRect(10, 70, 100, 30)
+         // only stoke this rect, not in current path
+         ctx.setStrokeStyle('blue')
+         ctx.strokeRect(10, 70, 100, 30)
 
-ctx.rect(10, 100, 100, 30)
+         ctx.rect(10, 100, 100, 30)
 
-// it will stroke current path
-ctx.setStrokeStyle('red')
-ctx.stroke()
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/stroke-path.png) */
+         // it will stroke current path
+         ctx.setStrokeStyle('red')
+         ctx.stroke()
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/stroke-path.png) */
         stroke(): void
         /** [CanvasContext.strokeRect(number x, number y, number width, number height)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.strokeRect.html)
-*
-* 画一个矩形(非填充)。 用 [`setStrokeStyle`](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setStrokeStyle.html) 设置矩形线条的颜色，如果没设置默认是黑色。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
-ctx.setStrokeStyle('red')
-ctx.strokeRect(10, 10, 150, 75)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/stroke-rect.png) */
+         *
+         * 画一个矩形(非填充)。 用 [`setStrokeStyle`](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.setStrokeStyle.html) 设置矩形线条的颜色，如果没设置默认是黑色。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
+         ctx.setStrokeStyle('red')
+         ctx.strokeRect(10, 10, 150, 75)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/stroke-rect.png) */
         strokeRect(
             /** 矩形路径左上角的横坐标 */
             x: number,
@@ -6774,7 +7572,7 @@ ctx.draw()
             /** 矩形路径的宽度 */
             width: number,
             /** 矩形路径的高度 */
-            height: number,
+            height: number
         ): void
         /** [CanvasContext.strokeText(string text, number x, number y, number maxWidth)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.strokeText.html)
          *
@@ -6789,9 +7587,9 @@ ctx.draw()
             /** 文本起始点的 y 轴坐标 */
             y: number,
             /** 需要绘制的最大宽度，可选 */
-            maxWidth?: number,
+            maxWidth?: number
         ): void
-        /** [CanvasContext.transform(number scaleX, number scaleY, number skewX, number skewY, number translateX, number translateY)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.transform.html)
+        /** [CanvasContext.transform(number scaleX, number skewX, number skewY, number scaleY, number translateX, number translateY)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.transform.html)
          *
          * 使用矩阵多次叠加当前变换的方法
          *
@@ -6799,43 +7597,43 @@ ctx.draw()
         transform(
             /** 水平缩放 */
             scaleX: number,
-            /** 垂直缩放 */
-            scaleY: number,
             /** 水平倾斜 */
             skewX: number,
             /** 垂直倾斜 */
             skewY: number,
+            /** 垂直缩放 */
+            scaleY: number,
             /** 水平移动 */
             translateX: number,
             /** 垂直移动 */
-            translateY: number,
+            translateY: number
         ): void
         /** [CanvasContext.translate(number x, number y)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.translate.html)
-*
-* 对当前坐标系的原点 (0, 0) 进行变换。默认的坐标系原点为页面左上角。
-*
-* **示例代码**
-*
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 对当前坐标系的原点 (0, 0) 进行变换。默认的坐标系原点为页面左上角。
+         *
+         * **示例代码**
+         *
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-ctx.strokeRect(10, 10, 150, 100)
-ctx.translate(20, 20)
-ctx.strokeRect(10, 10, 150, 100)
-ctx.translate(20, 20)
-ctx.strokeRect(10, 10, 150, 100)
+         ctx.strokeRect(10, 10, 150, 100)
+         ctx.translate(20, 20)
+         ctx.strokeRect(10, 10, 150, 100)
+         ctx.translate(20, 20)
+         ctx.strokeRect(10, 10, 150, 100)
 
-ctx.draw()
-```
-*
-* ![](@program/dev/image/canvas/translate.png) */
+         ctx.draw()
+         ```
+         *
+         * ![](@program/dev/image/canvas/translate.png) */
         translate(
             /** 水平坐标平移量 */
             x: number,
             /** 竖直坐标平移量 */
-            y: number,
+            y: number
         ): void
         /** [Object CanvasContext.measureText(string text)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.measureText.html)
          *
@@ -6844,58 +7642,58 @@ ctx.draw()
          * 最低基础库： `1.9.90` */
         measureText(
             /** 要测量的文本 */
-            text: string,
+            text: string
         ): TextMetrics
         /** [[CanvasGradient](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.html) CanvasContext.createCircularGradient(number x, number y, number r)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.createCircularGradient.html)
-*
-* 创建一个圆形的渐变颜色。起点在圆心，终点在圆环。返回的`CanvasGradient`对象需要使用 [CanvasGradient.addColorStop()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.addColorStop.html) 来指定渐变点，至少要两个。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 创建一个圆形的渐变颜色。起点在圆心，终点在圆环。返回的`CanvasGradient`对象需要使用 [CanvasGradient.addColorStop()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.addColorStop.html) 来指定渐变点，至少要两个。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-// Create circular gradient
-const grd = ctx.createCircularGradient(75, 50, 50)
-grd.addColorStop(0, 'red')
-grd.addColorStop(1, 'white')
+         // Create circular gradient
+         const grd = ctx.createCircularGradient(75, 50, 50)
+         grd.addColorStop(0, 'red')
+         grd.addColorStop(1, 'white')
 
-// Fill with gradient
-ctx.setFillStyle(grd)
-ctx.fillRect(10, 10, 150, 80)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/circular-gradient.png) */
+         // Fill with gradient
+         ctx.setFillStyle(grd)
+         ctx.fillRect(10, 10, 150, 80)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/circular-gradient.png) */
         createCircularGradient(
             /** 圆心的 x 坐标 */
             x: number,
             /** 圆心的 y 坐标 */
             y: number,
             /** 圆的半径 */
-            r: number,
+            r: number
         ): CanvasGradient
         /** [[CanvasGradient](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.html) CanvasContext.createLinearGradient(number x0, number y0, number x1, number y1)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.createLinearGradient.html)
-*
-* 创建一个线性的渐变颜色。返回的`CanvasGradient`对象需要使用 [CanvasGradient.addColorStop()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.addColorStop.html) 来指定渐变点，至少要两个。
-*
-* **示例代码**
-*
-*
-* ```javascript
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 创建一个线性的渐变颜色。返回的`CanvasGradient`对象需要使用 [CanvasGradient.addColorStop()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.addColorStop.html) 来指定渐变点，至少要两个。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         const ctx = wx.createCanvasContext('myCanvas')
 
-// Create linear gradient
-const grd = ctx.createLinearGradient(0, 0, 200, 0)
-grd.addColorStop(0, 'red')
-grd.addColorStop(1, 'white')
+         // Create linear gradient
+         const grd = ctx.createLinearGradient(0, 0, 200, 0)
+         grd.addColorStop(0, 'red')
+         grd.addColorStop(1, 'white')
 
-// Fill with gradient
-ctx.setFillStyle(grd)
-ctx.fillRect(10, 10, 150, 80)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/linear-gradient.png) */
+         // Fill with gradient
+         ctx.setFillStyle(grd)
+         ctx.fillRect(10, 10, 150, 80)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/linear-gradient.png) */
         createLinearGradient(
             /** 起点的 x 坐标 */
             x0: number,
@@ -6904,41 +7702,41 @@ ctx.draw()
             /** 终点的 x 坐标 */
             x1: number,
             /** 终点的 y 坐标 */
-            y1: number,
+            y1: number
         ): CanvasGradient
     }
     interface CanvasGradient {
         /** [CanvasGradient.addColorStop(number stop, string color)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasGradient.addColorStop.html)
-*
-* 添加颜色的渐变点。小于最小 stop 的部分会按最小 stop 的 color 来渲染，大于最大 stop 的部分会按最大 stop 的 color 来渲染
-*
-* **示例代码**
-*
-*
-* ```js
-const ctx = wx.createCanvasContext('myCanvas')
+         *
+         * 添加颜色的渐变点。小于最小 stop 的部分会按最小 stop 的 color 来渲染，大于最大 stop 的部分会按最大 stop 的 color 来渲染
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const ctx = wx.createCanvasContext('myCanvas')
 
-// Create circular gradient
-const grd = ctx.createLinearGradient(30, 10, 120, 10)
-grd.addColorStop(0, 'red')
-grd.addColorStop(0.16, 'orange')
-grd.addColorStop(0.33, 'yellow')
-grd.addColorStop(0.5, 'green')
-grd.addColorStop(0.66, 'cyan')
-grd.addColorStop(0.83, 'blue')
-grd.addColorStop(1, 'purple')
+         // Create circular gradient
+         const grd = ctx.createLinearGradient(30, 10, 120, 10)
+         grd.addColorStop(0, 'red')
+         grd.addColorStop(0.16, 'orange')
+         grd.addColorStop(0.33, 'yellow')
+         grd.addColorStop(0.5, 'green')
+         grd.addColorStop(0.66, 'cyan')
+         grd.addColorStop(0.83, 'blue')
+         grd.addColorStop(1, 'purple')
 
-// Fill with gradient
-ctx.setFillStyle(grd)
-ctx.fillRect(10, 10, 150, 80)
-ctx.draw()
-```
-* ![](@program/dev/image/canvas/color-stop.png) */
+         // Fill with gradient
+         ctx.setFillStyle(grd)
+         ctx.fillRect(10, 10, 150, 80)
+         ctx.draw()
+         ```
+         * ![](@program/dev/image/canvas/color-stop.png) */
         addColorStop(
             /** 表示渐变中开始与结束之间的位置，范围 0-1。 */
             stop: number,
             /** 渐变点的颜色。 */
-            color: string,
+            color: string
         ): void
     }
     interface Console {
@@ -6966,7 +7764,7 @@ ctx.draw()
          * 仅在工具中有效，在 vConsole 中为空函数实现。 */
         group(
             /** 分组标记，可选。 */
-            label?: string,
+            label?: string
         ): void
         /** [console.groupEnd()](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/console.groupEnd.html)
          *
@@ -7013,7 +7811,7 @@ ctx.draw()
          * 最低基础库： `2.1.0` */
         offHeadersReceived(
             /** HTTP Response Header 事件的回调函数 */
-            callback: DownloadTaskOffHeadersReceivedCallback,
+            callback: OffHeadersReceivedCallback
         ): void
         /** [DownloadTask.offProgressUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/download/DownloadTask.offProgressUpdate.html)
          *
@@ -7022,7 +7820,7 @@ ctx.draw()
          * 最低基础库： `2.1.0` */
         offProgressUpdate(
             /** 下载进度变化事件的回调函数 */
-            callback: DownloadTaskOffProgressUpdateCallback,
+            callback: DownloadTaskOffProgressUpdateCallback
         ): void
         /** [DownloadTask.onHeadersReceived(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/download/DownloadTask.onHeadersReceived.html)
          *
@@ -7031,7 +7829,7 @@ ctx.draw()
          * 最低基础库： `2.1.0` */
         onHeadersReceived(
             /** HTTP Response Header 事件的回调函数 */
-            callback: DownloadTaskOnHeadersReceivedCallback,
+            callback: OnHeadersReceivedCallback
         ): void
         /** [DownloadTask.onProgressUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/download/DownloadTask.onProgressUpdate.html)
          *
@@ -7040,7 +7838,7 @@ ctx.draw()
          * 最低基础库： `1.4.0` */
         onProgressUpdate(
             /** 下载进度变化事件的回调函数 */
-            callback: DownloadTaskOnProgressUpdateCallback,
+            callback: DownloadTaskOnProgressUpdateCallback
         ): void
     }
     interface EditorContext {
@@ -7052,7 +7850,9 @@ ctx.draw()
         blur(option?: BlurOption): void
         /** [EditorContext.clear(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.clear.html)
          *
-         * 清空编辑器内容 */
+         * 清空编辑器内容
+         *
+         * 最低基础库： `2.7.0` */
         clear(option?: ClearOption): void
         /** [EditorContext.format(string name, string value)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.format.html)
          *
@@ -7061,75 +7861,98 @@ ctx.draw()
          * ****
          *
          * ## 支持设置的样式列表
-         * | name | value |
-         * | ------| ------ |
-         * | bold  |        |
-         * | italic  |        |
-         * | underline  |        |
-         * | strike  |        |
-         * | ins  |        |
-         * | script  | sub / super |
-         * | header  | H1 / H2 / h3 / H4 / h5 /  H6 |
-         * | align  | left / center / right / justify |
-         * | direction  | rtl  |
-         * | indent | -1 / +1 |
-         * | list | ordered / bullet / check |
-         * | color | hex color |
-         * | backgroundColor| hex color |
-         * | margin/marginTop/marginBottom/marginLeft/marginRight  |  css style  |
-         * | padding/paddingTop/paddingBottom/paddingLeft/paddingRight  | css style |
-         * | font/fontSize/fontStyle/fontVariant/fontWeight/fontFamily  |  css style |
-         * | lineHeight | css style |
-         * | letterSpacing |  css style |
-         * | textDecoration |  css style |
-         * | textIndent    | css style |
+         * | name                                                      | value                           | verson |
+         * | --------------------------------------------------------- | ------------------------------- | ------ |
+         * | bold                                                      |                                 | 2.7.0  |
+         * | italic                                                    |                                 | 2.7.0  |
+         * | underline                                                 |                                 | 2.7.0  |
+         * | strike                                                    |                                 | 2.7.0  |
+         * | ins                                                       |                                 | 2.7.0  |
+         * | script                                                    | sub / super                     | 2.7.0  |
+         * | header                                                    | H1 / H2 / h3 / H4 / h5 /  H6    | 2.7.0  |
+         * | align                                                     | left / center / right / justify | 2.7.0  |
+         * | direction                                                 | rtl                             | 2.7.0  |
+         * | indent                                                    | -1 / +1                         | 2.7.0  |
+         * | list                                                      | ordered / bullet / check        | 2.7.0  |
+         * | color                                                     | hex color                       | 2.7.0  |
+         * | backgroundColor                                           | hex color                       | 2.7.0  |
+         * | margin/marginTop/marginBottom/marginLeft/marginRight      | css style                       | 2.7.0  |
+         * | padding/paddingTop/paddingBottom/paddingLeft/paddingRight | css style                       | 2.7.0  |
+         * | font/fontSize/fontStyle/fontVariant/fontWeight/fontFamily | css style                       | 2.7.0  |
+         * | lineHeight                                                | css style                       | 2.7.0  |
+         * | letterSpacing                                             | css style                       | 2.7.0  |
+         * | textDecoration                                            | css style                       | 2.7.0  |
+         * | textIndent                                                | css style                       | 2.8.0  |
+         * | wordWrap                                                  | css style                       | 2.10.2 |
+         * | wordBreak                                                 | css style                       | 2.10.2 |
+         * | whiteSpace                                                | css style                       | 2.10.2 |
          *
-         * 对已经应用样式的选区设置会取消样式。css style 表示 css 中规定的允许值。 */
+         * 对已经应用样式的选区设置会取消样式。css style 表示 css 中规定的允许值。
+         *
+         * 最低基础库： `2.7.0` */
         format(
             /** 属性 */
             name: string,
             /** 值 */
-            value?: string,
+            value?: string
         ): void
         /** [EditorContext.getContents(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.getContents.html)
          *
-         * 获取编辑器内容 */
+         * 获取编辑器内容
+         *
+         * 最低基础库： `2.7.0` */
         getContents(option?: GetContentsOption): void
+        /** [EditorContext.getSelectionText(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.getSelectionText.html)
+         *
+         * 获取编辑器已选区域内的纯文本内容。当编辑器失焦或未选中一段区间时，返回内容为空。
+         *
+         * 最低基础库： `2.10.2` */
+        getSelectionText(option?: GetSelectionTextOption): void
         /** [EditorContext.insertDivider(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.insertDivider.html)
          *
-         * 插入分割线 */
+         * 插入分割线
+         *
+         * 最低基础库： `2.7.0` */
         insertDivider(option?: InsertDividerOption): void
         /** [EditorContext.insertImage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.insertImage.html)
-*
-* 插入图片。
-*
-* 地址为临时文件时，获取的编辑器html格式内容中 <img> 标签增加属性 data-local，delta 格式内容中图片 attributes 属性增加 data-local 字段，该值为传入的临时文件地址。
-*
-* 开发者可选择在提交阶段上传图片到服务器，获取到网络地址后进行替换。替换时对于html内容应替换掉 <img> 的 src 值，对于 delta 内容应替换掉 `insert { image: abc }` 值。
-*
-* **示例代码**
-*
-*
-* ```javascript
-this.editorCtx.insertImage({
+         *
+         * 插入图片。
+         *
+         * 地址为临时文件时，获取的编辑器html格式内容中 <img> 标签增加属性 data-local，delta 格式内容中图片 attributes 属性增加 data-local 字段，该值为传入的临时文件地址。
+         *
+         * 开发者可选择在提交阶段上传图片到服务器，获取到网络地址后进行替换。替换时对于html内容应替换掉 <img> 的 src 值，对于 delta 内容应替换掉 `insert { image: abc }` 值。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         this.editorCtx.insertImage({
   src: 'xx',
   width: '100px',
   height: '50px',
   extClass: className
 })
-``` */
+         ```
+         *
+         * 最低基础库： `2.7.0` */
         insertImage(option: InsertImageOption): void
         /** [EditorContext.insertText(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.insertText.html)
          *
-         * 覆盖当前选区，设置一段文本 */
+         * 覆盖当前选区，设置一段文本
+         *
+         * 最低基础库： `2.7.0` */
         insertText(option: InsertTextOption): void
         /** [EditorContext.redo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.redo.html)
          *
-         * 恢复 */
+         * 恢复
+         *
+         * 最低基础库： `2.7.0` */
         redo(option?: RedoOption): void
         /** [EditorContext.removeFormat(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.removeFormat.html)
          *
-         * 清除当前选区的样式 */
+         * 清除当前选区的样式
+         *
+         * 最低基础库： `2.7.0` */
         removeFormat(option?: RemoveFormatOption): void
         /** [EditorContext.scrollIntoView()](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.scrollIntoView.html)
          *
@@ -7139,12 +7962,36 @@ this.editorCtx.insertImage({
         scrollIntoView(): void
         /** [EditorContext.setContents(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.setContents.html)
          *
-         * 初始化编辑器内容，hmlt和delta同时存在时仅delta生效 */
+         * 初始化编辑器内容，html和delta同时存在时仅delta生效
+         *
+         * 最低基础库： `2.7.0` */
         setContents(option: SetContentsOption): void
         /** [EditorContext.undo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.undo.html)
          *
-         * 撤销 */
+         * 撤销
+         *
+         * 最低基础库： `2.7.0` */
         undo(option?: UndoOption): void
+    }
+    interface EntryList {
+        /** [Array EntryList.getEntries()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/EntryList.getEntries.html)
+         *
+         * 该方法返回当前列表中的所有性能数据
+         *
+         * 最低基础库： `2.11.0` */
+        getEntries(): any[]
+        /** [Array EntryList.getEntriesByName(string name, string entryType)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/EntryList.getEntriesByName.html)
+         *
+         * 获取当前列表中所有名称为 [name] 且类型为 [entryType] 的性能数据
+         *
+         * 最低基础库： `2.11.0` */
+        getEntriesByName(name: string, entryType?: string): any[]
+        /** [Array EntryList.getEntriesByType(string entryType)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/EntryList.getEntriesByType.html)
+         *
+         * 获取当前列表中所有类型为 [entryType] 的性能数据
+         *
+         * 最低基础库： `2.11.0` */
+        getEntriesByType(entryType: string): any[]
     }
     interface EventChannel {
         /** [EventChannel.emit(string eventName, any args)](https://developers.weixin.qq.com/miniprogram/dev/api/route/EventChannel.emit.html)
@@ -7167,7 +8014,7 @@ this.editorCtx.insertImage({
             /** 事件名称 */
             eventName: string,
             /** 事件监听函数 */
-            fn: EventCallback,
+            fn: EventCallback
         ): void
         /** [EventChannel.on(string eventName, function fn)](https://developers.weixin.qq.com/miniprogram/dev/api/route/EventChannel.on.html)
          *
@@ -7178,7 +8025,7 @@ this.editorCtx.insertImage({
             /** 事件名称 */
             eventName: string,
             /** 事件监听函数 */
-            fn: EventCallback,
+            fn: EventCallback
         ): void
         /** [EventChannel.once(string eventName, function fn)](https://developers.weixin.qq.com/miniprogram/dev/api/route/EventChannel.once.html)
          *
@@ -7189,16 +8036,16 @@ this.editorCtx.insertImage({
             /** 事件名称 */
             eventName: string,
             /** 事件监听函数 */
-            fn: EventCallback,
+            fn: EventCallback
         ): void
     }
     interface FileSystemManager {
-        /** [Array.<string> FileSystemManager.readdirSync(string dirPath)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.readdirSync.html)
+        /** [Array.&lt;string&gt; FileSystemManager.readdirSync(string dirPath)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.readdirSync.html)
          *
          * [FileSystemManager.readdir](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.readdir.html) 的同步版本 */
         readdirSync(
-            /** 要读取的目录路径 */
-            dirPath: string,
+            /** 要读取的目录路径 (本地路径) */
+            dirPath: string
         ): string[]
         /** [FileSystemManager.access(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.access.html)
          *
@@ -7208,8 +8055,8 @@ this.editorCtx.insertImage({
          *
          * [FileSystemManager.access](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.access.html) 的同步版本 */
         accessSync(
-            /** 要判断是否存在的文件/目录路径 */
-            path: string,
+            /** 要判断是否存在的文件/目录路径 (本地路径) */
+            path: string
         ): void
         /** [FileSystemManager.appendFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.appendFile.html)
          *
@@ -7223,7 +8070,7 @@ this.editorCtx.insertImage({
          *
          * 最低基础库： `2.1.0` */
         appendFileSync(
-            /** 要追加内容的文件路径 */
+            /** 要追加内容的文件路径 (本地路径) */
             filePath: string,
             /** 要追加的文本或二进制数据 */
             data: string | ArrayBuffer,
@@ -7252,7 +8099,7 @@ this.editorCtx.insertImage({
                 | 'utf-16le'
                 | 'utf-8'
                 | 'utf8'
-                | 'latin1',
+                | 'latin1'
         ): void
         /** [FileSystemManager.copyFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.copyFile.html)
          *
@@ -7262,10 +8109,10 @@ this.editorCtx.insertImage({
          *
          * [FileSystemManager.copyFile](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.copyFile.html) 的同步版本 */
         copyFileSync(
-            /** 源文件路径，只可以是普通文件 */
+            /** 源文件路径，支持本地路径 */
             srcPath: string,
-            /** 目标文件路径 */
-            destPath: string,
+            /** 目标文件路径，支持本地路径 */
+            destPath: string
         ): void
         /** [FileSystemManager.getFileInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.getFileInfo.html)
          *
@@ -7283,12 +8130,12 @@ this.editorCtx.insertImage({
          *
          * [FileSystemManager.mkdir](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.mkdir.html) 的同步版本 */
         mkdirSync(
-            /** 创建的目录路径 */
+            /** 创建的目录路径 (本地路径) */
             dirPath: string,
             /** 是否在递归创建该目录的上级目录后再创建该目录。如果对应的上级目录已经存在，则不创建该上级目录。如 dirPath 为 a/b/c/d 且 recursive 为 true，将创建 a 目录，再在 a 目录下创建 b 目录，以此类推直至创建 a/b/c 目录下的 d 目录。
              *
              * 最低基础库： `2.3.0` */
-            recursive?: boolean,
+            recursive?: boolean
         ): void
         /** [FileSystemManager.readFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.readFile.html)
          *
@@ -7310,10 +8157,10 @@ this.editorCtx.insertImage({
          *
          * [FileSystemManager.rename](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.rename.html) 的同步版本 */
         renameSync(
-            /** 源文件路径，可以是普通文件或目录 */
+            /** 源文件路径，支持本地路径 */
             oldPath: string,
-            /** 新文件路径 */
-            newPath: string,
+            /** 新文件路径，支持本地路径 */
+            newPath: string
         ): void
         /** [FileSystemManager.rmdir(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.rmdir.html)
          *
@@ -7323,12 +8170,12 @@ this.editorCtx.insertImage({
          *
          * [FileSystemManager.rmdir](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.rmdir.html) 的同步版本 */
         rmdirSync(
-            /** 要删除的目录路径 */
+            /** 要删除的目录路径 (本地路径) */
             dirPath: string,
             /** 是否递归删除目录。如果为 true，则删除该目录和该目录下的所有子目录以及文件。
              *
              * 最低基础库： `2.3.0` */
-            recursive?: boolean,
+            recursive?: boolean
         ): void
         /** [FileSystemManager.saveFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.saveFile.html)
          *
@@ -7346,8 +8193,8 @@ this.editorCtx.insertImage({
          *
          * [FileSystemManager.unlink](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.unlink.html) 的同步版本 */
         unlinkSync(
-            /** 要删除的文件路径 */
-            filePath: string,
+            /** 要删除的文件路径 (本地路径) */
+            filePath: string
         ): void
         /** [FileSystemManager.unzip(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.unzip.html)
          *
@@ -7361,7 +8208,7 @@ this.editorCtx.insertImage({
          *
          * [FileSystemManager.writeFile](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.writeFile.html) 的同步版本 */
         writeFileSync(
-            /** 要写入的文件路径 */
+            /** 要写入的文件路径 (本地路径) */
             filePath: string,
             /** 要写入的文本或二进制数据 */
             data: string | ArrayBuffer,
@@ -7390,33 +8237,33 @@ this.editorCtx.insertImage({
                 | 'utf-16le'
                 | 'utf-8'
                 | 'utf8'
-                | 'latin1',
+                | 'latin1'
         ): void
         /** [[Stats](https://developers.weixin.qq.com/miniprogram/dev/api/file/Stats.html)|Object FileSystemManager.statSync(string path, boolean recursive)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.statSync.html)
          *
          * [FileSystemManager.stat](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.stat.html) 的同步版本 */
         statSync(
-            /** 文件/目录路径 */
+            /** 文件/目录路径 (本地路径) */
             path: string,
             /** 是否递归获取目录下的每个文件的 Stats 信息
              *
              * 最低基础库： `2.3.0` */
-            recursive?: boolean,
+            recursive?: boolean
         ): Stats | IAnyObject
-        /** [number FileSystemManager.saveFileSync(string tempFilePath, string filePath)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.saveFileSync.html)
+        /** [string FileSystemManager.saveFileSync(string tempFilePath, string filePath)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.saveFileSync.html)
          *
          * [FileSystemManager.saveFile](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.saveFile.html) 的同步版本 */
         saveFileSync(
-            /** 临时存储文件路径 */
+            /** 临时存储文件路径 (本地路径) */
             tempFilePath: string,
-            /** 要存储的文件路径 */
-            filePath?: string,
-        ): number
-        /** [string|ArrayBuffer FileSystemManager.readFileSync(string filePath, string encoding)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.readFileSync.html)
+            /** 要存储的文件路径 (本地路径) */
+            filePath?: string
+        ): string
+        /** [string|ArrayBuffer FileSystemManager.readFileSync(string filePath, string encoding, string position, string length)](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.readFileSync.html)
          *
          * [FileSystemManager.readFile](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.readFile.html) 的同步版本 */
         readFileSync(
-            /** 要读取的文件的路径 */
+            /** 要读取的文件的路径 (本地路径) */
             filePath: string,
             /** 指定读取文件的字符编码，如果不传 encoding，则以 ArrayBuffer 格式读取文件的二进制内容
              *
@@ -7444,6 +8291,14 @@ this.editorCtx.insertImage({
                 | 'utf-8'
                 | 'utf8'
                 | 'latin1',
+            /** 从文件指定位置开始读，如果不指定，则从文件头开始读。读取的范围应该是左闭右开区间 [position, position+length)。有效范围：[0, fileLength - 1]。单位：byte
+             *
+             * 最低基础库： `2.10.0` */
+            position?: string,
+            /** 指定文件的长度，如果不指定，则读到文件末尾。有效范围：[1, fileLength]。单位：byte
+             *
+             * 最低基础库： `2.10.0` */
+            length?: string
         ): string | ArrayBuffer
     }
     interface GeneralCallbackResult {
@@ -7487,7 +8342,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offCanplay(
             /** 音频进入可以播放状态的事件的回调函数 */
-            callback: OffCanplayCallback,
+            callback: OffCanplayCallback
         ): void
         /** [InnerAudioContext.offEnded(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offEnded.html)
          *
@@ -7496,7 +8351,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offEnded(
             /** 音频自然播放至结束的事件的回调函数 */
-            callback: OffEndedCallback,
+            callback: OffEndedCallback
         ): void
         /** [InnerAudioContext.offError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offError.html)
          *
@@ -7505,7 +8360,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offError(
             /** 音频播放错误事件的回调函数 */
-            callback: InnerAudioContextOffErrorCallback,
+            callback: InnerAudioContextOffErrorCallback
         ): void
         /** [InnerAudioContext.offPause(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offPause.html)
          *
@@ -7514,7 +8369,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offPause(
             /** 音频暂停事件的回调函数 */
-            callback: OffPauseCallback,
+            callback: OffPauseCallback
         ): void
         /** [InnerAudioContext.offPlay(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offPlay.html)
          *
@@ -7523,7 +8378,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offPlay(
             /** 音频播放事件的回调函数 */
-            callback: OffPlayCallback,
+            callback: OffPlayCallback
         ): void
         /** [InnerAudioContext.offSeeked(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offSeeked.html)
          *
@@ -7532,7 +8387,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offSeeked(
             /** 音频完成跳转操作的事件的回调函数 */
-            callback: OffSeekedCallback,
+            callback: OffSeekedCallback
         ): void
         /** [InnerAudioContext.offSeeking(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offSeeking.html)
          *
@@ -7541,7 +8396,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offSeeking(
             /** 音频进行跳转操作的事件的回调函数 */
-            callback: OffSeekingCallback,
+            callback: OffSeekingCallback
         ): void
         /** [InnerAudioContext.offStop(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offStop.html)
          *
@@ -7550,7 +8405,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offStop(
             /** 音频停止事件的回调函数 */
-            callback: OffStopCallback,
+            callback: OffStopCallback
         ): void
         /** [InnerAudioContext.offTimeUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offTimeUpdate.html)
          *
@@ -7559,7 +8414,7 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offTimeUpdate(
             /** 音频播放进度更新事件的回调函数 */
-            callback: OffTimeUpdateCallback,
+            callback: OffTimeUpdateCallback
         ): void
         /** [InnerAudioContext.offWaiting(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.offWaiting.html)
          *
@@ -7568,77 +8423,77 @@ this.editorCtx.insertImage({
          * 最低基础库： `1.9.0` */
         offWaiting(
             /** 音频加载中事件的回调函数 */
-            callback: OffWaitingCallback,
+            callback: OffWaitingCallback
         ): void
         /** [InnerAudioContext.onCanplay(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onCanplay.html)
          *
          * 监听音频进入可以播放状态的事件。但不保证后面可以流畅播放 */
         onCanplay(
             /** 音频进入可以播放状态的事件的回调函数 */
-            callback: InnerAudioContextOnCanplayCallback,
+            callback: InnerAudioContextOnCanplayCallback
         ): void
         /** [InnerAudioContext.onEnded(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onEnded.html)
          *
          * 监听音频自然播放至结束的事件 */
         onEnded(
             /** 音频自然播放至结束的事件的回调函数 */
-            callback: InnerAudioContextOnEndedCallback,
+            callback: InnerAudioContextOnEndedCallback
         ): void
         /** [InnerAudioContext.onError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onError.html)
          *
          * 监听音频播放错误事件 */
         onError(
             /** 音频播放错误事件的回调函数 */
-            callback: InnerAudioContextOnErrorCallback,
+            callback: InnerAudioContextOnErrorCallback
         ): void
         /** [InnerAudioContext.onPause(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onPause.html)
          *
          * 监听音频暂停事件 */
         onPause(
             /** 音频暂停事件的回调函数 */
-            callback: InnerAudioContextOnPauseCallback,
+            callback: InnerAudioContextOnPauseCallback
         ): void
         /** [InnerAudioContext.onPlay(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onPlay.html)
          *
          * 监听音频播放事件 */
         onPlay(
             /** 音频播放事件的回调函数 */
-            callback: InnerAudioContextOnPlayCallback,
+            callback: InnerAudioContextOnPlayCallback
         ): void
         /** [InnerAudioContext.onSeeked(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onSeeked.html)
          *
          * 监听音频完成跳转操作的事件 */
         onSeeked(
             /** 音频完成跳转操作的事件的回调函数 */
-            callback: InnerAudioContextOnSeekedCallback,
+            callback: InnerAudioContextOnSeekedCallback
         ): void
         /** [InnerAudioContext.onSeeking(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onSeeking.html)
          *
          * 监听音频进行跳转操作的事件 */
         onSeeking(
             /** 音频进行跳转操作的事件的回调函数 */
-            callback: InnerAudioContextOnSeekingCallback,
+            callback: InnerAudioContextOnSeekingCallback
         ): void
         /** [InnerAudioContext.onStop(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onStop.html)
          *
          * 监听音频停止事件 */
         onStop(
             /** 音频停止事件的回调函数 */
-            callback: InnerAudioContextOnStopCallback,
+            callback: InnerAudioContextOnStopCallback
         ): void
         /** [InnerAudioContext.onTimeUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onTimeUpdate.html)
          *
          * 监听音频播放进度更新事件 */
         onTimeUpdate(
             /** 音频播放进度更新事件的回调函数 */
-            callback: InnerAudioContextOnTimeUpdateCallback,
+            callback: InnerAudioContextOnTimeUpdateCallback
         ): void
         /** [InnerAudioContext.onWaiting(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.onWaiting.html)
          *
          * 监听音频加载中事件。当音频因为数据不足，需要停下来加载时会触发 */
         onWaiting(
             /** 音频加载中事件的回调函数 */
-            callback: InnerAudioContextOnWaitingCallback,
+            callback: OnWaitingCallback
         ): void
         /** [InnerAudioContext.pause()](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.pause.html)
          *
@@ -7653,7 +8508,7 @@ this.editorCtx.insertImage({
          * 跳转到指定位置 */
         seek(
             /** 跳转的时间，单位 s。精确到小数点后 3 位，即支持 ms 级别精确度 */
-            position: number,
+            position: number
         ): void
         /** [InnerAudioContext.stop()](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.stop.html)
          *
@@ -7672,7 +8527,7 @@ this.editorCtx.insertImage({
             /** 选择器 */
             targetSelector: string,
             /** 监听相交状态变化的回调函数 */
-            callback: ObserveCallback,
+            callback: ObserveCallback
         ): void
         /** [[IntersectionObserver](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/IntersectionObserver.html) IntersectionObserver.relativeTo(string selector, Object margins)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/IntersectionObserver.relativeTo.html)
          *
@@ -7681,18 +8536,18 @@ this.editorCtx.insertImage({
             /** 选择器 */
             selector: string,
             /** 用来扩展（或收缩）参照节点布局区域的边界 */
-            margins?: RelativeToMargins,
+            margins?: Margins
         ): IntersectionObserver
         /** [[IntersectionObserver](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/IntersectionObserver.html) IntersectionObserver.relativeToViewport(Object margins)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/IntersectionObserver.relativeToViewport.html)
-*
-* 指定页面显示区域作为参照区域之一
-*
-* **示例代码**
-*
-*
-* 下面的示例代码中，如果目标节点（用选择器 .target-class 指定）进入显示区域以下 100px 时，就会触发回调函数。
-* ```javascript
-Page({
+         *
+         * 指定页面显示区域作为参照区域之一
+         *
+         * **示例代码**
+         *
+         *
+         * 下面的示例代码中，如果目标节点（用选择器 .target-class 指定）进入显示区域以下 100px 时，就会触发回调函数。
+         * ```javascript
+         Page({
   onLoad: function(){
     wx.createIntersectionObserver().relativeToViewport({bottom: 100}).observe('.target-class', (res) => {
       res.intersectionRatio // 相交区域占目标节点的布局区域的比例
@@ -7704,10 +8559,10 @@ Page({
     })
   }
 })
-``` */
+         ``` */
         relativeToViewport(
             /** 用来扩展（或收缩）参照节点布局区域的边界 */
-            margins?: RelativeToViewportMargins,
+            margins?: Margins
         ): IntersectionObserver
     }
     interface InterstitialAd {
@@ -7722,28 +8577,28 @@ Page({
          * 取消监听插屏广告关闭事件 */
         offClose(
             /** 插屏广告关闭事件的回调函数 */
-            callback: InterstitialAdOffCloseCallback,
+            callback: InterstitialAdOffCloseCallback
         ): void
         /** [InterstitialAd.offError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/InterstitialAd.offError.html)
          *
          * 取消监听插屏错误事件 */
         offError(
             /** 插屏错误事件的回调函数 */
-            callback: InterstitialAdOffErrorCallback,
+            callback: InterstitialAdOffErrorCallback
         ): void
         /** [InterstitialAd.offLoad(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/InterstitialAd.offLoad.html)
          *
          * 取消监听插屏广告加载事件 */
         offLoad(
             /** 插屏广告加载事件的回调函数 */
-            callback: InterstitialAdOffLoadCallback,
+            callback: InterstitialAdOffLoadCallback
         ): void
         /** [InterstitialAd.onClose(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/InterstitialAd.onClose.html)
          *
          * 监听插屏广告关闭事件。 */
         onClose(
             /** 插屏广告关闭事件的回调函数 */
-            callback: InterstitialAdOnCloseCallback,
+            callback: InterstitialAdOnCloseCallback
         ): void
         /** [InterstitialAd.onError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/InterstitialAd.onError.html)
          *
@@ -7768,14 +8623,14 @@ Page({
          * | 1008  | 广告单元已关闭  | 该广告位的广告能力已经被关闭 | 请前往mp.weixin.qq.com重新打开对应广告位的展现。| */
         onError(
             /** 插屏错误事件的回调函数 */
-            callback: InterstitialAdOnErrorCallback,
+            callback: InterstitialAdOnErrorCallback
         ): void
         /** [InterstitialAd.onLoad(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/InterstitialAd.onLoad.html)
          *
          * 监听插屏广告加载事件。 */
         onLoad(
             /** 插屏广告加载事件的回调函数 */
-            callback: InterstitialAdOnLoadCallback,
+            callback: InterstitialAdOnLoadCallback
         ): void
         /** [Promise InterstitialAd.load()](https://developers.weixin.qq.com/miniprogram/dev/api/ad/InterstitialAd.load.html)
          *
@@ -7806,6 +8661,10 @@ Page({
          *
          * 退出全屏 */
         exitFullScreen(option?: ExitFullScreenOption): void
+        /** [LivePlayerContext.exitPictureInPicture(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.exitPictureInPicture.html)
+         *
+         * 退出小窗，该方法可在任意页面调用 */
+        exitPictureInPicture(option?: ExitPictureInPictureOption): void
         /** [LivePlayerContext.mute(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.mute.html)
          *
          * 静音 */
@@ -7815,7 +8674,7 @@ Page({
          * 暂停
          *
          * 最低基础库： `1.9.90` */
-        pause(option?: LivePlayerContextPauseOption): void
+        pause(option?: PauseOption): void
         /** [LivePlayerContext.play(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.play.html)
          *
          * 播放 */
@@ -7824,30 +8683,35 @@ Page({
          *
          * 进入全屏 */
         requestFullScreen(
-            option: LivePlayerContextRequestFullScreenOption,
+            option: LivePlayerContextRequestFullScreenOption
         ): void
         /** [LivePlayerContext.resume(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.resume.html)
          *
          * 恢复
          *
          * 最低基础库： `1.9.90` */
-        resume(option?: LivePlayerContextResumeOption): void
-        /** [LivePlayerContext.snapshot(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.snapshot.html)
+        resume(option?: ResumeOption): void
+        /** [LivePlayerContext.snapshot(string quality)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.snapshot.html)
          *
          * 截图
          *
          * 最低基础库： `2.7.1` */
-        snapshot(option?: LivePlayerContextSnapshotOption): void
+        snapshot(
+            /** 图片的质量，默认原图。有效值为 raw、compressed
+             *
+             * 最低基础库： `2.10.0` */
+            quality?: string
+        ): void
         /** [LivePlayerContext.stop(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.stop.html)
          *
          * 停止 */
-        stop(option?: LivePlayerContextStopOption): void
+        stop(option?: StopOption): void
     }
     interface LivePusherContext {
         /** [LivePusherContext.pause(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.pause.html)
          *
          * 暂停推流 */
-        pause(option?: LivePusherContextPauseOption): void
+        pause(option?: PauseOption): void
         /** [LivePusherContext.pauseBGM(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.pauseBGM.html)
          *
          * 暂停背景音
@@ -7863,7 +8727,7 @@ Page({
         /** [LivePusherContext.resume(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.resume.html)
          *
          * 恢复推流 */
-        resume(option?: LivePusherContextResumeOption): void
+        resume(option?: ResumeOption): void
         /** [LivePusherContext.resumeBGM(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.resumeBGM.html)
          *
          * 恢复背景音
@@ -7876,16 +8740,27 @@ Page({
          *
          * 最低基础库： `2.4.0` */
         setBGMVolume(option: SetBGMVolumeOption): void
-        /** [LivePusherContext.snapshot(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.snapshot.html)
+        /** [LivePusherContext.setMICVolume(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.setMICVolume.html)
+         *
+         * 设置麦克风音量
+         *
+         * 最低基础库： `2.10.0` */
+        setMICVolume(option: SetMICVolumeOption): void
+        /** [LivePusherContext.snapshot(string quality)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.snapshot.html)
          *
          * 快照
          *
          * 最低基础库： `1.9.90` */
-        snapshot(option?: LivePusherContextSnapshotOption): void
+        snapshot(
+            /** 图片的质量，默认原图。有效值为 raw、compressed
+             *
+             * 最低基础库： `2.10.0` */
+            quality?: string
+        ): void
         /** [LivePusherContext.start(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.start.html)
          *
          * 开始推流，同时开启摄像头预览 */
-        start(option?: LivePusherContextStartOption): void
+        start(option?: CameraFrameListenerStartOption): void
         /** [LivePusherContext.startPreview(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.startPreview.html)
          *
          * 开启摄像头预览
@@ -7895,7 +8770,7 @@ Page({
         /** [LivePusherContext.stop(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.stop.html)
          *
          * 停止推流，同时停止摄像头预览 */
-        stop(option?: LivePusherContextStopOption): void
+        stop(option?: StopOption): void
         /** [LivePusherContext.stopBGM(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.stopBGM.html)
          *
          * 停止背景音
@@ -7990,12 +8865,124 @@ Page({
          *
          * 最低基础库： `1.2.0` */
         moveToLocation(option: MoveToLocationOption): void
+        /** [MapContext.setCenterOffset(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/map/MapContext.setCenterOffset.html)
+         *
+         * 设置地图中心点偏移，向后向下为增长，屏幕比例范围(0.25~0.75)，默认偏移为[0.5, 0.5]
+         *
+         * 最低基础库： `2.10.0` */
+        setCenterOffset(option: SetCenterOffsetOption): void
         /** [MapContext.translateMarker(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/map/MapContext.translateMarker.html)
          *
          * 平移marker，带动画
          *
          * 最低基础库： `1.2.0` */
         translateMarker(option: TranslateMarkerOption): void
+    }
+    interface MediaContainer {
+        /** [MediaContainer.addTrack([MediaTrack](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaTrack.html) track)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaContainer.addTrack.html)
+         *
+         * 将音频或视频轨道添加到容器
+         *
+         * 最低基础库： `2.9.0` */
+        addTrack(
+            /** [MediaTrack](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaTrack.html)
+             *
+             * 要添加的音频或视频轨道 */
+            track: MediaTrack
+        ): void
+        /** [MediaContainer.destroy()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaContainer.destroy.html)
+         *
+         * 将容器销毁，释放资源
+         *
+         * 最低基础库： `2.9.0` */
+        destroy(): void
+        /** [MediaContainer.export()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaContainer.export.html)
+         *
+         * 将容器内的轨道合并并导出视频文件
+         *
+         * 最低基础库： `2.9.0` */
+        export(): void
+        /** [MediaContainer.extractDataSource(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaContainer.extractDataSource.html)
+         *
+         * 将传入的视频源分离轨道。不会自动将轨道添加到待合成的容器里。
+         *
+         * 最低基础库： `2.9.0` */
+        extractDataSource(option: ExtractDataSourceOption): void
+        /** [MediaContainer.removeTrack([MediaTrack](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaTrack.html) track)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaContainer.removeTrack.html)
+         *
+         * 将音频或视频轨道从容器中移除
+         *
+         * 最低基础库： `2.9.0` */
+        removeTrack(
+            /** [MediaTrack](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaTrack.html)
+             *
+             * 要移除的音频或视频轨道 */
+            track: MediaTrack
+        ): void
+    }
+    interface MediaRecorder {
+        /** [MediaRecorder.destroy()](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.destroy.html)
+         *
+         * 销毁录制器
+         *
+         * 最低基础库： `2.11.0` */
+        destroy(): void
+        /** [MediaRecorder.off(string eventName, function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.off.html)
+         *
+         * 取消监听录制事件。当对应事件触发时，该回调函数不再执行。
+         *
+         * 最低基础库： `2.11.0` */
+        off(
+            /** 事件名 */
+            eventName: string,
+            /** 事件触发时执行的回调函数 */
+            callback: (...args: any[]) => any
+        ): void
+        /** [MediaRecorder.on(string eventName, function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.on.html)
+         *
+         * 注册监听录制事件的回调函数。当对应事件触发时，回调函数会被执行。
+         *
+         * 最低基础库： `2.11.0` */
+        on(
+            /** 事件名
+             *
+             * 参数 eventName 可选值：
+             * - 'start': 录制开始事件。;
+             * - 'stop': 录制结束事件。返回 {tempFilePath, duration, fileSize}; */
+            eventName: 'start' | 'stop',
+            /** 事件触发时执行的回调函数 */
+            callback: (...args: any[]) => any
+        ): void
+        /** [MediaRecorder.pause()](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.pause.html)
+         *
+         * 暂停录制
+         *
+         * 最低基础库： `2.11.0` */
+        pause(): void
+        /** [MediaRecorder.requestFrame(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.requestFrame.html)
+         *
+         * 请求下一帧录制，在 callback 里完成一帧渲染后开始录制当前帧
+         *
+         * 最低基础库： `2.11.0` */
+        requestFrame(callback: (...args: any[]) => any): void
+        /** [MediaRecorder.resume()](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.resume.html)
+         *
+         * 恢复录制
+         *
+         * 最低基础库： `2.11.0` */
+        resume(): void
+        /** [MediaRecorder.start()](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.start.html)
+         *
+         * 开始录制
+         *
+         * 最低基础库： `2.11.0` */
+        start(): void
+        /** [MediaRecorder.stop()](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.stop.html)
+         *
+         * 结束录制
+         *
+         * 最低基础库： `2.11.0` */
+        stop(): void
     }
     interface NFCError {
         /** 错误信息
@@ -8025,14 +9012,14 @@ Page({
     }
     interface NodesRef {
         /** [[SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) NodesRef.boundingClientRect(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.boundingClientRect.html)
-*
-* 添加节点的布局位置的查询请求。相对于显示区域，以像素为单位。其功能类似于 DOM 的 `getBoundingClientRect`。返回 `NodesRef` 对应的 `SelectorQuery`。
-*
-* **示例代码**
-*
-*
-* ```js
-Page({
+         *
+         * 添加节点的布局位置的查询请求。相对于显示区域，以像素为单位。其功能类似于 DOM 的 `getBoundingClientRect`。返回 `NodesRef` 对应的 `SelectorQuery`。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         Page({
   getRect () {
     wx.createSelectorQuery().select('#the-id').boundingClientRect(function(rect){
       rect.id      // 节点的ID
@@ -8060,47 +9047,47 @@ Page({
     }).exec()
   }
 })
-``` */
+         ``` */
         boundingClientRect(
             /** 回调函数，在执行 `SelectorQuery.exec` 方法后，节点信息会在 `callback` 中返回。 */
-            callback?: BoundingClientRectCallback,
+            callback?: BoundingClientRectCallback
         ): SelectorQuery
         /** [[SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) NodesRef.context(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.context.html)
-*
-* 添加节点的 Context 对象查询请求。目前支持 [VideoContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/VideoContext.html)、[CanvasContext](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.html)、[LivePlayerContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.html)、[EditorContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.html)和 [MapContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/map/MapContext.html) 的获取。
-*
-* **示例代码**
-*
-*
-* ```js
-Page({
+         *
+         * 添加节点的 Context 对象查询请求。目前支持 [VideoContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/VideoContext.html)、[CanvasContext](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/CanvasContext.html)、[LivePlayerContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePlayerContext.html)、[EditorContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/editor/EditorContext.html)和 [MapContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/map/MapContext.html) 的获取。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         Page({
   getContext () {
     wx.createSelectorQuery().select('.the-video-class').context(function(res){
       console.log(res.context) // 节点对应的 Context 对象。如：选中的节点是 <video> 组件，那么此处即返回 VideoContext 对象
     }).exec()
   }
 })
-```
-*
-* 最低基础库： `2.4.2` */
+         ```
+         *
+         * 最低基础库： `2.4.2` */
         context(
             /** 回调函数，在执行 `SelectorQuery.exec` 方法后，返回节点信息。 */
-            callback?: ContextCallback,
+            callback?: ContextCallback
         ): SelectorQuery
         /** [[SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) NodesRef.fields(Object fields, function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.fields.html)
-*
-* 获取节点的相关信息。需要获取的字段在fields中指定。返回值是 `nodesRef` 对应的 `selectorQuery`
-*
-* **注意**
-*
-*
-* computedStyle 的优先级高于 size，当同时在 computedStyle 里指定了 width/height 和传入了 size: true，则优先返回 computedStyle 获取到的 width/height。
-*
-* **示例代码**
-*
-*
-* ```js
-Page({
+         *
+         * 获取节点的相关信息。需要获取的字段在fields中指定。返回值是 `nodesRef` 对应的 `selectorQuery`
+         *
+         * **注意**
+         *
+         *
+         * computedStyle 的优先级高于 size，当同时在 computedStyle 里指定了 width/height 和传入了 size: true，则优先返回 computedStyle 获取到的 width/height。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         Page({
   getFields () {
     wx.createSelectorQuery().select('#the-id').fields({
       dataset: true,
@@ -8124,43 +9111,43 @@ Page({
     }).exec()
   }
 })
-``` */
+         ``` */
         fields(
             fields: Fields,
             /** 回调函数 */
-            callback?: FieldsCallback,
+            callback?: FieldsCallback
         ): SelectorQuery
         /** [[SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) NodesRef.node(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.node.html)
-*
-* 获取 Node 节点实例。目前支持 [Canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) 的获取。
-*
-* **示例代码**
-*
-*
-* ```js
-Page({
+         *
+         * 获取 Node 节点实例。目前支持 [Canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) 的获取。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         Page({
   getNode() {
     wx.createSelectorQuery().select('.canvas').node(function(res){
       console.log(res.node) // 节点对应的 Canvas 实例。
     }).exec()
   }
 })
-```
-*
-* 最低基础库： `2.7.0` */
+         ```
+         *
+         * 最低基础库： `2.7.0` */
         node(
             /** 回调函数，在执行 `SelectorQuery.exec` 方法后，返回节点信息。 */
-            callback?: NodeCallback,
+            callback?: NodeCallback
         ): SelectorQuery
         /** [[SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) NodesRef.scrollOffset(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.scrollOffset.html)
-*
-* 添加节点的滚动位置查询请求。以像素为单位。节点必须是 `scroll-view` 或者 `viewport`，返回 `NodesRef` 对应的 `SelectorQuery`。
-*
-* **示例代码**
-*
-*
-* ```js
-Page({
+         *
+         * 添加节点的滚动位置查询请求。以像素为单位。节点必须是 `scroll-view` 或者 `viewport`，返回 `NodesRef` 对应的 `SelectorQuery`。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         Page({
   getScrollOffset () {
     wx.createSelectorQuery().selectViewport().scrollOffset(function(res){
       res.id      // 节点的ID
@@ -8170,10 +9157,10 @@ Page({
     }).exec()
   }
 })
-``` */
+         ``` */
         scrollOffset(
             /** 回调函数，在执行 `SelectorQuery.exec` 方法后，节点信息会在 `callback` 中返回。 */
-            callback?: ScrollOffsetCallback,
+            callback?: ScrollOffsetCallback
         ): SelectorQuery
     }
     interface OffscreenCanvas {
@@ -8186,7 +9173,56 @@ Page({
          * 当前仅支持获取 WebGL 绘图上下文
          *
          * 最低基础库： `2.7.0` */
-        getContext(contextType: string): RenderingContext
+        getContext(contextType: string): any
+    }
+    interface Performance {
+        /** [Array Performance.getEntries()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/Performance.getEntries.html)
+         *
+         * 该方法返回当前缓冲区中的所有性能数据
+         *
+         * 最低基础库： `2.11.0` */
+        getEntries(): any[]
+        /** [Array Performance.getEntriesByName(string name, string entryType)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/Performance.getEntriesByName.html)
+         *
+         * 获取当前缓冲区中所有名称为 [name] 且类型为 [entryType] 的性能数据
+         *
+         * 最低基础库： `2.11.0` */
+        getEntriesByName(name: string, entryType?: string): any[]
+        /** [Array Performance.getEntriesByType(string entryType)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/Performance.getEntriesByType.html)
+         *
+         * 获取当前缓冲区中所有类型为 [entryType] 的性能数据
+         *
+         * 最低基础库： `2.11.0` */
+        getEntriesByType(entryType: string): any[]
+        /** [Performance.setBufferSize(number size)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/Performance.setBufferSize.html)
+         *
+         * 设置缓冲区大小， 默认缓冲 30 条性能数据
+         *
+         * 最低基础库： `2.11.0` */
+        setBufferSize(size: number): void
+        /** [[PerformanceObserver](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/PerformanceObserver.html) Performance.createObserver(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/Performance.createObserver.html)
+         *
+         * 创建全局性能事件监听器
+         *
+         * 最低基础库： `2.11.0` */
+        createObserver(callback: (...args: any[]) => any): PerformanceObserver
+    }
+    interface PerformanceObserver {
+        /** [PerformanceObserver.disconnect()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/PerformanceObserver.disconnect.html)
+         *
+         * 停止监听
+         *
+         * 最低基础库： `2.11.0` */
+        disconnect(): void
+        /** [PerformanceObserver.observe(Object options)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/PerformanceObserver.observe.html)
+         *
+         * 开始监听
+         *
+         * 最低基础库： `2.11.0` */
+        observe(
+            /** 设置 type 监听单个类型的指标，设置 entryTypes 监听多个类型指标。 */
+            options: IAnyObject
+        ): void
     }
     interface RealtimeLogManager {
         /** [RealtimeLogManager.addFilterMsg(string msg)](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/RealtimeLogManager.addFilterMsg.html)
@@ -8196,7 +9232,7 @@ Page({
          * 最低基础库： `2.8.1` */
         addFilterMsg(
             /** 是setFilterMsg的添加接口。用于设置多个过滤关键字。 */
-            msg: string,
+            msg: string
         ): void
         /** [RealtimeLogManager.error()](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/RealtimeLogManager.error.html)
          *
@@ -8206,6 +9242,15 @@ Page({
         error(
             /** 日志内容，可以有任意多个。每次调用的参数的总大小不超过5Kb */
             ...args: any[]
+        ): void
+        /** [RealtimeLogManager.in(Page pageInstance)](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/RealtimeLogManager.in.html)
+         *
+         * 设置实时日志page参数所在的页面
+         *
+         * 最低基础库： `2.9.1` */
+        in(
+            /** page实例 */
+            pageInstance: Page.TrivialInstance
         ): void
         /** [RealtimeLogManager.info()](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/RealtimeLogManager.info.html)
          *
@@ -8223,7 +9268,7 @@ Page({
          * 最低基础库： `2.7.3` */
         setFilterMsg(
             /** 过滤关键字，最多不超过1Kb，可以在小程序管理后台根据设置的内容搜索得到对应的日志。 */
-            msg: string,
+            msg: string
         ): void
         /** [RealtimeLogManager.warn()](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/RealtimeLogManager.warn.html)
          *
@@ -8241,14 +9286,14 @@ Page({
          * 监听录音错误事件 */
         onError(
             /** 录音错误事件的回调函数 */
-            callback: RecorderManagerOnErrorCallback,
+            callback: RecorderManagerOnErrorCallback
         ): void
         /** [RecorderManager.onFrameRecorded(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.onFrameRecorded.html)
          *
          * 监听已录制完指定帧大小的文件事件。如果设置了 frameSize，则会回调此事件。 */
         onFrameRecorded(
             /** 已录制完指定帧大小的文件事件的回调函数 */
-            callback: OnFrameRecordedCallback,
+            callback: OnFrameRecordedCallback
         ): void
         /** [RecorderManager.onInterruptionBegin(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.onInterruptionBegin.html)
          *
@@ -8257,7 +9302,7 @@ Page({
          * 最低基础库： `2.3.0` */
         onInterruptionBegin(
             /** 录音因为受到系统占用而被中断开始事件的回调函数 */
-            callback: OnInterruptionBeginCallback,
+            callback: OnInterruptionBeginCallback
         ): void
         /** [RecorderManager.onInterruptionEnd(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.onInterruptionEnd.html)
          *
@@ -8266,35 +9311,35 @@ Page({
          * 最低基础库： `2.3.0` */
         onInterruptionEnd(
             /** 录音中断结束事件的回调函数 */
-            callback: OnInterruptionEndCallback,
+            callback: OnInterruptionEndCallback
         ): void
         /** [RecorderManager.onPause(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.onPause.html)
          *
          * 监听录音暂停事件 */
         onPause(
             /** 录音暂停事件的回调函数 */
-            callback: RecorderManagerOnPauseCallback,
+            callback: RecorderManagerOnPauseCallback
         ): void
         /** [RecorderManager.onResume(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.onResume.html)
          *
          * 监听录音继续事件 */
         onResume(
             /** 录音继续事件的回调函数 */
-            callback: OnResumeCallback,
+            callback: OnResumeCallback
         ): void
         /** [RecorderManager.onStart(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.onStart.html)
          *
          * 监听录音开始事件 */
         onStart(
             /** 录音开始事件的回调函数 */
-            callback: OnStartCallback,
+            callback: OnStartCallback
         ): void
         /** [RecorderManager.onStop(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.onStop.html)
          *
          * 监听录音结束事件 */
         onStop(
             /** 录音结束事件的回调函数 */
-            callback: RecorderManagerOnStopCallback,
+            callback: RecorderManagerOnStopCallback
         ): void
         /** [RecorderManager.pause()](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.pause.html)
          *
@@ -8344,7 +9389,7 @@ Page({
          * 最低基础库： `2.1.0` */
         offHeadersReceived(
             /** HTTP Response Header 事件的回调函数 */
-            callback: RequestTaskOffHeadersReceivedCallback,
+            callback: OffHeadersReceivedCallback
         ): void
         /** [RequestTask.onHeadersReceived(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/request/RequestTask.onHeadersReceived.html)
          *
@@ -8353,7 +9398,7 @@ Page({
          * 最低基础库： `2.1.0` */
         onHeadersReceived(
             /** HTTP Response Header 事件的回调函数 */
-            callback: RequestTaskOnHeadersReceivedCallback,
+            callback: OnHeadersReceivedCallback
         ): void
     }
     interface RewardedVideoAd {
@@ -8376,28 +9421,28 @@ Page({
          * 取消监听用户点击 `关闭广告` 按钮的事件 */
         offClose(
             /** 用户点击 `关闭广告` 按钮的事件的回调函数 */
-            callback: RewardedVideoAdOffCloseCallback,
+            callback: RewardedVideoAdOffCloseCallback
         ): void
         /** [RewardedVideoAd.offError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/RewardedVideoAd.offError.html)
          *
          * 取消监听激励视频错误事件 */
         offError(
             /** 激励视频错误事件的回调函数 */
-            callback: RewardedVideoAdOffErrorCallback,
+            callback: RewardedVideoAdOffErrorCallback
         ): void
         /** [RewardedVideoAd.offLoad(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/RewardedVideoAd.offLoad.html)
          *
          * 取消监听激励视频广告加载事件 */
         offLoad(
             /** 激励视频广告加载事件的回调函数 */
-            callback: RewardedVideoAdOffLoadCallback,
+            callback: RewardedVideoAdOffLoadCallback
         ): void
         /** [RewardedVideoAd.onClose(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/RewardedVideoAd.onClose.html)
          *
          * 监听用户点击 `关闭广告` 按钮的事件。 */
         onClose(
             /** 用户点击 `关闭广告` 按钮的事件的回调函数 */
-            callback: RewardedVideoAdOnCloseCallback,
+            callback: RewardedVideoAdOnCloseCallback
         ): void
         /** [RewardedVideoAd.onError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/RewardedVideoAd.onError.html)
          *
@@ -8422,14 +9467,14 @@ Page({
          * | 1008  | 广告单元已关闭  | 该广告位的广告能力已经被关闭 | 请前往mp.weixin.qq.com重新打开对应广告位的展现。| */
         onError(
             /** 激励视频错误事件的回调函数 */
-            callback: RewardedVideoAdOnErrorCallback,
+            callback: RewardedVideoAdOnErrorCallback
         ): void
         /** [RewardedVideoAd.onLoad(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/RewardedVideoAd.onLoad.html)
          *
          * 监听激励视频广告加载事件。 */
         onLoad(
             /** 激励视频广告加载事件的回调函数 */
-            callback: RewardedVideoAdOnLoadCallback,
+            callback: RewardedVideoAdOnLoadCallback
         ): void
     }
     interface SelectorQuery {
@@ -8438,7 +9483,7 @@ Page({
          * 执行所有的请求。请求结果按请求次序构成数组，在callback的第一个参数中返回。 */
         exec(
             /** 回调函数 */
-            callback?: (...args: any[]) => any,
+            callback?: (...args: any[]) => any
         ): NodesRef
         /** [[NodesRef](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.html) SelectorQuery.select(string selector)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.select.html)
          *
@@ -8457,7 +9502,7 @@ Page({
          * - 多选择器的并集：#a-node, .some-other-nodes */
         select(
             /** 选择器 */
-            selector: string,
+            selector: string
         ): NodesRef
         /** [[NodesRef](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.html) SelectorQuery.selectAll(string selector)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.selectAll.html)
          *
@@ -8476,21 +9521,21 @@ Page({
          * - 多选择器的并集：#a-node, .some-other-nodes */
         selectAll(
             /** 选择器 */
-            selector: string,
+            selector: string
         ): NodesRef
         /** [[NodesRef](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.html) SelectorQuery.selectViewport()](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.selectViewport.html)
          *
          * 选择显示区域。可用于获取显示区域的尺寸、滚动位置等信息。 */
         selectViewport(): NodesRef
         /** [[SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) SelectorQuery.in(Component component)](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.in.html)
-*
-* 将选择器的选取范围更改为自定义组件 `component` 内。（初始时，选择器仅选取页面范围的节点，不会选取任何自定义组件中的节点）。
-*
-* **示例代码**
-*
-*
-* ```js
-Component({
+         *
+         * 将选择器的选取范围更改为自定义组件 `component` 内。（初始时，选择器仅选取页面范围的节点，不会选取任何自定义组件中的节点）。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         Component({
   queryMultipleNodes (){
     const query = wx.createSelectorQuery().in(this)
     query.select('#the-id').boundingClientRect(function(res){
@@ -8498,46 +9543,46 @@ Component({
     }).exec()
   }
 })
-```
-*
-* 最低基础库： `1.6.0` */
+         ```
+         *
+         * 最低基础库： `1.6.0` */
         in(
             /** 自定义组件实例 */
-            component: Component.TrivialInstance | Page.TrivialInstance,
+            component: Component.TrivialInstance | Page.TrivialInstance
         ): SelectorQuery
     }
     interface SocketTask {
         /** [SocketTask.close(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/SocketTask.close.html)
          *
          * 关闭 WebSocket 连接 */
-        close(option: CloseOption): void
+        close(option: SocketTaskCloseOption): void
         /** [SocketTask.onClose(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/SocketTask.onClose.html)
          *
          * 监听 WebSocket 连接关闭事件 */
         onClose(
             /** WebSocket 连接关闭事件的回调函数 */
-            callback: SocketTaskOnCloseCallback,
+            callback: SocketTaskOnCloseCallback
         ): void
         /** [SocketTask.onError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/SocketTask.onError.html)
          *
          * 监听 WebSocket 错误事件 */
         onError(
             /** WebSocket 错误事件的回调函数 */
-            callback: SocketTaskOnErrorCallback,
+            callback: SocketTaskOnErrorCallback
         ): void
         /** [SocketTask.onMessage(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/SocketTask.onMessage.html)
          *
          * 监听 WebSocket 接受到服务器的消息事件 */
         onMessage(
             /** WebSocket 接受到服务器的消息事件的回调函数 */
-            callback: SocketTaskOnMessageCallback,
+            callback: SocketTaskOnMessageCallback
         ): void
         /** [SocketTask.onOpen(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/SocketTask.onOpen.html)
          *
          * 监听 WebSocket 连接打开事件 */
         onOpen(
             /** WebSocket 连接打开事件的回调函数 */
-            callback: OnOpenCallback,
+            callback: OnOpenCallback
         ): void
         /** [SocketTask.send(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/SocketTask.send.html)
          *
@@ -8564,65 +9609,70 @@ Component({
          * 取消监听关闭事件 */
         offClose(
             /** 关闭事件的回调函数 */
-            callback: UDPSocketOffCloseCallback,
+            callback: UDPSocketOffCloseCallback
         ): void
         /** [UDPSocket.offError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.offError.html)
          *
          * 取消监听错误事件 */
         offError(
             /** 错误事件的回调函数 */
-            callback: UDPSocketOffErrorCallback,
+            callback: UDPSocketOffErrorCallback
         ): void
         /** [UDPSocket.offListening(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.offListening.html)
          *
          * 取消监听开始监听数据包消息的事件 */
         offListening(
             /** 开始监听数据包消息的事件的回调函数 */
-            callback: OffListeningCallback,
+            callback: OffListeningCallback
         ): void
         /** [UDPSocket.offMessage(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.offMessage.html)
          *
          * 取消监听收到消息的事件 */
         offMessage(
             /** 收到消息的事件的回调函数 */
-            callback: OffMessageCallback,
+            callback: OffMessageCallback
         ): void
         /** [UDPSocket.onClose(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.onClose.html)
          *
          * 监听关闭事件 */
         onClose(
             /** 关闭事件的回调函数 */
-            callback: UDPSocketOnCloseCallback,
+            callback: UDPSocketOnCloseCallback
         ): void
         /** [UDPSocket.onError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.onError.html)
          *
          * 监听错误事件 */
         onError(
             /** 错误事件的回调函数 */
-            callback: UDPSocketOnErrorCallback,
+            callback: UDPSocketOnErrorCallback
         ): void
         /** [UDPSocket.onListening(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.onListening.html)
          *
          * 监听开始监听数据包消息的事件 */
         onListening(
             /** 开始监听数据包消息的事件的回调函数 */
-            callback: OnListeningCallback,
+            callback: OnListeningCallback
         ): void
         /** [UDPSocket.onMessage(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.onMessage.html)
          *
          * 监听收到消息的事件 */
         onMessage(
             /** 收到消息的事件的回调函数 */
-            callback: UDPSocketOnMessageCallback,
+            callback: UDPSocketOnMessageCallback
         ): void
         /** [UDPSocket.send(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.send.html)
          *
          * 向指定的 IP 和 port 发送消息 */
         send(option: UDPSocketSendOption): void
-        /** [number UDPSocket.bind()](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.bind.html)
+        /** [number UDPSocket.bind(number port)](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.bind.html)
          *
-         * 绑定一个系统随机分配的可用端口 */
-        bind(): number
+         * 绑定一个系统随机分配的可用端口，或绑定一个指定的端口号 */
+        bind(
+            /** 指定要绑定的端口号，不传则返回系统随机分配的可用端口
+             *
+             * 最低基础库： `2.9.0` */
+            port?: number
+        ): number
     }
     interface UpdateManager {
         /** [UpdateManager.applyUpdate()](https://developers.weixin.qq.com/miniprogram/dev/api/base/update/UpdateManager.applyUpdate.html)
@@ -8634,21 +9684,21 @@ Component({
          * 监听向微信后台请求检查更新结果事件。微信在小程序冷启动时自动检查更新，不需由开发者主动触发。 */
         onCheckForUpdate(
             /** 向微信后台请求检查更新结果事件的回调函数 */
-            callback: OnCheckForUpdateCallback,
+            callback: OnCheckForUpdateCallback
         ): void
         /** [UpdateManager.onUpdateFailed(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/update/UpdateManager.onUpdateFailed.html)
          *
          * 监听小程序更新失败事件。小程序有新版本，客户端主动触发下载（无需开发者触发），下载失败（可能是网络原因等）后回调 */
         onUpdateFailed(
             /** 小程序更新失败事件的回调函数 */
-            callback: OnUpdateFailedCallback,
+            callback: OnUpdateFailedCallback
         ): void
         /** [UpdateManager.onUpdateReady(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/update/UpdateManager.onUpdateReady.html)
          *
          * 监听小程序有版本更新事件。客户端主动触发下载（无需开发者触发），下载成功后回调 */
         onUpdateReady(
             /** 小程序有版本更新事件的回调函数 */
-            callback: OnUpdateReadyCallback,
+            callback: OnUpdateReadyCallback
         ): void
     }
     interface UploadTask {
@@ -8665,7 +9715,7 @@ Component({
          * 最低基础库： `2.1.0` */
         offHeadersReceived(
             /** HTTP Response Header 事件的回调函数 */
-            callback: UploadTaskOffHeadersReceivedCallback,
+            callback: OffHeadersReceivedCallback
         ): void
         /** [UploadTask.offProgressUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/upload/UploadTask.offProgressUpdate.html)
          *
@@ -8674,7 +9724,7 @@ Component({
          * 最低基础库： `2.1.0` */
         offProgressUpdate(
             /** 上传进度变化事件的回调函数 */
-            callback: UploadTaskOffProgressUpdateCallback,
+            callback: UploadTaskOffProgressUpdateCallback
         ): void
         /** [UploadTask.onHeadersReceived(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/upload/UploadTask.onHeadersReceived.html)
          *
@@ -8683,7 +9733,7 @@ Component({
          * 最低基础库： `2.1.0` */
         onHeadersReceived(
             /** HTTP Response Header 事件的回调函数 */
-            callback: UploadTaskOnHeadersReceivedCallback,
+            callback: OnHeadersReceivedCallback
         ): void
         /** [UploadTask.onProgressUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/upload/UploadTask.onProgressUpdate.html)
          *
@@ -8692,7 +9742,7 @@ Component({
          * 最低基础库： `1.4.0` */
         onProgressUpdate(
             /** 上传进度变化事件的回调函数 */
-            callback: UploadTaskOnProgressUpdateCallback,
+            callback: UploadTaskOnProgressUpdateCallback
         ): void
     }
     interface VideoContext {
@@ -8702,6 +9752,10 @@ Component({
          *
          * 最低基础库： `1.4.0` */
         exitFullScreen(): void
+        /** [VideoContext.exitPictureInPicture(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/VideoContext.exitPictureInPicture.html)
+         *
+         * 退出小窗，该方法可在任意页面调用 */
+        exitPictureInPicture(option?: ExitPictureInPictureOption): void
         /** [VideoContext.hideStatusBar()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/VideoContext.hideStatusBar.html)
          *
          * 隐藏状态栏，仅在iOS全屏下有效
@@ -8723,7 +9777,7 @@ Component({
          * 最低基础库： `1.4.0` */
         playbackRate(
             /** 倍率，支持 0.5/0.8/1.0/1.25/1.5，2.6.3 起支持 2.0 倍速 */
-            rate: number,
+            rate: number
         ): void
         /** [VideoContext.requestFullScreen(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/VideoContext.requestFullScreen.html)
          *
@@ -8736,14 +9790,14 @@ Component({
          * 跳转到指定位置 */
         seek(
             /** 跳转到的位置，单位 s */
-            position: number,
+            position: number
         ): void
         /** [VideoContext.sendDanmu(Object data)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/VideoContext.sendDanmu.html)
          *
          * 发送弹幕 */
         sendDanmu(
             /** 弹幕内容 */
-            data: Danmu,
+            data: Danmu
         ): void
         /** [VideoContext.showStatusBar()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/VideoContext.showStatusBar.html)
          *
@@ -8756,6 +9810,68 @@ Component({
          * 停止视频
          *
          * 最低基础库： `1.7.0` */
+        stop(): void
+    }
+    interface VideoDecoder {
+        /** [Object VideoDecoder.getFrameData()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/VideoDecoder.getFrameData.html)
+         *
+         * 获取下一帧的解码数据
+         *
+         * 最低基础库： `2.11.0` */
+        getFrameData(): IAnyObject
+        /** [VideoDecoder.off(string eventName, function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/VideoDecoder.off.html)
+         *
+         * 取消监听录制事件。当对应事件触发时，该回调函数不再执行
+         *
+         * 最低基础库： `2.11.0` */
+        off(
+            /** 事件名 */
+            eventName: string,
+            /** 事件触发时执行的回调函数 */
+            callback: (...args: any[]) => any
+        ): void
+        /** [VideoDecoder.on(string eventName, function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/VideoDecoder.on.html)
+         *
+         * 注册监听录制事件的回调函数。当对应事件触发时，回调函数会被执行
+         *
+         * 最低基础库： `2.11.0` */
+        on(
+            /** 事件名
+             *
+             * 参数 eventName 可选值：
+             * - 'start': 开始事件。返回 {width, height};
+             * - 'stop': 结束事件。;
+             * - 'seek': seek 完成事件。; */
+            eventName: 'start' | 'stop' | 'seek',
+            /** 事件触发时执行的回调函数 */
+            callback: (...args: any[]) => any
+        ): void
+        /** [VideoDecoder.remove()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/VideoDecoder.remove.html)
+         *
+         * 移除解码器
+         *
+         * 最低基础库： `2.11.0` */
+        remove(): void
+        /** [VideoDecoder.seek(number position)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/VideoDecoder.seek.html)
+         *
+         * 跳到某个时间点解码
+         *
+         * 最低基础库： `2.11.0` */
+        seek(
+            /** 跳转的解码位置，单位 ms */
+            position: number
+        ): void
+        /** [VideoDecoder.start(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/VideoDecoder.start.html)
+         *
+         * 开始解码
+         *
+         * 最低基础库： `2.11.0` */
+        start(option: VideoDecoderStartOption): void
+        /** [VideoDecoder.stop()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/VideoDecoder.stop.html)
+         *
+         * 停止解码
+         *
+         * 最低基础库： `2.11.0` */
         stop(): void
     }
     interface WifiError {
@@ -8802,33 +9918,33 @@ Component({
          * 监听主线程/Worker 线程向当前线程发送的消息的事件。 */
         onMessage(
             /** 主线程/Worker 线程向当前线程发送的消息的事件的回调函数 */
-            callback: WorkerOnMessageCallback,
+            callback: WorkerOnMessageCallback
         ): void
         /** [Worker.postMessage(Object message)](https://developers.weixin.qq.com/miniprogram/dev/api/worker/Worker.postMessage.html)
-*
-* 向主线程/Worker 线程发送的消息。
-*
-* **示例代码**
-*
-*
-* worker 线程中
-* ```js
-worker.postMessage({
+         *
+         * 向主线程/Worker 线程发送的消息。
+         *
+         * **示例代码**
+         *
+         *
+         * worker 线程中
+         * ```js
+         worker.postMessage({
   msg: 'hello from worker'
 })
-```
-*
-* 主线程中
-* ```js
-const worker = wx.createWorker('workers/request/index.js')
+         ```
+         *
+         * 主线程中
+         * ```js
+         const worker = wx.createWorker('workers/request/index.js')
 
-worker.postMessage({
+         worker.postMessage({
   msg: 'hello from main'
 })
-``` */
+         ``` */
         postMessage(
             /** 需要发送的消息，必须是一个可序列化的 JavaScript key-value 形式的对象。 */
-            message: IAnyObject,
+            message: IAnyObject
         ): void
         /** [Worker.terminate()](https://developers.weixin.qq.com/miniprogram/dev/api/worker/Worker.terminate.html)
          *
@@ -8843,49 +9959,31 @@ worker.postMessage({
          * 最低基础库： `1.1.0` */
         base64ToArrayBuffer(
             /** 要转化成 ArrayBuffer 对象的 Base64 字符串 */
-            base64: string,
+            base64: string
         ): ArrayBuffer
         /** [Object wx.getAccountInfoSync()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/account-info/wx.getAccountInfoSync.html)
-*
-* 获取当前帐号信息
-*
-* **示例代码**
-*
-*
-* ```js
-const accountInfo = wx.getAccountInfoSync();
-console.log(accountInfo.miniProgram.appId) // 小程序 appId
-console.log(accountInfo.plugin.appId) // 插件 appId
-console.log(accountInfo.plugin.version) // 插件版本号， 'a.b.c' 这样的形式
-```
-*
-* 最低基础库： `2.2.2` */
+         *
+         * 获取当前帐号信息。线上小程序版本号仅支持在正式版小程序中获取，开发版和体验版中无法获取。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const accountInfo = wx.getAccountInfoSync();
+         console.log(accountInfo.miniProgram.appId) // 小程序 appId
+         console.log(accountInfo.plugin.appId) // 插件 appId
+         console.log(accountInfo.plugin.version) // 插件版本号， 'a.b.c' 这样的形式
+         ```
+         *
+         * 最低基础库： `2.2.2` */
         getAccountInfoSync(): AccountInfo
         /** [Object wx.getBatteryInfoSync()](https://developers.weixin.qq.com/miniprogram/dev/api/device/battery/wx.getBatteryInfoSync.html)
          *
          * [wx.getBatteryInfo](https://developers.weixin.qq.com/miniprogram/dev/api/device/battery/wx.getBatteryInfo.html) 的同步版本 */
         getBatteryInfoSync(): GetBatteryInfoSyncResult
-        /** [Object wx.getExtConfigSync()](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfigSync.html)
-*
-* [wx.getExtConfig](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfig.html) 的同步版本。
-*
-* **Tips**
-*
-*
-* 1. 本接口暂时无法通过 [wx.canIUse](https://developers.weixin.qq.com/miniprogram/dev/api/base/wx.canIUse.html) 判断是否兼容，开发者需要自行判断 [wx.getExtConfigSync](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfigSync.html) 是否存在来兼容
-*
-* ****
-*
-* ```js
-let extConfig = wx.getExtConfigSync? wx.getExtConfigSync(): {}
-console.log(extConfig)
-```
-*
-* 最低基础库： `1.1.0` */
-        getExtConfigSync(): ExtInfo
-        /** [Object wx.getLaunchOptionsSync()](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/life-cycle/wx.getLaunchOptionsSync.html)
+        /** [Object wx.getEnterOptionsSync()](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/life-cycle/wx.getEnterOptionsSync.html)
          *
-         * 获取小程序启动时的参数。与 [`App.onLaunch`](https://developers.weixin.qq.com/miniprogram/dev/reference/api/App.html#onlaunchobject-object) 的回调参数一致。
+         * 获取本次小程序启动时的参数。如果当前是冷启动，则返回值与 [`App.onLaunch`](https://developers.weixin.qq.com/miniprogram/dev/reference/api/App.html#onLaunch-Object-object) 的回调参数一致；如果当前是热启动，则返回值与 [`App.onShow`](https://developers.weixin.qq.com/miniprogram/dev/reference/api/App.html#onShow-Object-object) 一致。
          *
          * **返回有效 referrerInfo 的场景**
          *
@@ -8902,6 +10000,48 @@ console.log(extConfig)
          * **注意**
          *
          *
+         * 部分版本在无 `referrerInfo` 的时候会返回 `undefined`，建议使用 `options.referrerInfo && options.referrerInfo.appId` 进行判断。
+         *
+         * 最低基础库： `2.9.4` */
+        getEnterOptionsSync(): LaunchOptionsApp
+        /** [Object wx.getExtConfigSync()](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfigSync.html)
+         *
+         * [wx.getExtConfig](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfig.html) 的同步版本。
+         *
+         * **Tips**
+         *
+         *
+         * 1. 本接口暂时无法通过 [wx.canIUse](https://developers.weixin.qq.com/miniprogram/dev/api/base/wx.canIUse.html) 判断是否兼容，开发者需要自行判断 [wx.getExtConfigSync](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfigSync.html) 是否存在来兼容
+         *
+         * ****
+         *
+         * ```js
+         let extConfig = wx.getExtConfigSync? wx.getExtConfigSync(): {}
+         console.log(extConfig)
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        getExtConfigSync(): IAnyObject
+        /** [Object wx.getLaunchOptionsSync()](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/life-cycle/wx.getLaunchOptionsSync.html)
+         *
+         * 获取小程序启动时的参数。与 [`App.onLaunch`](https://developers.weixin.qq.com/miniprogram/dev/reference/api/App.html#onlaunchobject-object) 的回调参数一致。
+         *
+         * **返回有效 referrerInfo 的场景**
+         *
+         *
+         * | 场景值 | 场景                            | appId含义  |
+         * | ------ | ------------------------------- | ---------- |
+         * | 1020   | 公众号 profile 页相关小程序列表 | 来源公众号 |
+         * | 1035   | 公众号自定义菜单                | 来源公众号 |
+         * | 1036   | App 分享消息卡片                | 来源App    |
+         * | 1037   | 小程序打开小程序                | 来源小程序 |
+         * | 1038   | 从另一个小程序返回              | 来源小程序 |
+         * | 1043   | 公众号模板消息                  | 来源公众号 |
+         * | 1069   | 移动应用                    | 来源App |
+         *
+         * **注意**
+         *
+         *
          * 部分版本在无`referrerInfo`的时候会返回 `undefined`，建议使用 `options.referrerInfo && options.referrerInfo.appId` 进行判断。
          *
          * 最低基础库： `2.1.2` */
@@ -8913,24 +10053,24 @@ console.log(extConfig)
          * 最低基础库： `2.1.0` */
         getMenuButtonBoundingClientRect(): Rect
         /** [Object wx.getStorageInfoSync()](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.getStorageInfoSync.html)
-*
-* [wx.getStorageInfo](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.getStorageInfo.html) 的同步版本
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getStorageInfo({
+         *
+         * [wx.getStorageInfo](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.getStorageInfo.html) 的同步版本
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getStorageInfo({
   success (res) {
     console.log(res.keys)
     console.log(res.currentSize)
     console.log(res.limitSize)
   }
 })
-```
-*
-* ```js
-try {
+         ```
+         *
+         * ```js
+         try {
   const res = wx.getStorageInfoSync()
   console.log(res.keys)
   console.log(res.currentSize)
@@ -8938,17 +10078,17 @@ try {
 } catch (e) {
   // Do something when catch error
 }
-``` */
+         ``` */
         getStorageInfoSync(): GetStorageInfoSyncOption
         /** [Object wx.getSystemInfoSync()](https://developers.weixin.qq.com/miniprogram/dev/api/base/system/system-info/wx.getSystemInfoSync.html)
-*
-* [wx.getSystemInfo](https://developers.weixin.qq.com/miniprogram/dev/api/base/system/system-info/wx.getSystemInfo.html) 的同步版本
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getSystemInfo({
+         *
+         * [wx.getSystemInfo](https://developers.weixin.qq.com/miniprogram/dev/api/base/system/system-info/wx.getSystemInfo.html) 的同步版本
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getSystemInfo({
   success (res) {
     console.log(res.model)
     console.log(res.pixelRatio)
@@ -8959,10 +10099,10 @@ wx.getSystemInfo({
     console.log(res.platform)
   }
 })
-```
-*
-* ```js
-try {
+         ```
+         *
+         * ```js
+         try {
   const res = wx.getSystemInfoSync()
   console.log(res.model)
   console.log(res.pixelRatio)
@@ -8974,12 +10114,12 @@ try {
 } catch (e) {
   // Do something when catch error
 }
-``` */
+         ``` */
         getSystemInfoSync(): GetSystemInfoSyncResult
         /** [[Animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html) wx.createAnimation(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/wx.createAnimation.html)
          *
          * 创建一个动画实例 [animation](https://developers.weixin.qq.com/miniprogram/dev/api/ui/animation/Animation.html)。调用实例的方法来描述动画。最后通过动画实例的 export 方法导出动画数据传递给组件的 animation 属性。 */
-        createAnimation(option: CreateAnimationOption): Animation
+        createAnimation(option: StepOption): Animation
         /** [[AudioContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/AudioContext.html) wx.createAudioContext(string id, Object this)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.createAudioContext.html)
          *
          * 创建 [audio](https://developers.weixin.qq.com/miniprogram/dev/component/audio.html) 上下文 [AudioContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/AudioContext.html) 对象。 */
@@ -8987,7 +10127,7 @@ try {
             /** [audio](https://developers.weixin.qq.com/miniprogram/dev/component/audio.html) 组件的 id */
             id: string,
             /** 在自定义组件下，当前组件实例的this，以操作组件内 [audio](https://developers.weixin.qq.com/miniprogram/dev/component/audio.html) 组件 */
-            component?: Component.TrivialInstance | Page.TrivialInstance,
+            component?: Component.TrivialInstance | Page.TrivialInstance
         ): AudioContext
         /** [[BackgroundAudioManager](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/BackgroundAudioManager.html) wx.getBackgroundAudioManager()](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.getBackgroundAudioManager.html)
          *
@@ -9011,19 +10151,19 @@ try {
             /** 要获取上下文的 [canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) 组件 canvas-id 属性 */
             canvasId: string,
             /** 在自定义组件下，当前组件实例的this，表示在这个自定义组件下查找拥有 canvas-id 的 [canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) ，如果省略则不在任何自定义组件内查找 */
-            component?: Component.TrivialInstance | Page.TrivialInstance,
+            component?: Component.TrivialInstance | Page.TrivialInstance
         ): CanvasContext
         /** [[DownloadTask](https://developers.weixin.qq.com/miniprogram/dev/api/network/download/DownloadTask.html) wx.downloadFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/download/wx.downloadFile.html)
-*
-* 下载文件资源到本地。客户端直接发起一个 HTTPS GET 请求，返回文件的本地临时路径，单次下载允许的最大文件为 50MB。使用前请注意阅读[相关说明](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html)。
-*
-* 注意：请在服务端响应的 header 中指定合理的 `Content-Type` 字段，以保证客户端正确处理文件类型。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.downloadFile({
+         *
+         * 下载文件资源到本地。客户端直接发起一个 HTTPS GET 请求，返回文件的本地临时路径 (本地路径)，单次下载允许的最大文件为 50MB。使用前请注意阅读[相关说明](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html)。
+         *
+         * 注意：请在服务端响应的 header 中指定合理的 `Content-Type` 字段，以保证客户端正确处理文件类型。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.downloadFile({
   url: 'https://example.com/audio/123', //仅为示例，并非真实的资源
   success (res) {
     // 只要服务器有响应数据，就会把响应内容写入文件并进入 success 回调，业务需要自行判断是否下载到了想要的内容
@@ -9034,7 +10174,7 @@ wx.downloadFile({
     }
   }
 })
-``` */
+         ``` */
         downloadFile(option: DownloadFileOption): DownloadTask
         /** [[FileSystemManager](https://developers.weixin.qq.com/miniprogram/dev/api/file/FileSystemManager.html) wx.getFileSystemManager()](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.getFileSystemManager.html)
          *
@@ -9062,7 +10202,7 @@ wx.downloadFile({
             /** 自定义组件实例 */
             component: IAnyObject,
             /** 选项 */
-            options?: CreateIntersectionObserverOption,
+            options?: CreateIntersectionObserverOption
         ): IntersectionObserver
         /** [[InterstitialAd](https://developers.weixin.qq.com/miniprogram/dev/api/ad/InterstitialAd.html) wx.createInterstitialAd(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/wx.createInterstitialAd.html)
          *
@@ -9079,7 +10219,7 @@ wx.downloadFile({
             /** [live-player](https://developers.weixin.qq.com/miniprogram/dev/component/live-player.html) 组件的 id */
             id: string,
             /** 在自定义组件下，当前组件实例的this，以操作组件内 [live-player](https://developers.weixin.qq.com/miniprogram/dev/component/live-player.html) 组件 */
-            component?: Component.TrivialInstance | Page.TrivialInstance,
+            component?: Component.TrivialInstance | Page.TrivialInstance
         ): LivePlayerContext
         /** [[LivePusherContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/LivePusherContext.html) wx.createLivePusherContext()](https://developers.weixin.qq.com/miniprogram/dev/api/media/live/wx.createLivePusherContext.html)
          *
@@ -9088,21 +10228,21 @@ wx.downloadFile({
          * 最低基础库： `1.7.0` */
         createLivePusherContext(): LivePusherContext
         /** [[LogManager](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/LogManager.html) wx.getLogManager(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/wx.getLogManager.html)
-*
-* 获取日志管理器对象。
-*
-* **示例代码**
-*
-*
-* ```js
-const logger = wx.getLogManager({level: 1})
-logger.log({str: 'hello world'}, 'basic log', 100, [1, 2, 3])
-logger.info({str: 'hello world'}, 'info log', 100, [1, 2, 3])
-logger.debug({str: 'hello world'}, 'debug log', 100, [1, 2, 3])
-logger.warn({str: 'hello world'}, 'warn log', 100, [1, 2, 3])
-```
-*
-* 最低基础库： `2.1.0` */
+         *
+         * 获取日志管理器对象。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const logger = wx.getLogManager({level: 1})
+         logger.log({str: 'hello world'}, 'basic log', 100, [1, 2, 3])
+         logger.info({str: 'hello world'}, 'info log', 100, [1, 2, 3])
+         logger.debug({str: 'hello world'}, 'debug log', 100, [1, 2, 3])
+         logger.warn({str: 'hello world'}, 'warn log', 100, [1, 2, 3])
+         ```
+         *
+         * 最低基础库： `2.1.0` */
         getLogManager(option: GetLogManagerOption): LogManager
         /** [[MapContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/map/MapContext.html) wx.createMapContext(string mapId, Object this)](https://developers.weixin.qq.com/miniprogram/dev/api/media/map/wx.createMapContext.html)
          *
@@ -9111,8 +10251,24 @@ logger.warn({str: 'hello world'}, 'warn log', 100, [1, 2, 3])
             /** [map](https://developers.weixin.qq.com/miniprogram/dev/component/map.html) 组件的 id */
             mapId: string,
             /** 在自定义组件下，当前组件实例的this，以操作组件内 [map](https://developers.weixin.qq.com/miniprogram/dev/component/map.html) 组件 */
-            component?: Component.TrivialInstance | Page.TrivialInstance,
+            component?: Component.TrivialInstance | Page.TrivialInstance
         ): MapContext
+        /** [[MediaContainer](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/MediaContainer.html) wx.createMediaContainer()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-processing/wx.createMediaContainer.html)
+         *
+         * 创建音视频处理容器，最终可将容器中的轨道合成一个视频
+         *
+         * 最低基础库： `2.9.0` */
+        createMediaContainer(): MediaContainer
+        /** [[MediaRecorder](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/MediaRecorder.html) wx.createMediaRecorder(Object canvas, Object options)](https://developers.weixin.qq.com/miniprogram/dev/api/media/media-recorder/wx.createMediaRecorder.html)
+         *
+         * 创建 WebGL 画面录制器，可逐帧录制在 WebGL 上渲染的画面并导出视频文件
+         *
+         * 最低基础库： `2.11.0` */
+        createMediaRecorder(
+            /** WebGL 对象，通过 [SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) 获取到的 node 对象 */
+            canvas: IAnyObject,
+            options: CreateMediaRecorderOption
+        ): MediaRecorder
         /** [[OffscreenCanvas](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/OffscreenCanvas.html) wx.createOffscreenCanvas()](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/wx.createOffscreenCanvas.html)
          *
          * 创建离屏 canvas 实例
@@ -9120,20 +10276,20 @@ logger.warn({str: 'hello world'}, 'warn log', 100, [1, 2, 3])
          * 最低基础库： `2.7.0` */
         createOffscreenCanvas(): OffscreenCanvas
         /** [[RealtimeLogManager](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/RealtimeLogManager.html) wx.getRealtimeLogManager()](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/wx.getRealtimeLogManager.html)
-*
-* 获取实时日志管理器对象。
-*
-* **示例代码**
-*
-*
-* ```js
-const logger = wx.getRealtimeLogManager()
-logger.info({str: 'hello world'}, 'info log', 100, [1, 2, 3])
-logger.error({str: 'hello world'}, 'error log', 100, [1, 2, 3])
-logger.warn({str: 'hello world'}, 'warn log', 100, [1, 2, 3])
-```
-*
-* 最低基础库： `2.7.1` */
+         *
+         * 获取实时日志管理器对象。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const logger = wx.getRealtimeLogManager()
+         logger.info({str: 'hello world'}, 'info log', 100, [1, 2, 3])
+         logger.error({str: 'hello world'}, 'error log', 100, [1, 2, 3])
+         logger.warn({str: 'hello world'}, 'warn log', 100, [1, 2, 3])
+         ```
+         *
+         * 最低基础库： `2.7.1` */
         getRealtimeLogManager(): RealtimeLogManager
         /** [[RecorderManager](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/RecorderManager.html) wx.getRecorderManager()](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/wx.getRecorderManager.html)
          *
@@ -9142,22 +10298,22 @@ logger.warn({str: 'hello world'}, 'warn log', 100, [1, 2, 3])
          * 最低基础库： `1.6.0` */
         getRecorderManager(): RecorderManager
         /** [[RequestTask](https://developers.weixin.qq.com/miniprogram/dev/api/network/request/RequestTask.html) wx.request(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/request/wx.request.html)
-*
-* 发起 HTTPS 网络请求。使用前请注意阅读[相关说明](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html)。
-*
-* **data 参数说明**
-*
-*
-* 最终发送给服务器的数据是 String 类型，如果传入的 data 不是 String 类型，会被转换成 String 。转换规则如下：
-* - 对于 `GET` 方法的数据，会将数据转换成 query string（`encodeURIComponent(k)=encodeURIComponent(v)&encodeURIComponent(k)=encodeURIComponent(v)...`）
-* - 对于 `POST` 方法且 `header['content-type']` 为 `application/json` 的数据，会对数据进行 JSON 序列化
-* - 对于 `POST` 方法且 `header['content-type']` 为 `application/x-www-form-urlencoded` 的数据，会将数据转换成 query string `（encodeURIComponent(k)=encodeURIComponent(v)&encodeURIComponent(k)=encodeURIComponent(v)...）`
-*
-* **示例代码**
-*
-*
-* ```js
-wx.request({
+         *
+         * 发起 HTTPS 网络请求。使用前请注意阅读[相关说明](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html)。
+         *
+         * **data 参数说明**
+         *
+         *
+         * 最终发送给服务器的数据是 String 类型，如果传入的 data 不是 String 类型，会被转换成 String 。转换规则如下：
+         * - 对于 `GET` 方法的数据，会将数据转换成 query string（`encodeURIComponent(k)=encodeURIComponent(v)&encodeURIComponent(k)=encodeURIComponent(v)...`）
+         * - 对于 `POST` 方法且 `header['content-type']` 为 `application/json` 的数据，会对数据进行 JSON 序列化
+         * - 对于 `POST` 方法且 `header['content-type']` 为 `application/x-www-form-urlencoded` 的数据，会将数据转换成 query string `（encodeURIComponent(k)=encodeURIComponent(v)&encodeURIComponent(k)=encodeURIComponent(v)...）`
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.request({
   url: 'test.php', //仅为示例，并非真实的接口地址
   data: {
     x: '',
@@ -9170,7 +10326,7 @@ wx.request({
     console.log(res.data)
   }
 })
-``` */
+         ``` */
         request(option: RequestOption): RequestTask
         /** [[RewardedVideoAd](https://developers.weixin.qq.com/miniprogram/dev/api/ad/RewardedVideoAd.html) wx.createRewardedVideoAd(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ad/wx.createRewardedVideoAd.html)
          *
@@ -9178,49 +10334,49 @@ wx.request({
          *
          * 最低基础库： `2.0.4` */
         createRewardedVideoAd(
-            option: CreateRewardedVideoAdOption,
+            option: CreateRewardedVideoAdOption
         ): RewardedVideoAd
         /** [[SelectorQuery](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/SelectorQuery.html) wx.createSelectorQuery()](https://developers.weixin.qq.com/miniprogram/dev/api/wxml/wx.createSelectorQuery.html)
-*
-* 返回一个 SelectorQuery 对象实例。在自定义组件或包含自定义组件的页面中，应使用 `this.createSelectorQuery()` 来代替。
-*
-* **示例代码**
-*
-*
-* ```js
-const query = wx.createSelectorQuery()
-query.select('#the-id').boundingClientRect()
-query.selectViewport().scrollOffset()
-query.exec(function(res){
+         *
+         * 返回一个 SelectorQuery 对象实例。在自定义组件或包含自定义组件的页面中，应使用 `this.createSelectorQuery()` 来代替。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const query = wx.createSelectorQuery()
+         query.select('#the-id').boundingClientRect()
+         query.selectViewport().scrollOffset()
+         query.exec(function(res){
   res[0].top       // #the-id节点的上边界坐标
   res[1].scrollTop // 显示区域的竖直滚动位置
 })
-```
-*
-* 最低基础库： `1.4.0` */
+         ```
+         *
+         * 最低基础库： `1.4.0` */
         createSelectorQuery(): SelectorQuery
         /** [[SocketTask](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/SocketTask.html) wx.connectSocket(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.connectSocket.html)
-*
-* 创建一个 WebSocket 连接。使用前请注意阅读[相关说明](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html)。
-*
-* **并发数**
-*
-*
-* - 1.7.0 及以上版本，最多可以同时存在 5 个 WebSocket 连接。
-* - 1.7.0 以下版本，一个小程序同时只能有一个 WebSocket 连接，如果当前已存在一个 WebSocket 连接，会自动关闭该连接，并重新创建一个 WebSocket 连接。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.connectSocket({
+         *
+         * 创建一个 WebSocket 连接。使用前请注意阅读[相关说明](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html)。
+         *
+         * **并发数**
+         *
+         *
+         * - 1.7.0 及以上版本，最多可以同时存在 5 个 WebSocket 连接。
+         * - 1.7.0 以下版本，一个小程序同时只能有一个 WebSocket 连接，如果当前已存在一个 WebSocket 连接，会自动关闭该连接，并重新创建一个 WebSocket 连接。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.connectSocket({
   url: 'wss://example.qq.com',
   header:{
     'content-type': 'application/json'
   },
   protocols: ['protocol1']
 })
-``` */
+         ``` */
         connectSocket(option: ConnectSocketOption): SocketTask
         /** [[UDPSocket](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/UDPSocket.html) wx.createUDPSocket()](https://developers.weixin.qq.com/miniprogram/dev/api/network/udp/wx.createUDPSocket.html)
          *
@@ -9235,14 +10391,14 @@ wx.connectSocket({
          * 最低基础库： `1.9.90` */
         getUpdateManager(): UpdateManager
         /** [[UploadTask](https://developers.weixin.qq.com/miniprogram/dev/api/network/upload/UploadTask.html) wx.uploadFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/upload/wx.uploadFile.html)
-*
-* 将本地资源上传到服务器。客户端发起一个 HTTPS POST 请求，其中 `content-type` 为 `multipart/form-data`。使用前请注意阅读[相关说明](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html)。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.chooseImage({
+         *
+         * 将本地资源上传到服务器。客户端发起一个 HTTPS POST 请求，其中 `content-type` 为 `multipart/form-data`。使用前请注意阅读[相关说明](https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html)。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.chooseImage({
   success (res) {
     const tempFilePaths = res.tempFilePaths
     wx.uploadFile({
@@ -9259,7 +10415,7 @@ wx.chooseImage({
     })
   }
 })
-``` */
+         ``` */
         uploadFile(option: UploadFileOption): UploadTask
         /** [[VideoContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/VideoContext.html) wx.createVideoContext(string id, Object this)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.createVideoContext.html)
          *
@@ -9268,8 +10424,14 @@ wx.chooseImage({
             /** [video](https://developers.weixin.qq.com/miniprogram/dev/component/video.html) 组件的 id */
             id: string,
             /** 在自定义组件下，当前组件实例的this，以操作组件内 [video](https://developers.weixin.qq.com/miniprogram/dev/component/video.html) 组件 */
-            component?: Component.TrivialInstance | Page.TrivialInstance,
+            component?: Component.TrivialInstance | Page.TrivialInstance
         ): VideoContext
+        /** [[VideoDecoder](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/VideoDecoder.html) wx.createVideoDecoder()](https://developers.weixin.qq.com/miniprogram/dev/api/media/video-decoder/wx.createVideoDecoder.html)
+         *
+         * 创建视频解码器，可逐帧获取解码后的数据
+         *
+         * 最低基础库： `2.11.0` */
+        createVideoDecoder(): VideoDecoder
         /** [[Worker](https://developers.weixin.qq.com/miniprogram/dev/api/worker/Worker.html) wx.createWorker(string scriptPath)](https://developers.weixin.qq.com/miniprogram/dev/api/worker/wx.createWorker.html)
          *
          * 创建一个 [Worker 线程](https://developers.weixin.qq.com/miniprogram/dev/framework/workers.html)。目前限制最多只能创建一个 Worker，创建下一个 Worker 前请先调用 [Worker.terminate](https://developers.weixin.qq.com/miniprogram/dev/api/worker/Worker.terminate.html)
@@ -9277,26 +10439,26 @@ wx.chooseImage({
          * 最低基础库： `1.9.90` */
         createWorker(
             /** worker 入口文件的**绝对路径** */
-            scriptPath: string,
+            scriptPath: string
         ): Worker
         /** [any wx.getStorageSync(string key)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.getStorageSync.html)
-*
-* [wx.getStorage](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.getStorage.html) 的同步版本
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getStorage({
+         *
+         * [wx.getStorage](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.getStorage.html) 的同步版本
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getStorage({
   key: 'key',
   success (res) {
     console.log(res.data)
   }
 })
-```
-*
-* ```js
-try {
+         ```
+         *
+         * ```js
+         try {
   var value = wx.getStorageSync('key')
   if (value) {
     // Do something with return value
@@ -9304,54 +10466,54 @@ try {
 } catch (e) {
   // Do something when catch error
 }
-``` */
+         ``` */
         getStorageSync(
             /** 本地缓存中指定的 key */
-            key: string,
+            key: string
         ): any
         /** [boolean wx.canIUse(string schema)](https://developers.weixin.qq.com/miniprogram/dev/api/base/wx.canIUse.html)
-*
-* 判断小程序的API，回调，参数，组件等是否在当前版本可用。
-*
-* **参数说明**
-*
-*
-* - `${API}` 代表 API 名字
-* - `${method}` 代表调用方式，有效值为return, success, object, callback
-* - `${param}` 代表参数或者返回值
-* - `${option}` 代表参数的可选值或者返回值的属性
-* - `${component}` 代表组件名字
-* - `${attribute}` 代表组件属性
-* - `${option}` 代表组件属性的可选值
-*
-* **示例代码**
-*
-*
-* ```js
-// 对象的属性或方法
-wx.canIUse('console.log')
-wx.canIUse('CameraContext.onCameraFrame')
-wx.canIUse('CameraFrameListener.start')
-wx.canIUse('Image.src')
+         *
+         * 判断小程序的API，回调，参数，组件等是否在当前版本可用。
+         *
+         * **参数说明**
+         *
+         *
+         * - `${API}` 代表 API 名字
+         * - `${method}` 代表调用方式，有效值为return, success, object, callback
+         * - `${param}` 代表参数或者返回值
+         * - `${option}` 代表参数的可选值或者返回值的属性
+         * - `${component}` 代表组件名字
+         * - `${attribute}` 代表组件属性
+         * - `${option}` 代表组件属性的可选值
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         // 对象的属性或方法
+         wx.canIUse('console.log')
+         wx.canIUse('CameraContext.onCameraFrame')
+         wx.canIUse('CameraFrameListener.start')
+         wx.canIUse('Image.src')
 
-// wx接口参数、回调或者返回值
-wx.canIUse('openBluetoothAdapter')
-wx.canIUse('getSystemInfoSync.return.safeArea.left')
-wx.canIUse('getSystemInfo.success.screenWidth')
-wx.canIUse('showToast.object.image')
-wx.canIUse('onCompassChange.callback.direction')
-wx.canIUse('request.object.method.GET')
+         // wx接口参数、回调或者返回值
+         wx.canIUse('openBluetoothAdapter')
+         wx.canIUse('getSystemInfoSync.return.safeArea.left')
+         wx.canIUse('getSystemInfo.success.screenWidth')
+         wx.canIUse('showToast.object.image')
+         wx.canIUse('onCompassChange.callback.direction')
+         wx.canIUse('request.object.method.GET')
 
-// 组件的属性
-wx.canIUse('live-player')
-wx.canIUse('text.selectable')
-wx.canIUse('button.open-type.contact')
-```
-*
-* 最低基础库： `1.1.1` */
+         // 组件的属性
+         wx.canIUse('live-player')
+         wx.canIUse('text.selectable')
+         wx.canIUse('button.open-type.contact')
+         ```
+         *
+         * 最低基础库： `1.1.1` */
         canIUse(
             /** 使用 `${API}.${method}.${param}.${option}` 或者 `${component}.${attribute}.${option}` 方式来调用 */
-            schema: string,
+            schema: string
         ): boolean
         /** [string wx.arrayBufferToBase64(ArrayBuffer arrayBuffer)](https://developers.weixin.qq.com/miniprogram/dev/api/base/wx.arrayBufferToBase64.html)
          *
@@ -9360,22 +10522,22 @@ wx.canIUse('button.open-type.contact')
          * 最低基础库： `1.1.0` */
         arrayBufferToBase64(
             /** 要转换成 Base64 字符串的 ArrayBuffer 对象 */
-            arrayBuffer: ArrayBuffer,
+            arrayBuffer: ArrayBuffer
         ): string
         /** [wx.addCard(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/card/wx.addCard.html)
-*
-* 批量添加卡券。只有通过 [认证](https://developers.weixin.qq.com/miniprogram/product/renzheng.html) 的小程序或文化互动类目的小游戏才能使用。更多文档请参考 [微信卡券接口文档](https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&key=1490190158&version=1&lang=zh_CN&platform=2)。
-*
-* **cardExt 说明**
-*
-*
-* cardExt 是卡券的扩展参数，其值是一个 JSON 字符串。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.addCard({
+         *
+         * 批量添加卡券。只有通过 [认证](https://developers.weixin.qq.com/miniprogram/product/renzheng.html) 的小程序或文化互动类目的小游戏才能使用。更多文档请参考 [微信卡券接口文档](https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&key=1490190158&version=1&lang=zh_CN&platform=2)。
+         *
+         * **cardExt 说明**
+         *
+         *
+         * cardExt 是卡券的扩展参数，其值是一个 JSON 字符串。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.addCard({
   cardList: [
     {
       cardId: '',
@@ -9389,26 +10551,30 @@ wx.addCard({
     console.log(res.cardList) // 卡券添加结果
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        addCard(option: AddCardOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        addCard<TOption extends AddCardOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, AddCardOption>
         /** [wx.addPhoneContact(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/contact/wx.addPhoneContact.html)
          *
          * 添加手机通讯录联系人。用户可以选择将该表单以「新增联系人」或「添加到已有联系人」的方式，写入手机系统通讯录。
          *
          * 最低基础库： `1.2.0` */
-        addPhoneContact(option: AddPhoneContactOption): void
+        addPhoneContact<TOption extends AddPhoneContactOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, AddPhoneContactOption>
         /** [wx.authorize(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/authorize/wx.authorize.html)
-*
-* 提前向用户发起授权请求。调用后会立刻弹窗询问用户是否同意授权小程序使用某项功能或获取用户的某些数据，但不会实际调用对应接口。如果用户之前已经同意授权，则不会出现弹窗，直接返回成功。更多用法详见 [用户授权](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/authorize.html)。
-*
-* **示例代码**
-*
-*
-* ```js
-// 可以通过 wx.getSetting 先查询一下用户是否授权了 "scope.record" 这个 scope
-wx.getSetting({
+         *
+         * 提前向用户发起授权请求。调用后会立刻弹窗询问用户是否同意授权小程序使用某项功能或获取用户的某些数据，但不会实际调用对应接口。如果用户之前已经同意授权，则不会出现弹窗，直接返回成功。更多用法详见 [用户授权](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/authorize.html)。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         // 可以通过 wx.getSetting 先查询一下用户是否授权了 "scope.record" 这个 scope
+         wx.getSetting({
   success(res) {
     if (!res.authSetting['scope.record']) {
       wx.authorize({
@@ -9421,21 +10587,23 @@ wx.getSetting({
     }
   }
 })
-```
-*
-* 最低基础库： `1.2.0` */
-        authorize(option: AuthorizeOption): void
+         ```
+         *
+         * 最低基础库： `1.2.0` */
+        authorize<TOption extends AuthorizeOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, AuthorizeOption>
         /** [wx.canvasGetImageData(Object object, Object this)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/wx.canvasGetImageData.html)
-*
-* 获取 canvas 区域隐含的像素数据。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/yufmRjmZ7W8f)
-*
-* ```js
-wx.canvasGetImageData({
+         *
+         * 获取 canvas 区域隐含的像素数据。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/yufmRjmZ7W8f)
+         *
+         * ```js
+         wx.canvasGetImageData({
   canvasId: 'myCanvas',
   x: 0,
   y: 0,
@@ -9448,86 +10616,93 @@ wx.canvasGetImageData({
     console.log(res.data.length) // 100 * 100 * 4
   }
 })
-```
-*
-* 最低基础库： `1.9.0` */
-        canvasGetImageData(
-            option: CanvasGetImageDataOption,
+         ```
+         *
+         * 最低基础库： `1.9.0` */
+        canvasGetImageData<TOption extends CanvasGetImageDataOption>(
+            option: TOption,
             /** 在自定义组件下，当前组件实例的this，以操作组件内 [canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) 组件 */
-            component?: Component.TrivialInstance | Page.TrivialInstance,
-        ): void
+            component?: Component.TrivialInstance | Page.TrivialInstance
+        ): PromisifySuccessResult<TOption, CanvasGetImageDataOption>
         /** [wx.canvasPutImageData(Object object, Object this)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/wx.canvasPutImageData.html)
          *
          * 将像素数据绘制到画布。在自定义组件下，第二个参数传入自定义组件实例 this，以操作组件内 <canvas> 组件
          *
          * 最低基础库： `1.9.0` */
-        canvasPutImageData(
-            option: CanvasPutImageDataOption,
+        canvasPutImageData<TOption extends CanvasPutImageDataOption>(
+            option: TOption,
             /** 在自定义组件下，当前组件实例的this，以操作组件内 [canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) 组件 */
-            component?: Component.TrivialInstance | Page.TrivialInstance,
-        ): void
+            component?: Component.TrivialInstance | Page.TrivialInstance
+        ): PromisifySuccessResult<TOption, CanvasPutImageDataOption>
         /** [wx.canvasToTempFilePath(Object object, Object this)](https://developers.weixin.qq.com/miniprogram/dev/api/canvas/wx.canvasToTempFilePath.html)
          *
          * 把当前画布指定区域的内容导出生成指定大小的图片。在 `draw()` 回调里调用该方法才能保证图片导出成功。 */
-        canvasToTempFilePath(
-            option: CanvasToTempFilePathOption,
+        canvasToTempFilePath<TOption extends CanvasToTempFilePathOption>(
+            option: TOption,
             /** 在自定义组件下，当前组件实例的this，以操作组件内 [canvas](https://developers.weixin.qq.com/miniprogram/dev/component/canvas.html) 组件 */
-            component?: Component.TrivialInstance | Page.TrivialInstance,
-        ): void
+            component?: Component.TrivialInstance | Page.TrivialInstance
+        ): PromisifySuccessResult<TOption, CanvasToTempFilePathOption>
         /** [wx.checkIsSoterEnrolledInDevice(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/soter/wx.checkIsSoterEnrolledInDevice.html)
-*
-* 获取设备内是否录入如指纹等生物信息的接口
-*
-* **示例代码**
-*
-*
-* ```js
-wx.checkIsSoterEnrolledInDevice({
+         *
+         * 获取设备内是否录入如指纹等生物信息的接口
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.checkIsSoterEnrolledInDevice({
   checkAuthMode: 'fingerPrint',
   success(res) {
     console.log(res.isEnrolled)
   }
 })
-```
-*
-* 最低基础库： `1.6.0` */
-        checkIsSoterEnrolledInDevice(
-            option: CheckIsSoterEnrolledInDeviceOption,
-        ): void
+         ```
+         *
+         * 最低基础库： `1.6.0` */
+        checkIsSoterEnrolledInDevice<
+            TOption extends CheckIsSoterEnrolledInDeviceOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<TOption, CheckIsSoterEnrolledInDeviceOption>
         /** [wx.checkIsSupportSoterAuthentication(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/soter/wx.checkIsSupportSoterAuthentication.html)
-*
-* 获取本机支持的 SOTER 生物认证方式
-*
-* **示例代码**
-*
-*
-* ```js
-wx.checkIsSupportSoterAuthentication({
+         *
+         * 获取本机支持的 SOTER 生物认证方式
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.checkIsSupportSoterAuthentication({
   success(res) {
     // res.supportMode = [] 不具备任何被SOTER支持的生物识别方式
     // res.supportMode = ['fingerPrint'] 只支持指纹识别
     // res.supportMode = ['fingerPrint', 'facial'] 支持指纹识别和人脸识别
   }
 })
-```
-*
-* 最低基础库： `1.5.0` */
-        checkIsSupportSoterAuthentication(
-            option?: CheckIsSupportSoterAuthenticationOption,
-        ): void
+         ```
+         *
+         * 最低基础库： `1.5.0` */
+        checkIsSupportSoterAuthentication<
+            TOption extends CheckIsSupportSoterAuthenticationOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<
+            TOption,
+            CheckIsSupportSoterAuthenticationOption
+            >
         /** [wx.checkSession(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.checkSession.html)
-*
-* 检查登录态是否过期。
-*
-* 通过 wx.login 接口获得的用户登录态拥有一定的时效性。用户越久未使用小程序，用户登录态越有可能失效。反之如果用户一直在使用小程序，则用户登录态一直保持有效。具体时效逻辑由微信维护，对开发者透明。开发者只需要调用 wx.checkSession 接口检测当前用户登录态是否有效。
-*
-* 登录态过期后开发者可以再调用 wx.login 获取新的用户登录态。调用成功说明当前 session_key 未过期，调用失败说明 session_key 已过期。更多使用方法详见 [小程序登录](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html)。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.checkSession({
+         *
+         * 检查登录态是否过期。
+         *
+         * 通过 wx.login 接口获得的用户登录态拥有一定的时效性。用户越久未使用小程序，用户登录态越有可能失效。反之如果用户一直在使用小程序，则用户登录态一直保持有效。具体时效逻辑由微信维护，对开发者透明。开发者只需要调用 wx.checkSession 接口检测当前用户登录态是否有效。
+         *
+         * 登录态过期后开发者可以再调用 wx.login 获取新的用户登录态。调用成功说明当前 session_key 未过期，调用失败说明 session_key 已过期。更多使用方法详见 [小程序登录](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html)。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.checkSession({
   success () {
     //session_key 未过期，并且在本生命周期一直有效
   },
@@ -9536,18 +10711,20 @@ wx.checkSession({
     wx.login() //重新登录
   }
 })
-``` */
-        checkSession(option?: CheckSessionOption): void
+         ``` */
+        checkSession<TOption extends CheckSessionOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, CheckSessionOption>
         /** [wx.chooseAddress(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/address/wx.chooseAddress.html)
-*
-* 获取用户收货地址。调起用户编辑收货地址原生界面，并在编辑完成后返回用户选择的地址。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/024hHnmd772y)
-* ```js
-wx.chooseAddress({
+         *
+         * 获取用户收货地址。调起用户编辑收货地址原生界面，并在编辑完成后返回用户选择的地址。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/024hHnmd772y)
+         * ```js
+         wx.chooseAddress({
   success (res) {
     console.log(res.userName)
     console.log(res.postalCode)
@@ -9559,18 +10736,20 @@ wx.chooseAddress({
     console.log(res.telNumber)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        chooseAddress(option?: ChooseAddressOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        chooseAddress<TOption extends ChooseAddressOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, ChooseAddressOption>
         /** [wx.chooseImage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/image/wx.chooseImage.html)
-*
-* 从本地相册选择图片或使用相机拍照。
-*
-* ****
-*
-* ```js
-wx.chooseImage({
+         *
+         * 从本地相册选择图片或使用相机拍照。
+         *
+         * ****
+         *
+         * ```js
+         wx.chooseImage({
   count: 1,
   sizeType: ['original', 'compressed'],
   sourceType: ['album', 'camera'],
@@ -9579,8 +10758,10 @@ wx.chooseImage({
     const tempFilePaths = res.tempFilePaths
   }
 })
-``` */
-        chooseImage(option: ChooseImageOption): void
+         ``` */
+        chooseImage<TOption extends ChooseImageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ChooseImageOption>
         /** [wx.chooseInvoice(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/invoice/wx.chooseInvoice.html)
          *
          * 选择用户已有的发票。
@@ -9592,56 +10773,89 @@ wx.chooseImage({
          * 其中 `access_token` 的获取请参考[auth.getAccessToken](https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/access-token/auth.getAccessToken.html)文档
          *
          * 最低基础库： `2.3.0` */
-        chooseInvoice(option?: ChooseInvoiceOption): void
+        chooseInvoice<TOption extends ChooseInvoiceOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, ChooseInvoiceOption>
         /** [wx.chooseInvoiceTitle(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/invoice/wx.chooseInvoiceTitle.html)
-*
-* 选择用户的发票抬头。当前小程序必须关联一个公众号，且这个公众号是完成了[微信认证](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1496554031_RD4xe)的，才能调用 chooseInvoiceTitle。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/GJ4S9nmQ7x2E)
-*
-* ```js
-wx.chooseInvoiceTitle({
+         *
+         * 选择用户的发票抬头。当前小程序必须关联一个公众号，且这个公众号是完成了[微信认证](https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1496554031_RD4xe)的，才能调用 chooseInvoiceTitle。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/GJ4S9nmQ7x2E)
+         *
+         * ```js
+         wx.chooseInvoiceTitle({
   success(res) {}
 })
-```
-*
-* 最低基础库： `1.5.0` */
-        chooseInvoiceTitle(option?: ChooseInvoiceTitleOption): void
+         ```
+         *
+         * 最低基础库： `1.5.0` */
+        chooseInvoiceTitle<TOption extends ChooseInvoiceTitleOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, ChooseInvoiceTitleOption>
         /** [wx.chooseLocation(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.chooseLocation.html)
          *
          * 打开地图选择位置。 */
-        chooseLocation(option?: ChooseLocationOption): void
+        chooseLocation<TOption extends ChooseLocationOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ChooseLocationOption>
+        /** [wx.chooseMedia(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.chooseMedia.html)
+         *
+         * 拍摄或从手机相册中选择图片或视频。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.chooseMedia({
+  count: 9,
+  mediaType: ['image','video'],
+  sourceType: ['album', 'camera'],
+  maxDuration: 30,
+  camera: 'back',
+  success(res) {
+    console.log(res.tempFiles.tempFilePath)
+    console.log(res.tempFiles.size)
+  }
+})
+         ```
+         *
+         * 最低基础库： `2.10.0` */
+        chooseMedia<TOption extends ChooseMediaOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ChooseMediaOption>
         /** [wx.chooseMessageFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/image/wx.chooseMessageFile.html)
-*
-* 从客户端会话选择文件。
-*
-* ****
-*
-* ```js
-wx.chooseMessageFile({
+         *
+         * 从客户端会话选择文件。
+         *
+         * ****
+         *
+         * ```js
+         wx.chooseMessageFile({
   count: 10,
   type: 'image',
   success (res) {
     // tempFilePath可以作为img标签的src属性显示图片
-    const tempFilePaths = res.tempFilePaths
+    const tempFilePaths = res.tempFiles
   }
 })
-```
-*
-* 最低基础库： `2.5.0` */
-        chooseMessageFile(option: ChooseMessageFileOption): void
+         ```
+         *
+         * 最低基础库： `2.5.0` */
+        chooseMessageFile<TOption extends ChooseMessageFileOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ChooseMessageFileOption>
         /** [wx.chooseVideo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.chooseVideo.html)
-*
-* 拍摄视频或从手机相册中选视频。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.chooseVideo({
+         *
+         * 拍摄视频或从手机相册中选视频。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.chooseVideo({
   sourceType: ['album','camera'],
   maxDuration: 60,
   camera: 'back',
@@ -9649,187 +10863,225 @@ wx.chooseVideo({
     console.log(res.tempFilePath)
   }
 })
-``` */
-        chooseVideo(option: ChooseVideoOption): void
+         ``` */
+        chooseVideo<TOption extends ChooseVideoOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ChooseVideoOption>
         /** [wx.clearStorage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.clearStorage.html)
-*
-* 清理本地数据缓存
-*
-* **示例代码**
-*
-*
-* ```js
-wx.clearStorage()
-```
-*
-* ```js
-try {
+         *
+         * 清理本地数据缓存
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.clearStorage()
+         ```
+         *
+         * ```js
+         try {
   wx.clearStorageSync()
 } catch(e) {
   // Do something when catch error
 }
-``` */
-        clearStorage(option?: ClearStorageOption): void
+         ``` */
+        clearStorage<TOption extends ClearStorageOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, ClearStorageOption>
         /** [wx.clearStorageSync()](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.clearStorageSync.html)
-*
-* [wx.clearStorage](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.clearStorage.html) 的同步版本
-*
-* **示例代码**
-*
-*
-* ```js
-wx.clearStorage()
-```
-*
-* ```js
-try {
+         *
+         * [wx.clearStorage](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.clearStorage.html) 的同步版本
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.clearStorage()
+         ```
+         *
+         * ```js
+         try {
   wx.clearStorageSync()
 } catch(e) {
   // Do something when catch error
 }
-``` */
+         ``` */
         clearStorageSync(): void
         /** [wx.closeBLEConnection(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.closeBLEConnection.html)
-*
-* 断开与低功耗蓝牙设备的连接。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.closeBLEConnection({
+         *
+         * 断开与低功耗蓝牙设备的连接。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.closeBLEConnection({
   deviceId,
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        closeBLEConnection(option: CloseBLEConnectionOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        closeBLEConnection<TOption extends CloseBLEConnectionOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, CloseBLEConnectionOption>
         /** [wx.closeBluetoothAdapter(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.closeBluetoothAdapter.html)
-*
-* 关闭蓝牙模块。调用该方法将断开所有已建立的连接并释放系统资源。建议在使用蓝牙流程后，与 [wx.openBluetoothAdapter](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.openBluetoothAdapter.html) 成对调用。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.closeBluetoothAdapter({
+         *
+         * 关闭蓝牙模块。调用该方法将断开所有已建立的连接并释放系统资源。建议在使用蓝牙流程后，与 [wx.openBluetoothAdapter](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.openBluetoothAdapter.html) 成对调用。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.closeBluetoothAdapter({
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        closeBluetoothAdapter(option?: CloseBluetoothAdapterOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        closeBluetoothAdapter<TOption extends CloseBluetoothAdapterOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, CloseBluetoothAdapterOption>
         /** [wx.closeSocket(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.closeSocket.html)
-*
-* 关闭 WebSocket 连接
-*
-* **示例代码**
-*
-*
-* ```js
-wx.connectSocket({
+         *
+         * 关闭 WebSocket 连接
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.connectSocket({
   url: 'test.php'
 })
 
-//注意这里有时序问题，
-//如果 wx.connectSocket 还没回调 wx.onSocketOpen，而先调用 wx.closeSocket，那么就做不到关闭 WebSocket 的目的。
-//必须在 WebSocket 打开期间调用 wx.closeSocket 才能关闭。
-wx.onSocketOpen(function() {
+         //注意这里有时序问题，
+         //如果 wx.connectSocket 还没回调 wx.onSocketOpen，而先调用 wx.closeSocket，那么就做不到关闭 WebSocket 的目的。
+         //必须在 WebSocket 打开期间调用 wx.closeSocket 才能关闭。
+         wx.onSocketOpen(function() {
   wx.closeSocket()
 })
 
-wx.onSocketClose(function(res) {
+         wx.onSocketClose(function(res) {
   console.log('WebSocket 已关闭！')
 })
-``` */
-        closeSocket(option?: CloseSocketOption): void
+         ``` */
+        closeSocket<TOption extends CloseSocketOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, CloseSocketOption>
         /** [wx.compressImage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/image/wx.compressImage.html)
-*
-* 压缩图片接口，可选压缩质量
-*
-* **示例代码**
-*
-*
-* ```js
-wx.compressImage({
+         *
+         * 压缩图片接口，可选压缩质量
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.compressImage({
   src: '', // 图片路径
   quality: 80 // 压缩质量
 })
-```
-*
-* 最低基础库： `2.4.0` */
-        compressImage(option: CompressImageOption): void
+         ```
+         *
+         * 最低基础库： `2.4.0` */
+        compressImage<TOption extends CompressImageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, CompressImageOption>
+        /** [wx.compressVideo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.compressVideo.html)
+         *
+         * 压缩视频接口。开发者可指定压缩质量 `quality` 进行压缩。当需要更精细的控制时，可指定 `bitrate`、`fps`、和 `resolution`，当 `quality` 传入时，这三个参数将被忽略。原视频的相关信息可通过 [getVideoInfo](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.getVideoInfo.html) 获取。
+         *
+         * 最低基础库： `2.11.0` */
+        compressVideo<TOption extends CompressVideoOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, CompressVideoOption>
         /** [wx.connectWifi(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.connectWifi.html)
-*
-* 连接 Wi-Fi。若已知 Wi-Fi 信息，可以直接利用该接口连接。仅 Android 与 iOS 11 以上版本支持。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.connectWifi({
+         *
+         * 连接 Wi-Fi。若已知 Wi-Fi 信息，可以直接利用该接口连接。仅 Android 与 iOS 11 以上版本支持。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.connectWifi({
   SSID: '',
   password: '',
   success (res) {
     console.log(res.errMsg)
   }
 })
-```
-*
-* 最低基础库： `1.6.0` */
-        connectWifi(option: ConnectWifiOption): void
+         ```
+         *
+         * 最低基础库： `1.6.0` */
+        connectWifi<TOption extends ConnectWifiOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ConnectWifiOption>
         /** [wx.createBLEConnection(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.createBLEConnection.html)
-*
-* 连接低功耗蓝牙设备。
-*
-* 若小程序在之前已有搜索过某个蓝牙设备，并成功建立连接，可直接传入之前搜索获取的 deviceId 直接尝试连接该设备，无需进行搜索操作。
-*
-* **注意**
-*
-*
-* - 请保证尽量成对的调用 `createBLEConnection` 和 `closeBLEConnection` 接口。安卓如果多次调用 `createBLEConnection` 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 `closeBLEConnection` 的时候并不能真正的断开与设备的连接。
-* - 蓝牙连接随时可能断开，建议监听 [wx.onBLEConnectionStateChange](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.onBLEConnectionStateChange.html) 回调事件，当蓝牙设备断开时按需执行重连操作
-* - 若对未连接的设备或已断开连接的设备调用数据读写操作的接口，会返回 10006 错误，建议进行重连操作。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.createBLEConnection({
+         *
+         * 连接低功耗蓝牙设备。
+         *
+         * 若小程序在之前已有搜索过某个蓝牙设备，并成功建立连接，可直接传入之前搜索获取的 deviceId 直接尝试连接该设备，无需进行搜索操作。
+         *
+         * **注意**
+         *
+         *
+         * - 请保证尽量成对的调用 `createBLEConnection` 和 `closeBLEConnection` 接口。安卓如果多次调用 `createBLEConnection` 创建连接，有可能导致系统持有同一设备多个连接的实例，导致调用 `closeBLEConnection` 的时候并不能真正的断开与设备的连接。
+         * - 蓝牙连接随时可能断开，建议监听 [wx.onBLEConnectionStateChange](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.onBLEConnectionStateChange.html) 回调事件，当蓝牙设备断开时按需执行重连操作
+         * - 若对未连接的设备或已断开连接的设备调用数据读写操作的接口，会返回 10006 错误，建议进行重连操作。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.createBLEConnection({
   // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
   deviceId,
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        createBLEConnection(option: CreateBLEConnectionOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        createBLEConnection<TOption extends CreateBLEConnectionOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, CreateBLEConnectionOption>
+        /** [wx.createBLEPeripheralServer(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-peripheral/wx.createBLEPeripheralServer.html)
+         *
+         * 建立本地作为外围设备的服务端，可创建多个。
+         *
+         * 最低基础库： `2.10.3` */
+        createBLEPeripheralServer<
+            TOption extends CreateBLEPeripheralServerOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, CreateBLEPeripheralServerOption>
         /** [wx.getAvailableAudioSources(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.getAvailableAudioSources.html)
          *
          * 获取当前支持的音频输入源
          *
          * 最低基础库： `2.1.0` */
-        getAvailableAudioSources(option?: GetAvailableAudioSourcesOption): void
+        getAvailableAudioSources<
+            TOption extends GetAvailableAudioSourcesOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetAvailableAudioSourcesOption>
         /** [wx.getBLEDeviceCharacteristics(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.getBLEDeviceCharacteristics.html)
-*
-* 获取蓝牙设备某个服务中所有特征值(characteristic)。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.getBLEDeviceCharacteristics({
+         *
+         * 获取蓝牙设备某个服务中所有特征值(characteristic)。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.getBLEDeviceCharacteristics({
   // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
   deviceId,
   // 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
@@ -9838,41 +11090,53 @@ wx.getBLEDeviceCharacteristics({
     console.log('device getBLEDeviceCharacteristics:', res.characteristics)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        getBLEDeviceCharacteristics(
-            option: GetBLEDeviceCharacteristicsOption,
-        ): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        getBLEDeviceCharacteristics<
+            TOption extends GetBLEDeviceCharacteristicsOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetBLEDeviceCharacteristicsOption>
+        /** [wx.getBLEDeviceRSSI(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.getBLEDeviceRSSI.html)
+         *
+         * 获取蓝牙设备的信号强度。
+         *
+         * 最低基础库： `2.11.0` */
+        getBLEDeviceRSSI<TOption extends GetBLEDeviceRSSIOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetBLEDeviceRSSIOption>
         /** [wx.getBLEDeviceServices(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.getBLEDeviceServices.html)
-*
-* 获取蓝牙设备所有服务(service)。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.getBLEDeviceServices({
+         *
+         * 获取蓝牙设备所有服务(service)。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.getBLEDeviceServices({
   // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
   deviceId,
   success (res) {
     console.log('device services:', res.services)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        getBLEDeviceServices(option: GetBLEDeviceServicesOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        getBLEDeviceServices<TOption extends GetBLEDeviceServicesOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetBLEDeviceServicesOption>
         /** [wx.getBackgroundAudioPlayerState(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.getBackgroundAudioPlayerState.html)
-*
-* 获取后台音乐播放状态。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getBackgroundAudioPlayerState({
+         *
+         * 获取后台音乐播放状态。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getBackgroundAudioPlayerState({
   success (res) {
     const status = res.status
     const dataUrl = res.dataUrl
@@ -9881,62 +11145,76 @@ wx.getBackgroundAudioPlayerState({
     const downloadPercent = res.downloadPercent
   }
 })
-``` */
-        getBackgroundAudioPlayerState(
-            option?: GetBackgroundAudioPlayerStateOption,
-        ): void
+         ``` */
+        getBackgroundAudioPlayerState<
+            TOption extends GetBackgroundAudioPlayerStateOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetBackgroundAudioPlayerStateOption>
         /** [wx.getBackgroundFetchData(object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/background-fetch/wx.getBackgroundFetchData.html)
          *
          * 拉取 backgroundFetch 客户端缓存数据
          *
          * 最低基础库： `2.8.0` */
-        getBackgroundFetchData(option: GetBackgroundFetchDataOption): void
+        getBackgroundFetchData<TOption extends GetBackgroundFetchDataOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetBackgroundFetchDataOption>
         /** [wx.getBackgroundFetchToken(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/background-fetch/wx.getBackgroundFetchToken.html)
          *
          * 获取设置过的自定义登录态。若无，则返回 fail。
          *
          * 最低基础库： `2.8.0` */
-        getBackgroundFetchToken(option?: GetBackgroundFetchTokenOption): void
+        getBackgroundFetchToken<TOption extends GetBackgroundFetchTokenOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetBackgroundFetchTokenOption>
         /** [wx.getBatteryInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/battery/wx.getBatteryInfo.html)
          *
          * 获取设备电量。同步 API [wx.getBatteryInfoSync](https://developers.weixin.qq.com/miniprogram/dev/api/device/battery/wx.getBatteryInfoSync.html) 在 iOS 上不可用。 */
-        getBatteryInfo(option?: GetBatteryInfoOption): void
+        getBatteryInfo<TOption extends GetBatteryInfoOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetBatteryInfoOption>
         /** [wx.getBeacons(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/ibeacon/wx.getBeacons.html)
          *
          * 获取所有已搜索到的 iBeacon 设备
          *
          * 最低基础库： `1.2.0` */
-        getBeacons(option?: GetBeaconsOption): void
+        getBeacons<TOption extends GetBeaconsOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetBeaconsOption>
         /** [wx.getBluetoothAdapterState(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.getBluetoothAdapterState.html)
-*
-* 获取本机蓝牙适配器状态。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.getBluetoothAdapterState({
+         *
+         * 获取本机蓝牙适配器状态。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.getBluetoothAdapterState({
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        getBluetoothAdapterState(option?: GetBluetoothAdapterStateOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        getBluetoothAdapterState<
+            TOption extends GetBluetoothAdapterStateOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetBluetoothAdapterStateOption>
         /** [wx.getBluetoothDevices(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.getBluetoothDevices.html)
-*
-* 获取在蓝牙模块生效期间所有已发现的蓝牙设备。包括已经和本机处于连接状态的设备。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-*
-* ```js
-// ArrayBuffer转16进度字符串示例
-function ab2hex(buffer) {
+         *
+         * 获取在蓝牙模块生效期间所有已发现的蓝牙设备。包括已经和本机处于连接状态的设备。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         *
+         * ```js
+         // ArrayBuffer转16进度字符串示例
+         function ab2hex(buffer) {
   var hexArr = Array.prototype.map.call(
     new Uint8Array(buffer),
     function(bit) {
@@ -9945,7 +11223,7 @@ function ab2hex(buffer) {
   )
   return hexArr.join('');
 }
-wx.getBluetoothDevices({
+         wx.getBluetoothDevices({
   success: function (res) {
     console.log(res)
     if (res.devices[0]) {
@@ -9953,128 +11231,142 @@ wx.getBluetoothDevices({
     }
   }
 })
-```
-*
-* **注意事项**
-*
-*
-* - 该接口获取到的设备列表为**蓝牙模块生效期间所有搜索到的蓝牙设备**，若在蓝牙模块使用流程结束后未及时调用 [wx.closeBluetoothAdapter](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.closeBluetoothAdapter.html) 释放资源，会存在调用该接口会返回之前的蓝牙使用流程中搜索到的蓝牙设备，可能设备已经不在用户身边，无法连接。
-* - 蓝牙设备在被搜索到时，系统返回的 name 字段一般为广播包中的 LocalName 字段中的设备名称，而如果与蓝牙设备建立连接，系统返回的 name 字段会改为从蓝牙设备上获取到的 `GattName`。若需要动态改变设备名称并展示，建议使用 `localName` 字段。
-*
-* 最低基础库： `1.1.0` */
-        getBluetoothDevices(option?: GetBluetoothDevicesOption): void
+         ```
+         *
+         * **注意事项**
+         *
+         *
+         * - 该接口获取到的设备列表为**蓝牙模块生效期间所有搜索到的蓝牙设备**，若在蓝牙模块使用流程结束后未及时调用 [wx.closeBluetoothAdapter](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.closeBluetoothAdapter.html) 释放资源，会存在调用该接口会返回之前的蓝牙使用流程中搜索到的蓝牙设备，可能设备已经不在用户身边，无法连接。
+         * - 蓝牙设备在被搜索到时，系统返回的 name 字段一般为广播包中的 LocalName 字段中的设备名称，而如果与蓝牙设备建立连接，系统返回的 name 字段会改为从蓝牙设备上获取到的 `GattName`。若需要动态改变设备名称并展示，建议使用 `localName` 字段。
+         *
+         * 最低基础库： `1.1.0` */
+        getBluetoothDevices<TOption extends GetBluetoothDevicesOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetBluetoothDevicesOption>
         /** [wx.getClipboardData(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/clipboard/wx.getClipboardData.html)
-*
-* 获取系统剪贴板的内容
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getClipboardData({
+         *
+         * 获取系统剪贴板的内容
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getClipboardData({
   success (res){
     console.log(res.data)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        getClipboardData(option?: GetClipboardDataOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        getClipboardData<TOption extends GetClipboardDataOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetClipboardDataOption>
         /** [wx.getConnectedBluetoothDevices(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.getConnectedBluetoothDevices.html)
-*
-* 根据 uuid 获取处于已连接状态的设备。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.getConnectedBluetoothDevices({
+         *
+         * 根据 uuid 获取处于已连接状态的设备。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.getConnectedBluetoothDevices({
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        getConnectedBluetoothDevices(
-            option: GetConnectedBluetoothDevicesOption,
-        ): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        getConnectedBluetoothDevices<
+            TOption extends GetConnectedBluetoothDevicesOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetConnectedBluetoothDevicesOption>
         /** [wx.getConnectedWifi(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.getConnectedWifi.html)
          *
          * 获取已连接中的 Wi-Fi 信息。
          *
          * 最低基础库： `1.6.0` */
-        getConnectedWifi(option?: GetConnectedWifiOption): void
+        getConnectedWifi<TOption extends GetConnectedWifiOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetConnectedWifiOption>
         /** [wx.getExtConfig(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfig.html)
-*
-* 获取[第三方平台](https://developers.weixin.qq.com/miniprogram/dev/devtools/ext.html)自定义的数据字段。
-*
-* **Tips**
-*
-*
-* 1. 本接口暂时无法通过 [wx.canIUse](https://developers.weixin.qq.com/miniprogram/dev/api/base/wx.canIUse.html) 判断是否兼容，开发者需要自行判断 [wx.getExtConfig](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfig.html) 是否存在来兼容
-*
-* ****
-*
-* ```js
-if (wx.getExtConfig) {
+         *
+         * 获取[第三方平台](https://developers.weixin.qq.com/miniprogram/dev/devtools/ext.html)自定义的数据字段。
+         *
+         * **Tips**
+         *
+         *
+         * 1. 本接口暂时无法通过 [wx.canIUse](https://developers.weixin.qq.com/miniprogram/dev/api/base/wx.canIUse.html) 判断是否兼容，开发者需要自行判断 [wx.getExtConfig](https://developers.weixin.qq.com/miniprogram/dev/api/ext/wx.getExtConfig.html) 是否存在来兼容
+         *
+         * ****
+         *
+         * ```js
+         if (wx.getExtConfig) {
   wx.getExtConfig({
     success (res) {
       console.log(res.extConfig)
     }
   })
 }
-```
-*
-* 最低基础库： `1.1.0` */
-        getExtConfig(option?: GetExtConfigOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        getExtConfig<TOption extends GetExtConfigOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetExtConfigOption>
         /** [wx.getFileInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.getFileInfo.html)
-*
-* 获取文件信息
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getFileInfo({
+         *
+         * 获取文件信息
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getFileInfo({
   success (res) {
     console.log(res.size)
     console.log(res.digest)
   }
 })
-```
-*
-* 最低基础库： `1.4.0` */
-        getFileInfo(option: WxGetFileInfoOption): void
+         ```
+         *
+         * 最低基础库： `1.4.0` */
+        getFileInfo<TOption extends WxGetFileInfoOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, WxGetFileInfoOption>
         /** [wx.getHCEState(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/nfc/wx.getHCEState.html)
-*
-* 判断当前设备是否支持 HCE 能力。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getHCEState({
+         *
+         * 判断当前设备是否支持 HCE 能力。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getHCEState({
   success (res) {
     console.log(res.errCode)
   }
 })
-```
-*
-* 最低基础库： `1.7.0` */
-        getHCEState(option?: GetHCEStateOption): void
+         ```
+         *
+         * 最低基础库： `1.7.0` */
+        getHCEState<TOption extends GetHCEStateOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetHCEStateOption>
         /** [wx.getImageInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/image/wx.getImageInfo.html)
-*
-* 获取图片信息。网络图片需先配置download域名才能生效。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/Kd47Sbmr6yYu)
-*
-* ```js
-wx.getImageInfo({
+         *
+         * 获取图片信息。网络图片需先配置download域名才能生效。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/Kd47Sbmr6yYu)
+         *
+         * ```js
+         wx.getImageInfo({
   src: 'images/a.jpg',
   success (res) {
     console.log(res.width)
@@ -10082,7 +11374,7 @@ wx.getImageInfo({
   }
 })
 
-wx.chooseImage({
+         wx.chooseImage({
   success (res) {
     wx.getImageInfo({
       src: res.tempFilePaths[0],
@@ -10093,17 +11385,19 @@ wx.chooseImage({
     })
   }
 })
-``` */
-        getImageInfo(option: GetImageInfoOption): void
+         ``` */
+        getImageInfo<TOption extends GetImageInfoOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetImageInfoOption>
         /** [wx.getLocation(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.getLocation.html)
-*
-* 获取当前的地理位置、速度。当用户离开小程序后，此接口无法调用。
-*
-* **示例代码**
-*
-*
-*  ```js
- wx.getLocation({
+         *
+         * 获取当前的地理位置、速度。当用户离开小程序后，此接口无法调用。开启高精度定位，接口耗时会增加，可指定 highAccuracyExpireTime 作为超时时间。地图相关使用的坐标格式应为 gcj02。
+         *
+         * **示例代码**
+         *
+         *
+         *  ```js
+         wx.getLocation({
   type: 'wgs84',
   success (res) {
     const latitude = res.latitude
@@ -10112,59 +11406,99 @@ wx.chooseImage({
     const accuracy = res.accuracy
   }
 })
- ```
-*
-* **注意**
-*
-*
-* - 工具中定位模拟使用IP定位，可能会有一定误差。且工具目前仅支持 gcj02 坐标。
-* - 使用第三方服务进行逆地址解析时，请确认第三方服务默认的坐标系，正确进行坐标转换。 */
-        getLocation(option: GetLocationOption): void
+         ```
+         *
+         * **注意**
+         *
+         *
+         * - 工具中定位模拟使用IP定位，可能会有一定误差。且工具目前仅支持 gcj02 坐标。
+         * - 使用第三方服务进行逆地址解析时，请确认第三方服务默认的坐标系，正确进行坐标转换。 */
+        getLocation<TOption extends GetLocationOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetLocationOption>
         /** [wx.getNetworkType(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/network/wx.getNetworkType.html)
-*
-* 获取网络类型
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getNetworkType({
+         *
+         * 获取网络类型
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getNetworkType({
   success (res) {
     const networkType = res.networkType
   }
 })
-``` */
-        getNetworkType(option?: GetNetworkTypeOption): void
+         ``` */
+        getNetworkType<TOption extends GetNetworkTypeOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetNetworkTypeOption>
+        /** [wx.getPerformance()](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/wx.getPerformance.html)
+         *
+         * 获取当前小程序性能相关的信息。
+         *
+         * ****
+         *
+         * 目前支持获取以下几类性能指标：
+         *
+         * | 类别 | 名称 (entryType) | 指标             |
+         * | ---- | ---------------- | ---------------- |
+         * | 路由 | navigation       | route, appLaunch |
+         * | 渲染 | render           | firstRender      |
+         * | 脚本 | script           | evaluateScript   |
+         *
+         *  - route: 路由性能
+         *  - appLaunch: 小程序启动耗时
+         *  - firstRender: 页面首次渲染耗时
+         *  - evaluateScript: 注入脚本耗时
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const performance = wx.getPerformance()
+         const observer = performance.createObserver((entryList) => {
+  console.log(entryList.getEntries())
+})
+         observer.observe({ entryTypes: ['render', 'script'] })
+         ```
+         *
+         * 最低基础库： `2.11.0` */
+        getPerformance(): void
         /** [wx.getSavedFileInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.getSavedFileInfo.html)
-*
-* 获取本地文件的文件信息。此接口只能用于获取已保存到本地的文件，若需要获取临时文件信息，请使用 [wx.getFileInfo()](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.getFileInfo.html) 接口。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getSavedFileList({
+         *
+         * 获取本地文件的文件信息。此接口只能用于获取已保存到本地的文件，若需要获取临时文件信息，请使用 [wx.getFileInfo()](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.getFileInfo.html) 接口。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getSavedFileList({
   success (res) {
     console.log(res.fileList)
   }
 })
-``` */
-        getSavedFileInfo(option: GetSavedFileInfoOption): void
+         ``` */
+        getSavedFileInfo<TOption extends GetSavedFileInfoOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetSavedFileInfoOption>
         /** [wx.getSavedFileList(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.getSavedFileList.html)
-*
-* 获取该小程序下已保存的本地缓存文件列表
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getSavedFileList({
+         *
+         * 获取该小程序下已保存的本地缓存文件列表
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getSavedFileList({
   success (res) {
     console.log(res.fileList)
   }
 })
-``` */
-        getSavedFileList(option?: WxGetSavedFileListOption): void
+         ``` */
+        getSavedFileList<TOption extends WxGetSavedFileListOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, WxGetSavedFileListOption>
         /** [wx.getScreenBrightness(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/screen/wx.getScreenBrightness.html)
          *
          * 获取屏幕亮度
@@ -10175,33 +11509,37 @@ wx.getSavedFileList({
          * - 若安卓系统设置中开启了自动调节亮度功能，则屏幕亮度会根据光线自动调整，该接口仅能获取自动调节亮度之前的值，而非实时的亮度值。
          *
          * 最低基础库： `1.2.0` */
-        getScreenBrightness(option?: GetScreenBrightnessOption): void
+        getScreenBrightness<TOption extends GetScreenBrightnessOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetScreenBrightnessOption>
         /** [wx.getSelectedTextRange(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/keyboard/wx.getSelectedTextRange.html)
-*
-* 在input、textarea等focus之后，获取输入框的光标位置。注意：只有在focus的时候调用此接口才有效。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getSelectedTextRange({
+         *
+         * 在input、textarea等focus之后，获取输入框的光标位置。注意：只有在focus的时候调用此接口才有效。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getSelectedTextRange({
   complete: res => {
     console.log('getSelectedTextRange res', res.start, res.end)
   }
 })
-```
-*
-* 最低基础库： `2.7.0` */
-        getSelectedTextRange(option?: GetSelectedTextRangeOption): void
+         ```
+         *
+         * 最低基础库： `2.7.0` */
+        getSelectedTextRange<TOption extends GetSelectedTextRangeOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetSelectedTextRangeOption>
         /** [wx.getSetting(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/setting/wx.getSetting.html)
-*
-* 获取用户的当前设置。**返回值中只会出现小程序已经向用户请求过的[权限](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/authorize.html)**。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getSetting({
+         *
+         * 获取用户的当前设置。**返回值中只会出现小程序已经向用户请求过的[权限](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/authorize.html)**。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getSetting({
   success (res) {
     console.log(res.authSetting)
     // res.authSetting = {
@@ -10210,51 +11548,77 @@ wx.getSetting({
     // }
   }
 })
-```
-*
-* 最低基础库： `1.2.0` */
-        getSetting(option?: GetSettingOption): void
+         ```
+         *
+         * ```js
+         wx.getSetting({
+  withSubscriptions: true,
+  success (res) {
+    console.log(res.authSetting)
+    // res.authSetting = {
+    //   "scope.userInfo": true,
+    //   "scope.userLocation": true
+    // }
+    console.log(res.subscriptionsSetting)
+    // res.subscriptionsSetting = {
+    //   mainSwitch: true, // 订阅消息总开关
+    //   itemSettings: {   // 每一项开关
+    //     SYS_MSG_TYPE_INTERACTIVE: 'accept', // 小游戏系统订阅消息
+    //     SYS_MSG_TYPE_RANK: 'accept'
+    //     zun-LzcQyW-edafCVvzPkK4de2Rllr1fFpw2A_x0oXE: 'reject', // 普通一次性订阅消息
+    //     ke_OZC_66gZxALLcsuI7ilCJSP2OJ2vWo2ooUPpkWrw: 'ban',
+    //   }
+    // }
+  }
+})
+         ```
+         *
+         * 最低基础库： `1.2.0` */
+        getSetting<TOption extends GetSettingOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetSettingOption>
         /** [wx.getShareInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/share/wx.getShareInfo.html)
-*
-* 获取转发详细信息
-*
-* **示例代码**
-*
-*
-* 敏感数据有两种获取方式，一是使用 [加密数据解密算法]((open-ability/signature#加密数据解密算法)) 。
-* 获取得到的开放数据为以下 json 结构（其中 openGId 为当前群的唯一标识）：
-*
-* ```json
-{
+         *
+         * 获取转发详细信息
+         *
+         * **示例代码**
+         *
+         *
+         * 敏感数据有两种获取方式，一是使用 [加密数据解密算法]((open-ability/signature#加密数据解密算法)) 。
+         * 获取得到的开放数据为以下 json 结构（其中 openGId 为当前群的唯一标识）：
+         *
+         * ```json
+         {
  "openGId": "OPENGID"
 }
-```
-*
-* **Tips**
-*
-*
-* - 如需要展示群名称，可以使用[开放数据组件](https://developers.weixin.qq.com/miniprogram/dev/component/open-ability/open-data.html)
-*
-* 最低基础库： `1.1.0` */
+         ```
+         *
+         * **Tips**
+         *
+         *
+         * - 如需要展示群名称，小程序可以使用[开放数据组件](https://developers.weixin.qq.com/miniprogram/dev/component/open-ability/open-data.html)
+         * - 小游戏可以通过 `wx.getGroupInfo` 接口获取群名称
+         *
+         * 最低基础库： `1.1.0` */
         getShareInfo(option: GetShareInfoOption): void
         /** [wx.getStorage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.getStorage.html)
-*
-* 从本地缓存中异步获取指定 key 的内容
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getStorage({
+         *
+         * 从本地缓存中异步获取指定 key 的内容
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getStorage({
   key: 'key',
   success (res) {
     console.log(res.data)
   }
 })
-```
-*
-* ```js
-try {
+         ```
+         *
+         * ```js
+         try {
   var value = wx.getStorageSync('key')
   if (value) {
     // Do something with return value
@@ -10262,27 +11626,29 @@ try {
 } catch (e) {
   // Do something when catch error
 }
-``` */
-        getStorage(option: GetStorageOption): void
+         ``` */
+        getStorage<TOption extends GetStorageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetStorageOption>
         /** [wx.getStorageInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.getStorageInfo.html)
-*
-* 异步获取当前storage的相关信息
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getStorageInfo({
+         *
+         * 异步获取当前storage的相关信息
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getStorageInfo({
   success (res) {
     console.log(res.keys)
     console.log(res.currentSize)
     console.log(res.limitSize)
   }
 })
-```
-*
-* ```js
-try {
+         ```
+         *
+         * ```js
+         try {
   const res = wx.getStorageInfoSync()
   console.log(res.keys)
   console.log(res.currentSize)
@@ -10290,17 +11656,19 @@ try {
 } catch (e) {
   // Do something when catch error
 }
-``` */
-        getStorageInfo(option?: GetStorageInfoOption): void
+         ``` */
+        getStorageInfo<TOption extends GetStorageInfoOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetStorageInfoOption>
         /** [wx.getSystemInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/base/system/system-info/wx.getSystemInfo.html)
-*
-* 获取系统信息
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getSystemInfo({
+         *
+         * 获取系统信息
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getSystemInfo({
   success (res) {
     console.log(res.model)
     console.log(res.pixelRatio)
@@ -10311,10 +11679,10 @@ wx.getSystemInfo({
     console.log(res.platform)
   }
 })
-```
-*
-* ```js
-try {
+         ```
+         *
+         * ```js
+         try {
   const res = wx.getSystemInfoSync()
   console.log(res.model)
   console.log(res.pixelRatio)
@@ -10326,24 +11694,26 @@ try {
 } catch (e) {
   // Do something when catch error
 }
-``` */
-        getSystemInfo(option?: GetSystemInfoOption): void
+         ``` */
+        getSystemInfo<TOption extends GetSystemInfoOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetSystemInfoOption>
         /** [wx.getUserInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUserInfo.html)
-*
-* 获取用户信息。
-*
-* **接口调整说明**
-*
-*
-* 在用户未授权过的情况下调用此接口，将不再出现授权弹窗，会直接进入 fail 回调（详见[《公告》](https://developers.weixin.qq.com/community/develop/doc/0000a26e1aca6012e896a517556c01))。在用户已授权的情况下调用此接口，可成功获取用户信息。
-*
-* **示例代码**
-*
-*
-*
-* ```js
-// 必须是在用户已经授权的情况下调用
-wx.getUserInfo({
+         *
+         * 获取用户信息。
+         *
+         * **接口调整说明**
+         *
+         *
+         * 在用户未授权过的情况下调用此接口，将不再出现授权弹窗，会直接进入 fail 回调（详见[《公告》](https://developers.weixin.qq.com/community/develop/doc/0000a26e1aca6012e896a517556c01))。在用户已授权的情况下调用此接口，可成功获取用户信息。
+         *
+         * **示例代码**
+         *
+         *
+         *
+         * ```js
+         // 必须是在用户已经授权的情况下调用
+         wx.getUserInfo({
   success: function(res) {
     var userInfo = res.userInfo
     var nickName = userInfo.nickName
@@ -10354,13 +11724,13 @@ wx.getUserInfo({
     var country = userInfo.country
   }
 })
-```
-*
-* 敏感数据有两种获取方式，一是使用 [加密数据解密算法]((open-ability/signature#加密数据解密算法)) 。
-* 获取得到的开放数据为以下 json 结构：
-*
-* ```json
-{
+         ```
+         *
+         * 敏感数据有两种获取方式，一是使用 [加密数据解密算法]((open-ability/signature#加密数据解密算法)) 。
+         * 获取得到的开放数据为以下 json 结构：
+         *
+         * ```json
+         {
   "openId": "OPENID",
   "nickName": "NICKNAME",
   "gender": GENDER,
@@ -10374,22 +11744,22 @@ wx.getUserInfo({
     "timestamp":TIMESTAMP
   }
 }
-```
-*
-* **小程序用户信息组件示例代码**
-*
-*
-* ```html
-* <!-- 如果只是展示用户头像昵称，可以使用 <open-data /> 组件 -->
-* <open-data type="userAvatarUrl"></open-data>
-* <open-data type="userNickName"></open-data>
-* <!-- 需要使用 button 来授权登录 -->
-* <button wx:if="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">授权登录</button>
-* <view wx:else>请升级微信版本</view>
-* ```
-*
-* ```js
-Page({
+         ```
+         *
+         * **小程序用户信息组件示例代码**
+         *
+         *
+         * ```html
+         * <!-- 如果只是展示用户头像昵称，可以使用 <open-data /> 组件 -->
+         * <open-data type="userAvatarUrl"></open-data>
+         * <open-data type="userNickName"></open-data>
+         * <!-- 需要使用 button 来授权登录 -->
+         * <button wx:if="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">授权登录</button>
+         * <view wx:else>请升级微信版本</view>
+         * ```
+         *
+         * ```js
+         Page({
   data: {
     canIUse: wx.canIUse('button.open-type.getUserInfo')
   },
@@ -10412,17 +11782,25 @@ Page({
     console.log(e.detail.userInfo)
   }
 })
-``` */
+         ``` */
         getUserInfo(option: GetUserInfoOption): void
+        /** [wx.getVideoInfo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.getVideoInfo.html)
+         *
+         * 获取视频详细信息。
+         *
+         * 最低基础库： `2.11.0` */
+        getVideoInfo<TOption extends GetVideoInfoOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, GetVideoInfoOption>
         /** [wx.getWeRunData(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/werun/wx.getWeRunData.html)
-*
-* 获取用户过去三十天微信运动步数。需要先调用 [wx.login](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) 接口。步数信息会在用户主动进入小程序时更新。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getWeRunData({
+         *
+         * 获取用户过去三十天微信运动步数。需要先调用 [wx.login](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html) 接口。步数信息会在用户主动进入小程序时更新。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getWeRunData({
   success (res) {
     // 拿 encryptedData 到开发者后台解密开放数据
     const encryptedData = res.encryptedData
@@ -10430,17 +11808,17 @@ wx.getWeRunData({
     const cloudID = res.cloudID
   }
 })
-```
-*
-* **开放数据 JSON 结构**
-*
-*
-*
-* 敏感数据有两种获取方式，一是使用 [加密数据解密算法]((open-ability/signature#加密数据解密算法)) 。
-* 获取得到的开放数据为以下 json 结构：
-*
-* ```json
-{
+         ```
+         *
+         * **开放数据 JSON 结构**
+         *
+         *
+         *
+         * 敏感数据有两种获取方式，一是使用 [加密数据解密算法]((open-ability/signature#加密数据解密算法)) 。
+         * 获取得到的开放数据为以下 json 结构：
+         *
+         * ```json
+         {
   "stepInfoList": [
     {
       "timestamp": 1445866601,
@@ -10452,16 +11830,16 @@ wx.getWeRunData({
     }
   ]
 }
-```
-*
-* stepInfoList 中，每一项结构如下：
-*
-* | 属性 | 类型 | 说明 |
-* | --- | ---- | --- |
-* | timestamp | number | 时间戳，表示数据对应的时间 |
-* | step | number | 微信运动步数 |
-*
-* 最低基础库： `1.2.0` */
+         ```
+         *
+         * stepInfoList 中，每一项结构如下：
+         *
+         * | 属性 | 类型 | 说明 |
+         * | --- | ---- | --- |
+         * | timestamp | number | 时间戳，表示数据对应的时间 |
+         * | step | number | 微信运动步数 |
+         *
+         * 最低基础库： `1.2.0` */
         getWeRunData(option?: GetWeRunDataOption): void
         /** [wx.getWifiList(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.getWifiList.html)
          *
@@ -10470,103 +11848,126 @@ wx.getWeRunData({
          * iOS 将跳转到系统的 Wi-Fi 界面，Android 不会跳转。 iOS 11.0 及 iOS 11.1 两个版本因系统问题，该方法失效。但在 iOS 11.2 中已修复。
          *
          * 最低基础库： `1.6.0` */
-        getWifiList(option?: GetWifiListOption): void
+        getWifiList<TOption extends GetWifiListOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, GetWifiListOption>
         /** [wx.hideHomeButton(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/navigation-bar/wx.hideHomeButton.html)
          *
          * 隐藏返回首页按钮。微信7.0.7版本起，当用户打开的小程序最底层页面是非首页时，默认展示“返回首页”按钮，开发者可在页面 onShow 中调用 hideHomeButton 进行隐藏。
          *
          * 最低基础库： `2.8.3` */
-        hideHomeButton(option?: HideHomeButtonOption): void
+        hideHomeButton<TOption extends HideHomeButtonOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, HideHomeButtonOption>
         /** [wx.hideKeyboard(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/keyboard/wx.hideKeyboard.html)
-*
-* 在input、textarea等focus拉起键盘之后，手动调用此接口收起键盘
-*
-* **示例代码**
-*
-*
-* ```js
-wx.hideKeyboard({
+         *
+         * 在input、textarea等focus拉起键盘之后，手动调用此接口收起键盘
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.hideKeyboard({
   complete: res => {
     console.log('hideKeyboard res', res)
   }
 })
-```
-*
-* 最低基础库： `2.8.2` */
-        hideKeyboard(option?: HideKeyboardOption): void
+         ```
+         *
+         * 最低基础库： `2.8.2` */
+        hideKeyboard<TOption extends HideKeyboardOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, HideKeyboardOption>
         /** [wx.hideLoading(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.hideLoading.html)
          *
          * 隐藏 loading 提示框
          *
          * 最低基础库： `1.1.0` */
-        hideLoading(option?: HideLoadingOption): void
+        hideLoading<TOption extends HideLoadingOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, HideLoadingOption>
         /** [wx.hideNavigationBarLoading(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/navigation-bar/wx.hideNavigationBarLoading.html)
          *
          * 在当前页面隐藏导航条加载动画 */
-        hideNavigationBarLoading(option?: HideNavigationBarLoadingOption): void
+        hideNavigationBarLoading<
+            TOption extends HideNavigationBarLoadingOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, HideNavigationBarLoadingOption>
         /** [wx.hideShareMenu(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/share/wx.hideShareMenu.html)
-*
-* 隐藏转发按钮
-*
-* **示例代码**
-*
-*
-* ```js
-wx.hideShareMenu()
-```
-*
-* 最低基础库： `1.1.0` */
-        hideShareMenu(option?: HideShareMenuOption): void
+         *
+         * 隐藏转发按钮
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.hideShareMenu()
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        hideShareMenu<TOption extends HideShareMenuOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, HideShareMenuOption>
         /** [wx.hideTabBar(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/tab-bar/wx.hideTabBar.html)
          *
          * 隐藏 tabBar
          *
          * 最低基础库： `1.9.0` */
-        hideTabBar(option: HideTabBarOption): void
+        hideTabBar<TOption extends HideTabBarOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, HideTabBarOption>
         /** [wx.hideTabBarRedDot(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/tab-bar/wx.hideTabBarRedDot.html)
          *
          * 隐藏 tabBar 某一项的右上角的红点
          *
          * 最低基础库： `1.9.0` */
-        hideTabBarRedDot(option: HideTabBarRedDotOption): void
+        hideTabBarRedDot<TOption extends HideTabBarRedDotOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, HideTabBarRedDotOption>
         /** [wx.hideToast(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.hideToast.html)
          *
          * 隐藏消息提示框 */
-        hideToast(option?: HideToastOption): void
+        hideToast<TOption extends HideToastOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, HideToastOption>
         /** [wx.loadFontFace(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/font/wx.loadFontFace.html)
-*
-* 动态加载网络字体。文件地址需为下载类型。iOS 仅支持 https 格式文件地址。
-*
-* 注意：
-* 1. 字体文件返回的 contet-type 参考 [font](https://www.iana.org/assignments/media-types/media-types.xhtml#font)，格式不正确时会解析失败。
-* 2. 字体链接必须是https（ios不支持http)
-* 3. 字体链接必须是同源下的，或开启了cors支持，小程序的域名是`servicewechat.com`
-* 4. canvas等原生组件不支持使用接口添加的字体
-* 5. 工具里提示 Faild to load font可以忽略
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/b6Zrajm67R2x)
-* ```js
-wx.loadFontFace({
+         *
+         * 动态加载网络字体，文件地址需为下载类型。[2.10.0](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)起支持全局生效，需在 `app.js` 中调用。
+         *
+         * 注意：
+         * 1. 字体文件返回的 contet-type 参考 [font](https://www.iana.org/assignments/media-types/media-types.xhtml#font)，格式不正确时会解析失败。
+         * 2. 字体链接必须是https（ios不支持http)
+         * 3. 字体链接必须是同源下的，或开启了cors支持，小程序的域名是`servicewechat.com`
+         * 4. canvas等原生组件不支持使用接口添加的字体
+         * 5. 工具里提示 Faild to load font可以忽略
+         * 6. [2.10.0](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html) 以前仅在调用页面生效。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/b6Zrajm67R2x)
+         * ```js
+         wx.loadFontFace({
   family: 'Bitstream Vera Serif Bold',
   source: 'url("https://sungd.github.io/Pacifico.ttf")',
   success: console.log
 })
-```
-*
-* 最低基础库： `2.1.0` */
-        loadFontFace(option: LoadFontFaceOption): void
+         ```
+         *
+         * 最低基础库： `2.1.0` */
+        loadFontFace<TOption extends LoadFontFaceOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, LoadFontFaceOption>
         /** [wx.login(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html)
-*
-* 调用接口获取登录凭证（code）。通过凭证进而换取用户登录态信息，包括用户的唯一标识（openid）及本次登录的会话密钥（session_key）等。用户数据的加解密通讯需要依赖会话密钥完成。更多使用方法详见 [小程序登录](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html)。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.login({
+         *
+         * 调用接口获取登录凭证（code）。通过凭证进而换取用户登录态信息，包括用户的唯一标识（openid）及本次登录的会话密钥（session_key）等。用户数据的加解密通讯需要依赖会话密钥完成。更多使用方法详见 [小程序登录](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html)。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.login({
   success (res) {
     if (res.code) {
       //发起网络请求
@@ -10581,36 +11982,40 @@ wx.login({
     }
   }
 })
-``` */
+         ``` */
         login(option?: LoginOption): void
         /** [wx.makePhoneCall(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/phone/wx.makePhoneCall.html)
-*
-* 拨打电话
-*
-* **示例代码**
-*
-*
-* ```js
-wx.makePhoneCall({
+         *
+         * 拨打电话
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.makePhoneCall({
   phoneNumber: '1340000' //仅为示例，并非真实的电话号码
 })
-``` */
-        makePhoneCall(option: MakePhoneCallOption): void
+         ``` */
+        makePhoneCall<TOption extends MakePhoneCallOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, MakePhoneCallOption>
         /** [wx.navigateBack(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateBack.html)
          *
          * 关闭当前页面，返回上一页面或多级页面。可通过 [getCurrentPages](https://developers.weixin.qq.com/miniprogram/dev/reference/api/getCurrentPages.html) 获取当前的页面栈，决定需要返回几层。 */
-        navigateBack(option?: NavigateBackOption): void
+        navigateBack<TOption extends NavigateBackOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, NavigateBackOption>
         /** [wx.navigateBackMiniProgram(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/miniprogram-navigate/wx.navigateBackMiniProgram.html)
-*
-* 返回到上一个小程序。只有在当前小程序是被其他小程序打开时可以调用成功
-*
-* 注意：**微信客户端 iOS 6.5.9，Android 6.5.10 及以上版本支持**
-*
-* **示例代码**
-*
-*
-* ```js
-wx.navigateBackMiniProgram({
+         *
+         * 返回到上一个小程序。只有在当前小程序是被其他小程序打开时可以调用成功
+         *
+         * 注意：**微信客户端 iOS 6.5.9，Android 6.5.10 及以上版本支持**
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.navigateBackMiniProgram({
   extraData: {
   foo: 'bar'
 },
@@ -10618,20 +12023,22 @@ success(res) {
   // 返回成功
 }
 })
-```
-*
-* 最低基础库： `1.3.0` */
-        navigateBackMiniProgram(option: NavigateBackMiniProgramOption): void
+         ```
+         *
+         * 最低基础库： `1.3.0` */
+        navigateBackMiniProgram<TOption extends NavigateBackMiniProgramOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, NavigateBackMiniProgramOption>
         /** [wx.navigateTo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateTo.html)
-*
-* 保留当前页面，跳转到应用内的某个页面。但是不能跳到 tabbar 页面。使用 [wx.navigateBack](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateBack.html) 可以返回到原页面。小程序中页面栈最多十层。
-*
-* **示例代码**
-*
-*
-*
-* ```js
-wx.navigateTo({
+         *
+         * 保留当前页面，跳转到应用内的某个页面。但是不能跳到 tabbar 页面。使用 [wx.navigateBack](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.navigateBack.html) 可以返回到原页面。小程序中页面栈最多十层。
+         *
+         * **示例代码**
+         *
+         *
+         *
+         * ```js
+         wx.navigateTo({
   url: 'test?id=1',
   events: {
     // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
@@ -10648,11 +12055,11 @@ wx.navigateTo({
     res.eventChannel.emit('acceptDataFromOpenerPage', { data: 'test' })
   }
 })
-```
-*
-* ```javascript
-//test.js
-Page({
+         ```
+         *
+         * ```javascript
+         //test.js
+         Page({
   onLoad: function(option){
     console.log(option.query)
     const eventChannel = this.getOpenerEventChannel()
@@ -10664,33 +12071,41 @@ Page({
     })
   }
 })
-``` */
-        navigateTo(option: NavigateToOption): void
+         ``` */
+        navigateTo<TOption extends NavigateToOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, NavigateToOption>
         /** [wx.navigateToMiniProgram(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/miniprogram-navigate/wx.navigateToMiniProgram.html)
-*
-* 打开另一个小程序
-*
-* **使用限制**
-*
-*
-* ##### 需要用户触发跳转
-* 从 2.3.0 版本开始，若用户未点击小程序页面任意位置，则开发者将无法调用此接口自动跳转至其他小程序。
-* ##### 需要用户确认跳转
-* 从 2.3.0 版本开始，在跳转至其他小程序前，将统一增加弹窗，询问是否跳转，用户确认后才可以跳转其他小程序。如果用户点击取消，则回调 `fail cancel`。
-* ##### 每个小程序可跳转的其他小程序数量限制为不超过 10 个
-* 从 2.4.0 版本以及指定日期（具体待定）开始，开发者提交新版小程序代码时，如使用了跳转其他小程序功能，则需要在代码配置中声明将要跳转的小程序名单，限定不超过 10 个，否则将无法通过审核。该名单可在发布新版时更新，不支持动态修改。配置方法详见 [小程序全局配置](https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/app.html)。调用此接口时，所跳转的 appId 必须在配置列表中，否则回调 `fail appId "${appId}" is not in navigateToMiniProgramAppIdList`。
-*
-* **关于调试**
-*
-*
-* - 在开发者工具上调用此 API 并不会真实的跳转到另外的小程序，但是开发者工具会校验本次调用跳转是否成功。[详情](https://developers.weixin.qq.com/miniprogram/dev/devtools/different.html#跳转小程序调试支持)
-* - 开发者工具上支持被跳转的小程序处理接收参数的调试。[详情](https://developers.weixin.qq.com/miniprogram/dev/devtools/different.html#跳转小程序调试支持)
-*
-* **示例代码**
-*
-*
-* ```js
-wx.navigateToMiniProgram({
+         *
+         * 打开另一个小程序
+         *
+         * **使用限制**
+         *
+         *
+         *  ##### 需要用户触发跳转
+         *  从 2.3.0 版本开始，若用户未点击小程序页面任意位置，则开发者将无法调用此接口自动跳转至其他小程序。
+         *  ##### 需要用户确认跳转
+         *  从 2.3.0 版本开始，在跳转至其他小程序前，将统一增加弹窗，询问是否跳转，用户确认后才可以跳转其他小程序。如果用户点击取消，则回调 `fail cancel`。
+         *  ##### 无需声明跳转名单，不限跳转数量（众测中）
+         * 1. 从2020年4月24日起，使用跳转其他小程序功能将无需在全局配置中声明跳转名单，调用此接口时将不再校验所跳转的 AppID 是否在 navigateToMiniProgramAppIdList 中。
+         * 2. 从2020年4月24日起，跳转其他小程序将不再受数量限制，使用此功能时请注意遵守运营规范。
+         *
+         * **运营规范**
+         *
+         *
+         * 平台将坚决打击小程序盒子等互推行为，使用此功能时请严格遵守[《微信小程序平台运营规范》](https://developers.weixin.qq.com/miniprogram/product/#_5-10-%E4%BA%92%E6%8E%A8%E8%A1%8C%E4%B8%BA)，若发现小程序违反运营规范将被下架处理。
+         *
+         * **关于调试**
+         *
+         *
+         * - 在开发者工具上调用此 API 并不会真实的跳转到另外的小程序，但是开发者工具会校验本次调用跳转是否成功。[详情](https://developers.weixin.qq.com/miniprogram/dev/devtools/different.html#跳转小程序调试支持)
+         * - 开发者工具上支持被跳转的小程序处理接收参数的调试。[详情](https://developers.weixin.qq.com/miniprogram/dev/devtools/different.html#跳转小程序调试支持)
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.navigateToMiniProgram({
   appId: '',
   path: 'page/index/index?id=123',
   extraData: {
@@ -10701,27 +12116,29 @@ wx.navigateToMiniProgram({
     // 打开成功
   }
 })
-```
-*
-* 最低基础库： `1.3.0` */
-        navigateToMiniProgram(option: NavigateToMiniProgramOption): void
+         ```
+         *
+         * 最低基础库： `1.3.0` */
+        navigateToMiniProgram<TOption extends NavigateToMiniProgramOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, NavigateToMiniProgramOption>
         /** [wx.nextTick(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/custom-component/wx.nextTick.html)
-*
-* 延迟一部分操作到下一个时间片再执行。（类似于 setTimeout）
-*
-* **说明**
-*
-*
-*
-* 因为自定义组件中的 setData 和 triggerEvent 等接口本身是同步的操作，当这几个接口被连续调用时，都是在一个同步流程中执行完的，因此若逻辑不当可能会导致出错。
-*
-* 一个极端的案例：当父组件的 setData 引发了子组件的 triggerEvent，进而使得父组件又进行了一次 setData，期间有通过 wx:if 语句对子组件进行卸载，就有可能引发奇怪的错误，所以对于不需要在一个同步流程内完成的逻辑，可以使用此接口延迟到下一个时间片再执行。
-*
-* **示例代码**
-*
-*
-* ```js
-Component({
+         *
+         * 延迟一部分操作到下一个时间片再执行。（类似于 setTimeout）
+         *
+         * **说明**
+         *
+         *
+         *
+         * 因为自定义组件中的 setData 和 triggerEvent 等接口本身是同步的操作，当这几个接口被连续调用时，都是在一个同步流程中执行完的，因此若逻辑不当可能会导致出错。
+         *
+         * 一个极端的案例：当父组件的 setData 引发了子组件的 triggerEvent，进而使得父组件又进行了一次 setData，期间有通过 wx:if 语句对子组件进行卸载，就有可能引发奇怪的错误，所以对于不需要在一个同步流程内完成的逻辑，可以使用此接口延迟到下一个时间片再执行。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         Component({
   doSth() {
     this.setData({ number: 1 }) // 直接在当前同步流程中执行
 
@@ -10732,28 +12149,28 @@ Component({
     this.setData({ number: 2 }) // 直接在当前同步流程中执行
   }
 })
-```
-*
-* 最低基础库： `2.2.3` */
+         ```
+         *
+         * 最低基础库： `2.2.3` */
         nextTick(callback: (...args: any[]) => any): void
         /** [wx.notifyBLECharacteristicValueChange(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.notifyBLECharacteristicValueChange.html)
-*
-* 启用低功耗蓝牙设备特征值变化时的 notify 功能，订阅特征值。注意：必须设备的特征值支持 notify 或者 indicate 才可以成功调用。
-*
-* 另外，必须先启用 `notifyBLECharacteristicValueChange` 才能监听到设备 `characteristicValueChange` 事件
-*
-* **注意**
-*
-*
-* - 订阅操作成功后需要设备主动更新特征值的 value，才会触发 [wx.onBLECharacteristicValueChange](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.onBLECharacteristicValueChange.html) 回调。
-* - 安卓平台上，在调用 `notifyBLECharacteristicValueChange` 成功后立即调用 `writeBLECharacteristicValue` 接口，在部分机型上会发生 10008 系统错误
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.notifyBLECharacteristicValueChange({
+         *
+         * 启用低功耗蓝牙设备特征值变化时的 notify 功能，订阅特征值。注意：必须设备的特征值支持 notify 或者 indicate 才可以成功调用。
+         *
+         * 另外，必须先启用 `notifyBLECharacteristicValueChange` 才能监听到设备 `characteristicValueChange` 事件
+         *
+         * **注意**
+         *
+         *
+         * - 订阅操作成功后需要设备主动更新特征值的 value，才会触发 [wx.onBLECharacteristicValueChange](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.onBLECharacteristicValueChange.html) 回调。
+         * - 安卓平台上，在调用 `notifyBLECharacteristicValueChange` 成功后立即调用 `writeBLECharacteristicValue` 接口，在部分机型上会发生 10008 系统错误
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.notifyBLECharacteristicValueChange({
   state: true, // 启用 notify 功能
   // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
   deviceId,
@@ -10765,20 +12182,25 @@ wx.notifyBLECharacteristicValueChange({
     console.log('notifyBLECharacteristicValueChange success', res.errMsg)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        notifyBLECharacteristicValueChange(
-            option: NotifyBLECharacteristicValueChangeOption,
-        ): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        notifyBLECharacteristicValueChange<
+            TOption extends NotifyBLECharacteristicValueChangeOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<
+            TOption,
+            NotifyBLECharacteristicValueChangeOption
+            >
         /** [wx.offAccelerometerChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/accelerometer/wx.offAccelerometerChange.html)
          *
-         * 取消监听加速度数据事件
+         * 取消监听加速度数据事件，参数为空，则取消所有的事件监听。
          *
-         * 最低基础库： `2.8.1` */
+         * 最低基础库： `2.9.3` */
         offAccelerometerChange(
             /** 加速度数据事件的回调函数 */
-            callback: OffAccelerometerChangeCallback,
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offAppHide(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.offAppHide.html)
          *
@@ -10787,7 +12209,7 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.1.2` */
         offAppHide(
             /** 小程序切后台事件的回调函数 */
-            callback: OffAppHideCallback,
+            callback: OffAppHideCallback
         ): void
         /** [wx.offAppShow(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.offAppShow.html)
          *
@@ -10796,7 +12218,7 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.1.2` */
         offAppShow(
             /** 小程序切前台事件的回调函数 */
-            callback: OffAppShowCallback,
+            callback: OffAppShowCallback
         ): void
         /** [wx.offAudioInterruptionBegin(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.offAudioInterruptionBegin.html)
          *
@@ -10805,7 +12227,7 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.6.2` */
         offAudioInterruptionBegin(
             /** 音频因为受到系统占用而被中断开始事件的回调函数 */
-            callback: OffAudioInterruptionBeginCallback,
+            callback: OffAudioInterruptionBeginCallback
         ): void
         /** [wx.offAudioInterruptionEnd(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.offAudioInterruptionEnd.html)
          *
@@ -10814,7 +12236,34 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.6.2` */
         offAudioInterruptionEnd(
             /** 音频中断结束事件的回调函数 */
-            callback: OffAudioInterruptionEndCallback,
+            callback: OffAudioInterruptionEndCallback
+        ): void
+        /** [wx.offBLECharacteristicValueChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.offBLECharacteristicValueChange.html)
+         *
+         * 取消监听低功耗蓝牙设备的特征值变化事件。
+         *
+         * 最低基础库： `2.9.0` */
+        offBLECharacteristicValueChange(
+            /** 低功耗蓝牙设备的特征值变化事件的回调函数 */
+            callback: (...args: any[]) => any
+        ): void
+        /** [wx.offBLEConnectionStateChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.offBLEConnectionStateChange.html)
+         *
+         * 取消监听低功耗蓝牙连接状态的改变事件
+         *
+         * 最低基础库： `2.9.0` */
+        offBLEConnectionStateChange(
+            /** 低功耗蓝牙连接状态的改变事件的回调函数 */
+            callback: (...args: any[]) => any
+        ): void
+        /** [wx.offBLEPeripheralConnectionStateChanged(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.offBLEPeripheralConnectionStateChanged.html)
+         *
+         * 取消监听当前外围设备被连接或断开连接事件
+         *
+         * 最低基础库： `2.10.3` */
+        offBLEPeripheralConnectionStateChanged(
+            /** 当前外围设备被连接或断开连接事件的回调函数 */
+            callback: OffBLEPeripheralConnectionStateChangedCallback
         ): void
         /** [wx.offBeaconServiceChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/ibeacon/wx.offBeaconServiceChange.html)
          *
@@ -10823,7 +12272,7 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.8.1` */
         offBeaconServiceChange(
             /** iBeacon 服务状态变化事件的回调函数 */
-            callback: OffBeaconServiceChangeCallback,
+            callback: OffBeaconServiceChangeCallback
         ): void
         /** [wx.offBeaconUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/ibeacon/wx.offBeaconUpdate.html)
          *
@@ -10832,25 +12281,43 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.8.1` */
         offBeaconUpdate(
             /** iBeacon 设备更新事件的回调函数 */
-            callback: OffBeaconUpdateCallback,
+            callback: OffBeaconUpdateCallback
+        ): void
+        /** [wx.offBluetoothAdapterStateChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.offBluetoothAdapterStateChange.html)
+         *
+         * 取消监听蓝牙适配器状态变化事件。
+         *
+         * 最低基础库： `2.9.0` */
+        offBluetoothAdapterStateChange(
+            /** 蓝牙适配器状态变化事件的回调函数 */
+            callback: (...args: any[]) => any
+        ): void
+        /** [wx.offBluetoothDeviceFound(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.offBluetoothDeviceFound.html)
+         *
+         * 取消监听寻找到新设备的事件。
+         *
+         * 最低基础库： `2.9.0` */
+        offBluetoothDeviceFound(
+            /** 寻找到新设备的事件的回调函数 */
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offCompassChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/compass/wx.offCompassChange.html)
          *
-         * 取消监听罗盘数据变化事件
+         * 取消监听罗盘数据变化事件，参数为空，则取消所有的事件监听。
          *
-         * 最低基础库： `2.8.1` */
+         * 最低基础库： `2.9.3` */
         offCompassChange(
             /** 罗盘数据变化事件的回调函数 */
-            callback: OffCompassChangeCallback,
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offDeviceMotionChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/motion/wx.offDeviceMotionChange.html)
          *
-         * 取消监听设备方向变化事件
+         * 取消监听设备方向变化事件，参数为空，则取消所有的事件监听。
          *
-         * 最低基础库： `2.8.1` */
+         * 最低基础库： `2.9.3` */
         offDeviceMotionChange(
             /** 设备方向变化事件的回调函数 */
-            callback: OffDeviceMotionChangeCallback,
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.offError.html)
          *
@@ -10859,25 +12326,43 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.1.2` */
         offError(
             /** 小程序错误事件的回调函数 */
-            callback: (...args: any[]) => any,
+            callback: (...args: any[]) => any
+        ): void
+        /** [wx.offGetWifiList(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.offGetWifiList.html)
+         *
+         * 取消监听获取到 Wi-Fi 列表数据事件。
+         *
+         * 最低基础库： `2.9.0` */
+        offGetWifiList(
+            /** 获取到 Wi-Fi 列表数据事件的回调函数 */
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offGyroscopeChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/gyroscope/wx.offGyroscopeChange.html)
          *
-         * 取消监听陀螺仪数据变化事件
+         * 取消监听陀螺仪数据变化事件。
          *
-         * 最低基础库： `2.8.1` */
+         * 最低基础库： `2.9.3` */
         offGyroscopeChange(
             /** 陀螺仪数据变化事件的回调函数 */
-            callback: OffGyroscopeChangeCallback,
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offHCEMessage(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/nfc/wx.offHCEMessage.html)
          *
-         * 取消监听接收 NFC 设备消息事件
+         * 接收 NFC 设备消息事件，取消事件监听。
          *
          * 最低基础库： `2.8.1` */
         offHCEMessage(
             /** 接收 NFC 设备消息事件的回调函数 */
-            callback: OffHCEMessageCallback,
+            callback: (...args: any[]) => any
+        ): void
+        /** [wx.offKeyboardHeightChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/aapi/ui/keyboard/wx.offKeyboardHeightChange.html)
+         *
+         * 取消监听键盘高度变化事件
+         *
+         * 最低基础库： `2.9.2` */
+        offKeyboardHeightChange(
+            /** 键盘高度变化事件的回调函数 */
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offLocalServiceDiscoveryStop(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.offLocalServiceDiscoveryStop.html)
          *
@@ -10886,7 +12371,7 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.4.0` */
         offLocalServiceDiscoveryStop(
             /** mDNS 服务停止搜索的事件的回调函数 */
-            callback: OffLocalServiceDiscoveryStopCallback,
+            callback: OffLocalServiceDiscoveryStopCallback
         ): void
         /** [wx.offLocalServiceFound(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.offLocalServiceFound.html)
          *
@@ -10895,7 +12380,7 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.4.0` */
         offLocalServiceFound(
             /** mDNS 服务发现的事件的回调函数 */
-            callback: OffLocalServiceFoundCallback,
+            callback: OffLocalServiceFoundCallback
         ): void
         /** [wx.offLocalServiceLost(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.offLocalServiceLost.html)
          *
@@ -10904,7 +12389,7 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.4.0` */
         offLocalServiceLost(
             /** mDNS 服务离开的事件的回调函数 */
-            callback: OffLocalServiceLostCallback,
+            callback: OffLocalServiceLostCallback
         ): void
         /** [wx.offLocalServiceResolveFail(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.offLocalServiceResolveFail.html)
          *
@@ -10913,7 +12398,7 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.4.0` */
         offLocalServiceResolveFail(
             /** mDNS 服务解析失败的事件的回调函数 */
-            callback: OffLocalServiceResolveFailCallback,
+            callback: OffLocalServiceResolveFailCallback
         ): void
         /** [wx.offLocationChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.offLocationChange.html)
          *
@@ -10922,16 +12407,25 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.8.1` */
         offLocationChange(
             /** 实时地理位置变化事件的回调函数 */
-            callback: OffLocationChangeCallback,
+            callback: OffLocationChangeCallback
+        ): void
+        /** [wx.offMemoryWarning(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/performance/wx.offMemoryWarning.html)
+         *
+         * 取消监听内存不足告警事件。
+         *
+         * 最低基础库： `2.9.0` */
+        offMemoryWarning(
+            /** 内存不足告警事件的回调函数 */
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offNetworkStatusChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/network/wx.offNetworkStatusChange.html)
          *
-         * 取消监听网络状态变化事件
+         * 取消监听网络状态变化事件，参数为空，则取消所有的事件监听。
          *
-         * 最低基础库： `2.8.1` */
+         * 最低基础库： `2.9.3` */
         offNetworkStatusChange(
             /** 网络状态变化事件的回调函数 */
-            callback: OffNetworkStatusChangeCallback,
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offPageNotFound(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.offPageNotFound.html)
          *
@@ -10940,16 +12434,43 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.1.2` */
         offPageNotFound(
             /** 小程序要打开的页面不存在事件的回调函数 */
-            callback: OffPageNotFoundCallback,
+            callback: OffPageNotFoundCallback
+        ): void
+        /** [wx.offThemeChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.offThemeChange.html)
+         *
+         * 取消监听系统主题改变事件
+         *
+         * 最低基础库： `2.11.0` */
+        offThemeChange(
+            /** 系统主题改变事件的回调函数 */
+            callback: OffThemeChangeCallback
+        ): void
+        /** [wx.offUnhandledRejection(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.offUnhandledRejection.html)
+         *
+         * 取消监听未处理的 Promise 拒绝事件
+         *
+         * 最低基础库： `2.10.0` */
+        offUnhandledRejection(
+            /** 未处理的 Promise 拒绝事件的回调函数 */
+            callback: OffUnhandledRejectionCallback
         ): void
         /** [wx.offUserCaptureScreen(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/screen/wx.offUserCaptureScreen.html)
          *
-         * 取消监听用户主动截屏事件
+         * 用户主动截屏事件。取消事件监听。
          *
-         * 最低基础库： `2.8.1` */
+         * 最低基础库： `2.9.3` */
         offUserCaptureScreen(
             /** 用户主动截屏事件的回调函数 */
-            callback: OffUserCaptureScreenCallback,
+            callback: (...args: any[]) => any
+        ): void
+        /** [wx.offWifiConnected(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.offWifiConnected.html)
+         *
+         * 取消监听连接上 Wi-Fi 的事件。
+         *
+         * 最低基础库： `2.9.0` */
+        offWifiConnected(
+            /** 连接上 Wi-Fi 的事件的回调函数 */
+            callback: (...args: any[]) => any
         ): void
         /** [wx.offWindowResize(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/window/wx.offWindowResize.html)
          *
@@ -10958,21 +12479,21 @@ wx.notifyBLECharacteristicValueChange({
          * 最低基础库： `2.3.0` */
         offWindowResize(
             /** 窗口尺寸变化事件的回调函数 */
-            callback: OffWindowResizeCallback,
+            callback: OffWindowResizeCallback
         ): void
         /** [wx.onAccelerometerChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/accelerometer/wx.onAccelerometerChange.html)
-*
-* 监听加速度数据事件。频率根据 [wx.startAccelerometer()](https://developers.weixin.qq.com/miniprogram/dev/api/device/accelerometer/wx.startAccelerometer.html) 的 interval 参数, 接口调用后会自动开始监听。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.onAccelerometerChange(callback)
-``` */
+         *
+         * 监听加速度数据事件。频率根据 [wx.startAccelerometer()](https://developers.weixin.qq.com/miniprogram/dev/api/device/accelerometer/wx.startAccelerometer.html) 的 interval 参数, 接口调用后会自动开始监听。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.onAccelerometerChange(callback)
+         ``` */
         onAccelerometerChange(
             /** 加速度数据事件的回调函数 */
-            callback: OnAccelerometerChangeCallback,
+            callback: OnAccelerometerChangeCallback
         ): void
         /** [wx.onAppHide(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onAppHide.html)
          *
@@ -10981,7 +12502,7 @@ wx.onAccelerometerChange(callback)
          * 最低基础库： `2.1.2` */
         onAppHide(
             /** 小程序切后台事件的回调函数 */
-            callback: OnAppHideCallback,
+            callback: OnAppHideCallback
         ): void
         /** [wx.onAppShow(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onAppShow.html)
          *
@@ -11007,7 +12528,7 @@ wx.onAccelerometerChange(callback)
          * 最低基础库： `2.1.2` */
         onAppShow(
             /** 小程序切前台事件的回调函数 */
-            callback: OnAppShowCallback,
+            callback: OnAppShowCallback
         ): void
         /** [wx.onAudioInterruptionBegin(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onAudioInterruptionBegin.html)
          *
@@ -11016,7 +12537,7 @@ wx.onAccelerometerChange(callback)
          * 最低基础库： `2.6.2` */
         onAudioInterruptionBegin(
             /** 音频因为受到系统占用而被中断开始事件的回调函数 */
-            callback: OnAudioInterruptionBeginCallback,
+            callback: OnAudioInterruptionBeginCallback
         ): void
         /** [wx.onAudioInterruptionEnd(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onAudioInterruptionEnd.html)
          *
@@ -11025,20 +12546,20 @@ wx.onAccelerometerChange(callback)
          * 最低基础库： `2.6.2` */
         onAudioInterruptionEnd(
             /** 音频中断结束事件的回调函数 */
-            callback: OnAudioInterruptionEndCallback,
+            callback: OnAudioInterruptionEndCallback
         ): void
         /** [wx.onBLECharacteristicValueChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.onBLECharacteristicValueChange.html)
-*
-* 监听低功耗蓝牙设备的特征值变化事件。必须先启用 `notifyBLECharacteristicValueChange` 接口才能接收到设备推送的 notification。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-*
-* ```js
-// ArrayBuffer转16进制字符串示例
-function ab2hex(buffer) {
+         *
+         * 监听低功耗蓝牙设备的特征值变化事件。必须先启用 `notifyBLECharacteristicValueChange` 接口才能接收到设备推送的 notification。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         *
+         * ```js
+         // ArrayBuffer转16进制字符串示例
+         function ab2hex(buffer) {
   let hexArr = Array.prototype.map.call(
     new Uint8Array(buffer),
     function(bit) {
@@ -11047,64 +12568,75 @@ function ab2hex(buffer) {
   )
   return hexArr.join('');
 }
-wx.onBLECharacteristicValueChange(function(res) {
+         wx.onBLECharacteristicValueChange(function(res) {
   console.log(`characteristic ${res.characteristicId} has changed, now is ${res.value}`)
   console.log(ab2hex(res.value))
 })
-```
-*
-* 最低基础库： `1.1.0` */
+         ```
+         *
+         * 最低基础库： `1.1.0` */
         onBLECharacteristicValueChange(
             /** 低功耗蓝牙设备的特征值变化事件的回调函数 */
-            callback: OnBLECharacteristicValueChangeCallback,
+            callback: OnBLECharacteristicValueChangeCallback
         ): void
         /** [wx.onBLEConnectionStateChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.onBLEConnectionStateChange.html)
-*
-* 监听低功耗蓝牙连接状态的改变事件。包括开发者主动连接或断开连接，设备丢失，连接异常断开等等
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.onBLEConnectionStateChange(function(res) {
+         *
+         * 监听低功耗蓝牙连接状态的改变事件。包括开发者主动连接或断开连接，设备丢失，连接异常断开等等
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.onBLEConnectionStateChange(function(res) {
   // 该方法回调中可以用于处理连接意外断开等异常情况
   console.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
 })
-```
-*
-* 最低基础库： `1.1.1` */
+         ```
+         *
+         * 最低基础库： `1.1.0` */
         onBLEConnectionStateChange(
             /** 低功耗蓝牙连接状态的改变事件的回调函数 */
-            callback: OnBLEConnectionStateChangeCallback,
+            callback: OnBLEConnectionStateChangeCallback
+        ): void
+        /** [wx.onBLEPeripheralConnectionStateChanged(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.onBLEPeripheralConnectionStateChanged.html)
+         *
+         * 监听当前外围设备被连接或断开连接事件
+         *
+         * 最低基础库： `2.10.3` */
+        onBLEPeripheralConnectionStateChanged(
+            /** 当前外围设备被连接或断开连接事件的回调函数 */
+            callback: OnBLEPeripheralConnectionStateChangedCallback
         ): void
         /** [wx.onBackgroundAudioPause(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.onBackgroundAudioPause.html)
          *
          * 监听音乐暂停事件。 */
         onBackgroundAudioPause(
             /** 音乐暂停事件的回调函数 */
-            callback: OnBackgroundAudioPauseCallback,
+            callback: OnBackgroundAudioPauseCallback
         ): void
         /** [wx.onBackgroundAudioPlay(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.onBackgroundAudioPlay.html)
          *
          * 监听音乐播放事件。 */
         onBackgroundAudioPlay(
             /** 音乐播放事件的回调函数 */
-            callback: OnBackgroundAudioPlayCallback,
+            callback: OnBackgroundAudioPlayCallback
         ): void
         /** [wx.onBackgroundAudioStop(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.onBackgroundAudioStop.html)
          *
          * 监听音乐停止事件。 */
         onBackgroundAudioStop(
             /** 音乐停止事件的回调函数 */
-            callback: OnBackgroundAudioStopCallback,
+            callback: OnBackgroundAudioStopCallback
         ): void
         /** [wx.onBackgroundFetchData(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/background-fetch/wx.onBackgroundFetchData.html)
          *
          * 收到 backgroundFetch 数据时的回调
          *
          * 最低基础库： `2.8.0` */
-        onBackgroundFetchData(option?: OnBackgroundFetchDataOption): void
+        onBackgroundFetchData<TOption extends OnBackgroundFetchDataOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, OnBackgroundFetchDataOption>
         /** [wx.onBeaconServiceChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/ibeacon/wx.onBeaconServiceChange.html)
          *
          * 监听 iBeacon 服务状态变化事件，仅能注册一个监听
@@ -11112,7 +12644,7 @@ wx.onBLEConnectionStateChange(function(res) {
          * 最低基础库： `1.2.0` */
         onBeaconServiceChange(
             /** iBeacon 服务状态变化事件的回调函数 */
-            callback: OnBeaconServiceChangeCallback,
+            callback: OnBeaconServiceChangeCallback
         ): void
         /** [wx.onBeaconUpdate(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/ibeacon/wx.onBeaconUpdate.html)
          *
@@ -11121,44 +12653,44 @@ wx.onBLEConnectionStateChange(function(res) {
          * 最低基础库： `1.2.0` */
         onBeaconUpdate(
             /** iBeacon 设备更新事件的回调函数 */
-            callback: OnBeaconUpdateCallback,
+            callback: OnBeaconUpdateCallback
         ): void
         /** [wx.onBluetoothAdapterStateChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.onBluetoothAdapterStateChange.html)
-*
-* 监听蓝牙适配器状态变化事件
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.onBluetoothAdapterStateChange(function (res) {
+         *
+         * 监听蓝牙适配器状态变化事件
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.onBluetoothAdapterStateChange(function (res) {
   console.log('adapterState changed, now is', res)
 })
-```
-*
-* 最低基础库： `1.1.0` */
+         ```
+         *
+         * 最低基础库： `1.1.0` */
         onBluetoothAdapterStateChange(
             /** 蓝牙适配器状态变化事件的回调函数 */
-            callback: OnBluetoothAdapterStateChangeCallback,
+            callback: OnBluetoothAdapterStateChangeCallback
         ): void
         /** [wx.onBluetoothDeviceFound(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.onBluetoothDeviceFound.html)
-*
-* 监听寻找到新设备的事件
-*
-* **注意**
-*
-*
-* - 若在 [wx.onBluetoothDeviceFound](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.onBluetoothDeviceFound.html) 回调了某个设备，则此设备会添加到 [wx.getBluetoothDevices](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.getBluetoothDevices.html) 接口获取到的数组中。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-*
-* ```js
-// ArrayBuffer转16进度字符串示例
-function ab2hex(buffer) {
+         *
+         * 监听寻找到新设备的事件
+         *
+         * **注意**
+         *
+         *
+         * - 若在 [wx.onBluetoothDeviceFound](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.onBluetoothDeviceFound.html) 回调了某个设备，则此设备会添加到 [wx.getBluetoothDevices](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.getBluetoothDevices.html) 接口获取到的数组中。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         *
+         * ```js
+         // ArrayBuffer转16进度字符串示例
+         function ab2hex(buffer) {
   var hexArr = Array.prototype.map.call(
     new Uint8Array(buffer),
     function(bit) {
@@ -11167,23 +12699,23 @@ function ab2hex(buffer) {
   )
   return hexArr.join('');
 }
-wx.onBluetoothDeviceFound(function(res) {
+         wx.onBluetoothDeviceFound(function(res) {
   var devices = res.devices;
   console.log('new device list has founded')
   console.dir(devices)
   console.log(ab2hex(devices[0].advertisData))
 })
-```
-*
-* **注意**
-*
-*
-* - 安卓下部分机型需要有位置权限才能搜索到设备，需留意是否开启了位置权限
-*
-* 最低基础库： `1.1.0` */
+         ```
+         *
+         * **注意**
+         *
+         *
+         * - 安卓下部分机型需要有位置权限才能搜索到设备，需留意是否开启了位置权限
+         *
+         * 最低基础库： `1.1.0` */
         onBluetoothDeviceFound(
             /** 寻找到新设备的事件的回调函数 */
-            callback: OnBluetoothDeviceFoundCallback,
+            callback: OnBluetoothDeviceFoundCallback
         ): void
         /** [wx.onCompassChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/compass/wx.onCompassChange.html)
          *
@@ -11207,7 +12739,7 @@ wx.onBluetoothDeviceFound(function(res) {
          * | unknow ${value} | 未知的精度枚举值，即该 Android 系统此时返回的表示精度的 value 不是一个标准的精度枚举值 | */
         onCompassChange(
             /** 罗盘数据变化事件的回调函数 */
-            callback: OnCompassChangeCallback,
+            callback: OnCompassChangeCallback
         ): void
         /** [wx.onDeviceMotionChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/motion/wx.onDeviceMotionChange.html)
          *
@@ -11216,7 +12748,7 @@ wx.onBluetoothDeviceFound(function(res) {
          * 最低基础库： `2.3.0` */
         onDeviceMotionChange(
             /** 设备方向变化事件的回调函数 */
-            callback: OnDeviceMotionChangeCallback,
+            callback: OnDeviceMotionChangeCallback
         ): void
         /** [wx.onError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onError.html)
          *
@@ -11225,7 +12757,7 @@ wx.onBluetoothDeviceFound(function(res) {
          * 最低基础库： `2.1.2` */
         onError(
             /** 小程序错误事件的回调函数 */
-            callback: OnAppErrorCallback,
+            callback: OnAppErrorCallback
         ): void
         /** [wx.onGetWifiList(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.onGetWifiList.html)
          *
@@ -11234,7 +12766,7 @@ wx.onBluetoothDeviceFound(function(res) {
          * 最低基础库： `1.6.0` */
         onGetWifiList(
             /** 获取到 Wi-Fi 列表数据事件的回调函数 */
-            callback: OnGetWifiListCallback,
+            callback: OnGetWifiListCallback
         ): void
         /** [wx.onGyroscopeChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/gyroscope/wx.onGyroscopeChange.html)
          *
@@ -11243,7 +12775,7 @@ wx.onBluetoothDeviceFound(function(res) {
          * 最低基础库： `2.3.0` */
         onGyroscopeChange(
             /** 陀螺仪数据变化事件的回调函数 */
-            callback: OnGyroscopeChangeCallback,
+            callback: OnGyroscopeChangeCallback
         ): void
         /** [wx.onHCEMessage(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/nfc/wx.onHCEMessage.html)
          *
@@ -11252,22 +12784,22 @@ wx.onBluetoothDeviceFound(function(res) {
          * 最低基础库： `1.7.0` */
         onHCEMessage(
             /** 接收 NFC 设备消息事件的回调函数 */
-            callback: OnHCEMessageCallback,
+            callback: OnHCEMessageCallback
         ): void
         /** [wx.onKeyboardHeightChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/keyboard/wx.onKeyboardHeightChange.html)
-*
-* 监听键盘高度变化
-*
-* **示例代码**
-*
-*
-* ```js
-wx.onKeyboardHeightChange(res => {
+         *
+         * 监听键盘高度变化
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.onKeyboardHeightChange(res => {
   console.log(res.height)
 })
-```
-*
-* 最低基础库： `2.7.0` */
+         ```
+         *
+         * 最低基础库： `2.7.0` */
         onKeyboardHeightChange(callback: OnKeyboardHeightChangeCallback): void
         /** [wx.onLocalServiceDiscoveryStop(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.onLocalServiceDiscoveryStop.html)
          *
@@ -11276,7 +12808,7 @@ wx.onKeyboardHeightChange(res => {
          * 最低基础库： `2.4.0` */
         onLocalServiceDiscoveryStop(
             /** mDNS 服务停止搜索的事件的回调函数 */
-            callback: OnLocalServiceDiscoveryStopCallback,
+            callback: OnLocalServiceDiscoveryStopCallback
         ): void
         /** [wx.onLocalServiceFound(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.onLocalServiceFound.html)
          *
@@ -11285,7 +12817,7 @@ wx.onKeyboardHeightChange(res => {
          * 最低基础库： `2.4.0` */
         onLocalServiceFound(
             /** mDNS 服务发现的事件的回调函数 */
-            callback: OnLocalServiceFoundCallback,
+            callback: OnLocalServiceFoundCallback
         ): void
         /** [wx.onLocalServiceLost(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.onLocalServiceLost.html)
          *
@@ -11294,7 +12826,7 @@ wx.onKeyboardHeightChange(res => {
          * 最低基础库： `2.4.0` */
         onLocalServiceLost(
             /** mDNS 服务离开的事件的回调函数 */
-            callback: OnLocalServiceLostCallback,
+            callback: OnLocalServiceLostCallback
         ): void
         /** [wx.onLocalServiceResolveFail(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.onLocalServiceResolveFail.html)
          *
@@ -11303,27 +12835,27 @@ wx.onKeyboardHeightChange(res => {
          * 最低基础库： `2.4.0` */
         onLocalServiceResolveFail(
             /** mDNS 服务解析失败的事件的回调函数 */
-            callback: OnLocalServiceResolveFailCallback,
+            callback: OnLocalServiceResolveFailCallback
         ): void
         /** [wx.onLocationChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.onLocationChange.html)
-*
-* 监听实时地理位置变化事件，需结合 [wx.startLocationUpdateBackground](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.startLocationUpdateBackground.html)、[wx.startLocationUpdate](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.startLocationUpdate.html)使用。
-*
-* **示例代码**
-*
-*
-* ```js
- const _locationChangeFn = function(res) {
+         *
+         * 监听实时地理位置变化事件，需结合 [wx.startLocationUpdateBackground](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.startLocationUpdateBackground.html)、[wx.startLocationUpdate](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.startLocationUpdate.html)使用。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const _locationChangeFn = function(res) {
   console.log('location change', res)
  }
- wx.onLocationChange(_locationChangeFn)
- wx.offLocationChange(_locationChangeFn)
-```
-*
-* 最低基础库： `2.8.1` */
+         wx.onLocationChange(_locationChangeFn)
+         wx.offLocationChange(_locationChangeFn)
+         ```
+         *
+         * 最低基础库： `2.8.1` */
         onLocationChange(
             /** 实时地理位置变化事件的回调函数 */
-            callback: OnLocationChangeCallback,
+            callback: OnLocationChangeCallback
         ): void
         /** [wx.onMemoryWarning(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/performance/wx.onMemoryWarning.html)
          *
@@ -11343,26 +12875,26 @@ wx.onKeyboardHeightChange(res => {
          * 最低基础库： `2.0.2` */
         onMemoryWarning(
             /** 内存不足告警事件的回调函数 */
-            callback: OnMemoryWarningCallback,
+            callback: OnMemoryWarningCallback
         ): void
         /** [wx.onNetworkStatusChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/network/wx.onNetworkStatusChange.html)
-*
-* 监听网络状态变化事件
-*
-* **示例代码**
-*
-*
-* ```js
-wx.onNetworkStatusChange(function (res) {
+         *
+         * 监听网络状态变化事件
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.onNetworkStatusChange(function (res) {
   console.log(res.isConnected)
   console.log(res.networkType)
 })
-```
-*
-* 最低基础库： `1.1.0` */
+         ```
+         *
+         * 最低基础库： `1.1.0` */
         onNetworkStatusChange(
             /** 网络状态变化事件的回调函数 */
-            callback: OnNetworkStatusChangeCallback,
+            callback: OnNetworkStatusChangeCallback
         ): void
         /** [wx.onPageNotFound(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onPageNotFound.html)
          *
@@ -11378,53 +12910,82 @@ wx.onNetworkStatusChange(function (res) {
          * 最低基础库： `2.1.2` */
         onPageNotFound(
             /** 小程序要打开的页面不存在事件的回调函数 */
-            callback: OnPageNotFoundCallback,
+            callback: OnPageNotFoundCallback
         ): void
         /** [wx.onSocketClose(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.onSocketClose.html)
          *
          * 监听 WebSocket 连接关闭事件 */
         onSocketClose(
             /** WebSocket 连接关闭事件的回调函数 */
-            callback: OnSocketCloseCallback,
+            callback: OnSocketCloseCallback
         ): void
         /** [wx.onSocketError(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.onSocketError.html)
          *
          * 监听 WebSocket 错误事件 */
         onSocketError(
             /** WebSocket 错误事件的回调函数 */
-            callback: OnSocketErrorCallback,
+            callback: OnSocketErrorCallback
         ): void
         /** [wx.onSocketMessage(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.onSocketMessage.html)
          *
          * 监听 WebSocket 接受到服务器的消息事件 */
         onSocketMessage(
             /** WebSocket 接受到服务器的消息事件的回调函数 */
-            callback: OnSocketMessageCallback,
+            callback: OnSocketMessageCallback
         ): void
         /** [wx.onSocketOpen(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.onSocketOpen.html)
          *
          * 监听 WebSocket 连接打开事件 */
         onSocketOpen(
             /** WebSocket 连接打开事件的回调函数 */
-            callback: OnSocketOpenCallback,
+            callback: OnSocketOpenCallback
+        ): void
+        /** [wx.onThemeChange(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onThemeChange.html)
+         *
+         * 监听系统主题改变事件。该事件与 [`App.onThemeChange`](https://developers.weixin.qq.com/miniprogram/dev/reference/api/App.html#onThemeChange-Object-object) 的回调时机一致。
+         *
+         * **注意**
+         *
+         *
+         * - 只有在全局配置"darkmode": true时才会触发此事件。
+         *
+         * 最低基础库： `2.11.0` */
+        onThemeChange(
+            /** 系统主题改变事件的回调函数 */
+            callback: OnThemeChangeCallback
+        ): void
+        /** [wx.onUnhandledRejection(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/base/app/app-event/wx.onUnhandledRejection.html)
+         *
+         * 监听未处理的 Promise 拒绝事件。该事件与 `App.onUnhandledRejection` 的回调时机与参数一致。
+         *
+         * **注意**
+         *
+         *
+         * - 安卓平台暂时不支持该事件
+         * - 所有的 unhandledRejection 都可以被这一监听捕获，但只有 Error 类型的才会在小程序后台触发报警。
+         *
+         * 最低基础库： `2.10.0` */
+        onUnhandledRejection(
+            /** 未处理的 Promise 拒绝事件的回调函数 */
+            callback: OnUnhandledRejectionCallback
         ): void
         /** [wx.onUserCaptureScreen(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/screen/wx.onUserCaptureScreen.html)
-*
-* 监听用户主动截屏事件。用户使用系统截屏按键截屏时触发，只能注册一个监听
-*
-* **示例代码**
-*
-*
-* ```js
-wx.onUserCaptureScreen(function (res) {
+         *
+         * 监听用户主动截屏事件。用户使用系统截屏按键截屏时触发，只能注册一个监听
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.onUserCaptureScreen(function (res) {
   console.log('用户截屏了')
 })
-```
-*
-* 最低基础库： `1.4.0` */
+         ```
+         *
+         * 最低基础库： `1.4.0` */
         onUserCaptureScreen(
             /** 用户主动截屏事件的回调函数 */
-            callback: OnUserCaptureScreenCallback,
+            callback: OnUserCaptureScreenCallback
         ): void
         /** [wx.onWifiConnected(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.onWifiConnected.html)
          *
@@ -11433,7 +12994,7 @@ wx.onUserCaptureScreen(function (res) {
          * 最低基础库： `1.6.0` */
         onWifiConnected(
             /** 连接上 Wi-Fi 的事件的回调函数 */
-            callback: OnWifiConnectedCallback,
+            callback: OnWifiConnectedCallback
         ): void
         /** [wx.onWindowResize(function callback)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/window/wx.onWindowResize.html)
          *
@@ -11442,41 +13003,54 @@ wx.onUserCaptureScreen(function (res) {
          * 最低基础库： `2.3.0` */
         onWindowResize(
             /** 窗口尺寸变化事件的回调函数 */
-            callback: OnWindowResizeCallback,
+            callback: OnWindowResizeCallback
         ): void
         /** [wx.openBluetoothAdapter(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.openBluetoothAdapter.html)
-*
-* 初始化蓝牙模块
-*
-* **注意**
-*
-*
-* - 其他蓝牙相关 API 必须在 [wx.openBluetoothAdapter](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.openBluetoothAdapter.html) 调用之后使用。否则 API 会返回错误（errCode=10000）。
-* - 在用户蓝牙开关未开启或者手机不支持蓝牙功能的情况下，调用 [wx.openBluetoothAdapter](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.openBluetoothAdapter.html) 会返回错误（errCode=10001），表示手机蓝牙功能不可用。此时小程序蓝牙模块已经初始化完成，可通过 [wx.onBluetoothAdapterStateChange](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.onBluetoothAdapterStateChange.html) 监听手机蓝牙状态的改变，也可以调用蓝牙模块的所有API。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.openBluetoothAdapter({
+         *
+         * 初始化蓝牙模块。iOS 上开启主机/丛机模式时需分别调用一次，指定对应的 `mode`。
+         *
+         * **object.fail 回调函数返回的 state 参数（仅 iOS）**
+         *
+         *
+         * | 状态码 | 说明   |
+         * | ------ | ------ |
+         * | 0      | 未知   |
+         * | 1      | 重置中 |
+         * | 2      | 不支持 |
+         * | 3      | 未授权 |
+         * | 4      | 未开启 |
+         *
+         * **注意**
+         *
+         *
+         * - 其他蓝牙相关 API 必须在 [wx.openBluetoothAdapter](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.openBluetoothAdapter.html) 调用之后使用。否则 API 会返回错误（errCode=10000）。
+         * - 在用户蓝牙开关未开启或者手机不支持蓝牙功能的情况下，调用 [wx.openBluetoothAdapter](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.openBluetoothAdapter.html) 会返回错误（errCode=10001），表示手机蓝牙功能不可用。此时小程序蓝牙模块已经初始化完成，可通过 [wx.onBluetoothAdapterStateChange](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.onBluetoothAdapterStateChange.html) 监听手机蓝牙状态的改变，也可以调用蓝牙模块的所有API。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.openBluetoothAdapter({
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        openBluetoothAdapter(option?: OpenBluetoothAdapterOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        openBluetoothAdapter<TOption extends OpenBluetoothAdapterOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, OpenBluetoothAdapterOption>
         /** [wx.openCard(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/card/wx.openCard.html)
-*
-* 查看微信卡包中的卡券。只有通过 [认证](https://developers.weixin.qq.com/miniprogram/product/renzheng.html) 的小程序或文化互动类目的小游戏才能使用。更多文档请参考 [微信卡券接口文档](https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&key=1490190158&version=1&lang=zh_CN&platform=2)。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.openCard({
+         *
+         * 查看微信卡包中的卡券。只有通过 [认证](https://developers.weixin.qq.com/miniprogram/product/renzheng.html) 的小程序或文化互动类目的小游戏才能使用。更多文档请参考 [微信卡券接口文档](https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&key=1490190158&version=1&lang=zh_CN&platform=2)。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.openCard({
   cardList: [{
     cardId: '',
     code: ''
@@ -11486,23 +13060,27 @@ wx.openCard({
   }],
   success (res) { }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        openCard(option: OpenCardOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        openCard<TOption extends OpenCardOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, OpenCardOption>
         /** [wx.openDocument(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.openDocument.html)
          *
-         * 新开页面打开文档 */
-        openDocument(option: OpenDocumentOption): void
+         * 新开页面打开文档。微信客户端 `7.0.12` 版本前默认显示右上角菜单按钮，之后的版本默认不显示，需主动传入 `showMenu`。 */
+        openDocument<TOption extends OpenDocumentOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, OpenDocumentOption>
         /** [wx.openLocation(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.openLocation.html)
-*
-* 使用微信内置地图查看位置
-*
-* **示例代码**
-*
-*
-*  ```js
- wx.getLocation({
+         *
+         * 使用微信内置地图查看位置
+         *
+         * **示例代码**
+         *
+         *
+         *  ```js
+         wx.getLocation({
   type: 'gcj02', //返回可以用于wx.openLocation的经纬度
   success (res) {
     const latitude = res.latitude
@@ -11514,20 +13092,19 @@ wx.openCard({
     })
   }
 })
- ``` */
-        openLocation(option: OpenLocationOption): void
+         ``` */
+        openLocation<TOption extends OpenLocationOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, OpenLocationOption>
         /** [wx.openSetting(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/setting/wx.openSetting.html)
-*
-* 调起客户端小程序设置界面，返回用户设置的操作结果。**设置界面只会出现小程序已经向用户请求过的[权限](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/authorize.html)**。
-*
-*
-* 注意：[2.3.0](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html) 版本开始，用户发生点击行为后，才可以跳转打开设置页，管理授权信息。[详情](https://developers.weixin.qq.com/community/develop/doc/000cea2305cc5047af5733de751008)
-*
-* **示例代码**
-*
-*
-* ```js
-wx.openSetting({
+         *
+         * 调起客户端小程序设置界面，返回用户设置的操作结果。**设置界面只会出现小程序已经向用户请求过的[权限](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/authorize.html)**。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.openSetting({
   success (res) {
     console.log(res.authSetting)
     // res.authSetting = {
@@ -11536,58 +13113,64 @@ wx.openSetting({
     // }
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        openSetting(option?: OpenSettingOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        openSetting<TOption extends OpenSettingOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, OpenSettingOption>
         /** [wx.pageScrollTo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/scroll/wx.pageScrollTo.html)
-*
-* 将页面滚动到目标位置，支持选择器和滚动距离两种方式定位
-*
-* **selector 语法**
-*
-*
-* selector类似于 CSS 的选择器，但仅支持下列语法。
-*
-* + ID选择器：#the-id
-* + class选择器（可以连续指定多个）：.a-class.another-class
-* + 子元素选择器：.the-parent > .the-child
-* + 后代选择器：.the-ancestor .the-descendant
-* + 跨自定义组件的后代选择器：.the-ancestor >>> .the-descendant
-* + 多选择器的并集：#a-node, .some-other-nodes
-*
-* **示例代码**
-*
-*
-* ```js
-wx.pageScrollTo({
+         *
+         * 将页面滚动到目标位置，支持选择器和滚动距离两种方式定位
+         *
+         * **selector 语法**
+         *
+         *
+         * selector类似于 CSS 的选择器，但仅支持下列语法。
+         *
+         * + ID选择器：#the-id
+         * + class选择器（可以连续指定多个）：.a-class.another-class
+         * + 子元素选择器：.the-parent > .the-child
+         * + 后代选择器：.the-ancestor .the-descendant
+         * + 跨自定义组件的后代选择器：.the-ancestor >>> .the-descendant
+         * + 多选择器的并集：#a-node, .some-other-nodes
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.pageScrollTo({
   scrollTop: 0,
   duration: 300
 })
-```
-*
-* 最低基础库： `1.4.0` */
-        pageScrollTo(option: PageScrollToOption): void
+         ```
+         *
+         * 最低基础库： `1.4.0` */
+        pageScrollTo<TOption extends PageScrollToOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, PageScrollToOption>
         /** [wx.pauseBackgroundAudio(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.pauseBackgroundAudio.html)
-*
-* 暂停播放音乐。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.pauseBackgroundAudio()
-``` */
-        pauseBackgroundAudio(option?: PauseBackgroundAudioOption): void
+         *
+         * 暂停播放音乐。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.pauseBackgroundAudio()
+         ``` */
+        pauseBackgroundAudio<TOption extends PauseBackgroundAudioOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, PauseBackgroundAudioOption>
         /** [wx.pauseVoice(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.pauseVoice.html)
-*
-* 暂停正在播放的语音。再次调用 [wx.playVoice](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.playVoice.html) 播放同一个文件时，会从暂停处开始播放。如果想从头开始播放，需要先调用 [wx.stopVoice](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.stopVoice.html)。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startRecord({
+         *
+         * 暂停正在播放的语音。再次调用 [wx.playVoice](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.playVoice.html) 播放同一个文件时，会从暂停处开始播放。如果想从头开始播放，需要先调用 [wx.stopVoice](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.stopVoice.html)。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startRecord({
   success (res) {
     const tempFilePath = res.tempFilePath
     wx.playVoice({
@@ -11597,32 +13180,36 @@ wx.startRecord({
     setTimeout(() => { wx.pauseVoice() }, 5000)
   }
 })
-``` */
-        pauseVoice(option?: PauseVoiceOption): void
+         ``` */
+        pauseVoice<TOption extends PauseVoiceOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, PauseVoiceOption>
         /** [wx.playBackgroundAudio(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.playBackgroundAudio.html)
-*
-* 使用后台播放器播放音乐。对于微信客户端来说，只能同时有一个后台音乐在播放。当用户离开小程序后，音乐将暂停播放；当用户在其他小程序占用了音乐播放器，原有小程序内的音乐将停止播放。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.playBackgroundAudio({
+         *
+         * 使用后台播放器播放音乐。对于微信客户端来说，只能同时有一个后台音乐在播放。当用户离开小程序后，音乐将暂停播放；当用户在其他小程序占用了音乐播放器，原有小程序内的音乐将停止播放。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.playBackgroundAudio({
   dataUrl: '',
   title: '',
   coverImgUrl: ''
 })
-``` */
-        playBackgroundAudio(option: PlayBackgroundAudioOption): void
+         ``` */
+        playBackgroundAudio<TOption extends PlayBackgroundAudioOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, PlayBackgroundAudioOption>
         /** [wx.playVoice(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.playVoice.html)
-*
-* 开始播放语音。同时只允许一个语音文件正在播放，如果前一个语音文件还没播放完，将中断前一个语音播放。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startRecord({
+         *
+         * 开始播放语音。同时只允许一个语音文件正在播放，如果前一个语音文件还没播放完，将中断前一个语音播放。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startRecord({
   success (res) {
     const tempFilePath = res.tempFilePath
     wx.playVoice({
@@ -11631,67 +13218,73 @@ wx.startRecord({
     })
   }
 })
-``` */
-        playVoice(option: PlayVoiceOption): void
+         ``` */
+        playVoice<TOption extends PlayVoiceOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, PlayVoiceOption>
         /** [wx.previewImage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/image/wx.previewImage.html)
-*
-* 在新页面中全屏预览图片。预览的过程中用户可以进行保存图片、发送给朋友等操作。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.previewImage({
+         *
+         * 在新页面中全屏预览图片。预览的过程中用户可以进行保存图片、发送给朋友等操作。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.previewImage({
   current: '', // 当前显示图片的http链接
   urls: [] // 需要预览的图片http链接列表
 })
-``` */
-        previewImage(option: PreviewImageOption): void
+         ``` */
+        previewImage<TOption extends PreviewImageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, PreviewImageOption>
         /** [wx.reLaunch(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.reLaunch.html)
-*
-* 关闭所有页面，打开到应用内的某个页面
-*
-* **示例代码**
-*
-*
-* ```js
-wx.reLaunch({
+         *
+         * 关闭所有页面，打开到应用内的某个页面
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.reLaunch({
   url: 'test?id=1'
 })
-```
-*
-* ```html
-* // test
-* Page({
-*   onLoad (option) {
-*     console.log(option.query)
-*   }
-* })
-* ```
-*
-* 最低基础库： `1.1.0` */
-        reLaunch(option: ReLaunchOption): void
+         ```
+         *
+         * ```html
+         * // test
+         * Page({
+         *   onLoad (option) {
+         *     console.log(option.query)
+         *   }
+         * })
+         * ```
+         *
+         * 最低基础库： `1.1.0` */
+        reLaunch<TOption extends ReLaunchOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ReLaunchOption>
         /** [wx.readBLECharacteristicValue(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.readBLECharacteristicValue.html)
-*
-* 读取低功耗蓝牙设备的特征值的二进制数据值。注意：必须设备的特征值支持 read 才可以成功调用。
-*
-* **注意**
-*
-*
-* - 并行调用多次会存在读失败的可能性。
-* - 接口读取到的信息需要在 `onBLECharacteristicValueChange` 方法注册的回调中获取。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-// 必须在这里的回调才能获取
-wx.onBLECharacteristicValueChange(function(characteristic) {
+         *
+         * 读取低功耗蓝牙设备的特征值的二进制数据值。注意：必须设备的特征值支持 read 才可以成功调用。
+         *
+         * **注意**
+         *
+         *
+         * - 并行调用多次会存在读失败的可能性。
+         * - 接口读取到的信息需要在 `onBLECharacteristicValueChange` 方法注册的回调中获取。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         // 必须在这里的回调才能获取
+         wx.onBLECharacteristicValueChange(function(characteristic) {
   console.log('characteristic value comed:', characteristic)
 })
 
-wx.readBLECharacteristicValue({
+         wx.readBLECharacteristicValue({
   // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
   deviceId,
   // 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
@@ -11702,34 +13295,38 @@ wx.readBLECharacteristicValue({
     console.log('readBLECharacteristicValue:', res.errCode)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        readBLECharacteristicValue(
-            option: ReadBLECharacteristicValueOption,
-        ): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        readBLECharacteristicValue<
+            TOption extends ReadBLECharacteristicValueOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ReadBLECharacteristicValueOption>
         /** [wx.redirectTo(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.redirectTo.html)
-*
-* 关闭当前页面，跳转到应用内的某个页面。但是不允许跳转到 tabbar 页面。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.redirectTo({
+         *
+         * 关闭当前页面，跳转到应用内的某个页面。但是不允许跳转到 tabbar 页面。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.redirectTo({
   url: 'test?id=1'
 })
-``` */
-        redirectTo(option: RedirectToOption): void
+         ``` */
+        redirectTo<TOption extends RedirectToOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, RedirectToOption>
         /** [wx.removeSavedFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.removeSavedFile.html)
-*
-* 删除本地缓存文件
-*
-* **示例代码**
-*
-*
-* ```js
-wx.getSavedFileList({
+         *
+         * 删除本地缓存文件
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.getSavedFileList({
  success (res) {
    if (res.fileList.length > 0){
      wx.removeSavedFile({
@@ -11741,116 +13338,143 @@ wx.getSavedFileList({
    }
  }
 })
-``` */
-        removeSavedFile(option: WxRemoveSavedFileOption): void
+         ``` */
+        removeSavedFile<TOption extends WxRemoveSavedFileOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, WxRemoveSavedFileOption>
         /** [wx.removeStorage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.removeStorage.html)
-*
-* 从本地缓存中移除指定 key
-*
-* **示例代码**
-*
-*
-* ```js
-wx.removeStorage({
+         *
+         * 从本地缓存中移除指定 key
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.removeStorage({
   key: 'key',
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* ```js
-try {
+         ```
+         *
+         * ```js
+         try {
   wx.removeStorageSync('key')
 } catch (e) {
   // Do something when catch error
 }
-``` */
-        removeStorage(option: RemoveStorageOption): void
+         ``` */
+        removeStorage<TOption extends RemoveStorageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, RemoveStorageOption>
         /** [wx.removeStorageSync(string key)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.removeStorageSync.html)
-*
-* [wx.removeStorage](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.removeStorage.html) 的同步版本
-*
-* **示例代码**
-*
-*
-* ```js
-wx.removeStorage({
+         *
+         * [wx.removeStorage](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.removeStorage.html) 的同步版本
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.removeStorage({
   key: 'key',
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* ```js
-try {
+         ```
+         *
+         * ```js
+         try {
   wx.removeStorageSync('key')
 } catch (e) {
   // Do something when catch error
 }
-``` */
+         ``` */
         removeStorageSync(
             /** 本地缓存中指定的 key */
-            key: string,
+            key: string
         ): void
         /** [wx.removeTabBarBadge(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/tab-bar/wx.removeTabBarBadge.html)
          *
          * 移除 tabBar 某一项右上角的文本
          *
          * 最低基础库： `1.9.0` */
-        removeTabBarBadge(option: RemoveTabBarBadgeOption): void
+        removeTabBarBadge<TOption extends RemoveTabBarBadgeOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, RemoveTabBarBadgeOption>
         /** [wx.reportAnalytics(string eventName, Object data)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/data-analysis/wx.reportAnalytics.html)
-*
-* 自定义分析数据上报接口。使用前，需要在小程序管理后台自定义分析中新建事件，配置好事件名与字段。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.reportAnalytics('purchase', {
+         *
+         * 自定义分析数据上报接口。使用前，需要在小程序管理后台自定义分析中新建事件，配置好事件名与字段。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.reportAnalytics('purchase', {
   price: 120,
   color: 'red'
 })
-``` */
+         ``` */
         reportAnalytics(
             /** 事件名 */
             eventName: string,
             /** 上报的自定义数据，key 为配置中的字段名，value 为上报的数据。 */
-            data: IAnyObject,
+            data: IAnyObject
         ): void
         /** [wx.reportMonitor(string name, number value)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/report/wx.reportMonitor.html)
-*
-* 自定义业务数据监控上报接口。
-*
-* **使用说明**
-*
-*
-* 使用前，需要在「小程序管理后台-运维中心-性能监控-业务数据监控」中新建监控事件，配置监控描述与告警类型。每一个监控事件对应唯一的监控ID，开发者最多可以创建128个监控事件。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.reportMonitor('1', 1)
-```
-*
-* 最低基础库： `2.0.1` */
+         *
+         * 自定义业务数据监控上报接口。
+         *
+         * **使用说明**
+         *
+         *
+         * 使用前，需要在「小程序管理后台-运维中心-性能监控-业务数据监控」中新建监控事件，配置监控描述与告警类型。每一个监控事件对应唯一的监控ID，开发者最多可以创建128个监控事件。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.reportMonitor('1', 1)
+         ```
+         *
+         * 最低基础库： `2.0.1` */
         reportMonitor(
             /** 监控ID，在「小程序管理后台」新建数据指标后获得 */
             name: string,
             /** 上报数值，经处理后会在「小程序管理后台」上展示每分钟的上报总量 */
+            value: number
+        ): void
+        /** [wx.reportPerformance(Number id, Number value, String|Array dimensions)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/performance/wx.reportPerformance.html)
+         *
+         * 小程序测速上报。使用前，需要在小程序管理后台配置。 详情参见[小程序测速](#)指南。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.reportPerformance(1101, 680)
+         wx.reportPerformance(1101, 680, 'custom')
+         ```
+         *
+         * 最低基础库： `2.9.2` */
+        reportPerformance(
+            /** 指标 id */
+            id: number,
+            /** 需要上报的数值 */
             value: number,
+            /** 自定义维度 (选填) */
+            dimensions?: string | any[]
         ): void
         /** [wx.requestPayment(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/payment/wx.requestPayment.html)
-*
-* 发起微信支付。了解更多信息，请查看[微信支付接口文档](https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=7_3&index=1)
-*
-* **示例代码**
-*
-*
-* ```js
-wx.requestPayment({
+         *
+         * 发起微信支付。了解更多信息，请查看[微信支付接口文档](https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=7_3&index=1)
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.requestPayment({
   timeStamp: '',
   nonceStr: '',
   package: '',
@@ -11859,17 +13483,60 @@ wx.requestPayment({
   success (res) { },
   fail (res) { }
 })
-``` */
-        requestPayment(option: RequestPaymentOption): void
+         ``` */
+        requestPayment<TOption extends RequestPaymentOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, RequestPaymentOption>
+        /** [wx.requestSubscribeMessage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/subscribe-message/wx.requestSubscribeMessage.html)
+         *
+         * 调起客户端小程序订阅消息界面，返回用户订阅消息的操作结果。当用户勾选了订阅面板中的“总是保持以上选择，不再询问”时，模板消息会被添加到用户的小程序设置页，通过 [wx.getSetting](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/setting/wx.getSetting.html) 接口可获取用户对相关模板消息的订阅状态。
+         *
+         * ## 注意事项
+         *  - 一次性模板 id 和永久模板 id 不可同时使用。
+         *  - 低版本基础库2.4.4~2.8.3 已支持订阅消息接口调用，仅支持传入一个一次性 tmplId / 永久 tmplId。
+         *  - [2.8.2](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html) 版本开始，用户发生点击行为或者发起支付回调后，才可以调起订阅消息界面。
+         *  - [2.10.0](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html) 版本开始，开发版和体验版小程序将禁止使用模板消息 fomrId。
+         *
+         * **错误码**
+         *
+         *
+         *
+         * | errCode | errMsg                                                 | 说明                                                           |
+         * | ------- | ------------------------------------------------------ | -------------------------------------------------------------- |
+         * | 10001   | TmplIds can't be empty                                 | 参数传空了                                                     |
+         * | 10002   | Request list fail                                       | 网络问题，请求消息列表失败                                     |
+         * | 10003   | Request subscribe fail                                 | 网络问题，订阅请求发送失败                                     |
+         * | 10004   | Invalid template id                                    | 参数类型错误                                                   |
+         * | 10005   | Cannot show subscribe message UI                       | 无法展示 UI，一般是小程序这个时候退后台了导致的                |
+         * | 20001   | No template data return, verify the template id exist  | 没有模板数据，一般是模板 ID 不存在 或者和模板类型不对应 导致的 |
+         * | 20002   | Templates type must be same                            | 模板消息类型 既有一次性的又有永久的                            |
+         * | 20003   | Templates count out of max bounds                      | 模板消息数量超过上限                                           |
+         * | 20004   | The main switch is switched off                        | 用户关闭了主开关，无法进行订阅                                 |
+         * | 20005   | This mini program was banned from subscribing messages | 小程序被禁封                                                   |
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.requestSubscribeMessage({
+  tmplIds: [''],
+  success (res) { }
+})
+         ```
+         *
+         * 最低基础库： `2.4.4` */
+        requestSubscribeMessage<TOption extends RequestSubscribeMessageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, RequestSubscribeMessageOption>
         /** [wx.saveFile(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.saveFile.html)
-*
-* 保存文件到本地。注意：**saveFile 会把临时文件移动，因此调用成功后传入的 tempFilePath 将不可用**
-*
-* **示例代码**
-*
-*
-* ```js
-wx.chooseImage({
+         *
+         * 保存文件到本地。注意：**saveFile 会把临时文件移动，因此调用成功后传入的 tempFilePath 将不可用**
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.chooseImage({
   success: function(res) {
     const tempFilePaths = res.tempFilePaths
     wx.saveFile({
@@ -11880,96 +13547,112 @@ wx.chooseImage({
     })
   }
 })
-```
-*
-* **注意**
-*
-*
-* 本地文件存储的大小限制为 10M */
-        saveFile(option: WxSaveFileOption): void
+         ```
+         *
+         * **注意**
+         *
+         *
+         * 本地文件存储的大小限制为 10M */
+        saveFile<TOption extends WxSaveFileOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, WxSaveFileOption>
+        /** [wx.saveFileToDisk(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.saveFileToDisk.html)
+         *
+         * 保存文件系统的文件到用户磁盘，仅在 PC 端支持
+         *
+         * 最低基础库： `2.11.0` */
+        saveFileToDisk(option: SaveFileToDiskOption): void
         /** [wx.saveImageToPhotosAlbum(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/image/wx.saveImageToPhotosAlbum.html)
-*
-* 保存图片到系统相册。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.saveImageToPhotosAlbum({
+         *
+         * 保存图片到系统相册。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.saveImageToPhotosAlbum({
   success(res) { }
 })
-```
-*
-* 最低基础库： `1.2.0` */
-        saveImageToPhotosAlbum(option: SaveImageToPhotosAlbumOption): void
+         ```
+         *
+         * 最低基础库： `1.2.0` */
+        saveImageToPhotosAlbum<TOption extends SaveImageToPhotosAlbumOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SaveImageToPhotosAlbumOption>
         /** [wx.saveVideoToPhotosAlbum(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.saveVideoToPhotosAlbum.html)
-*
-* 保存视频到系统相册。支持mp4视频格式。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.saveVideoToPhotosAlbum({
+         *
+         * 保存视频到系统相册。支持mp4视频格式。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.saveVideoToPhotosAlbum({
   filePath: 'wxfile://xxx',
   success (res) {
     console.log(res.errMsg)
   }
 })
-```
-*
-* 最低基础库： `1.2.0` */
-        saveVideoToPhotosAlbum(option: SaveVideoToPhotosAlbumOption): void
+         ```
+         *
+         * 最低基础库： `1.2.0` */
+        saveVideoToPhotosAlbum<TOption extends SaveVideoToPhotosAlbumOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SaveVideoToPhotosAlbumOption>
         /** [wx.scanCode(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/scan/wx.scanCode.html)
-*
-* 调起客户端扫码界面进行扫码
-*
-* **示例代码**
-*
-*
-* ```js
-// 允许从相机和相册扫码
-wx.scanCode({
+         *
+         * 调起客户端扫码界面进行扫码
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         // 允许从相机和相册扫码
+         wx.scanCode({
   success (res) {
     console.log(res)
   }
 })
 
-// 只允许从相机扫码
-wx.scanCode({
+         // 只允许从相机扫码
+         wx.scanCode({
   onlyFromCamera: true,
   success (res) {
     console.log(res)
   }
 })
-``` */
-        scanCode(option: ScanCodeOption): void
+         ``` */
+        scanCode<TOption extends ScanCodeOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ScanCodeOption>
         /** [wx.seekBackgroundAudio(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.seekBackgroundAudio.html)
-*
-* 控制音乐播放进度。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.seekBackgroundAudio({
+         *
+         * 控制音乐播放进度。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.seekBackgroundAudio({
   position: 30
 })
-``` */
-        seekBackgroundAudio(option: SeekBackgroundAudioOption): void
+         ``` */
+        seekBackgroundAudio<TOption extends SeekBackgroundAudioOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SeekBackgroundAudioOption>
         /** [wx.sendHCEMessage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/nfc/wx.sendHCEMessage.html)
-*
-* 发送 NFC 消息。仅在安卓系统下有效。
-*
-* **示例代码**
-*
-*
-* ```js
-const buffer = new ArrayBuffer(1)
-const dataView = new DataView(buffer)
-dataView.setUint8(0, 0)
+         *
+         * 发送 NFC 消息。仅在安卓系统下有效。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         const buffer = new ArrayBuffer(1)
+         const dataView = new DataView(buffer)
+         dataView.setUint8(0, 0)
 
-wx.startHCE({
+         wx.startHCE({
   success (res) {
     wx.onHCEMessage(function(res) {
       if (res.messageType === 1) {
@@ -11978,25 +13661,27 @@ wx.startHCE({
     })
   }
 })
-```
-*
-* 最低基础库： `1.7.0` */
-        sendHCEMessage(option: SendHCEMessageOption): void
+         ```
+         *
+         * 最低基础库： `1.7.0` */
+        sendHCEMessage<TOption extends SendHCEMessageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SendHCEMessageOption>
         /** [wx.sendSocketMessage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.sendSocketMessage.html)
-*
-* 通过 WebSocket 连接发送数据。需要先 wx.connectSocket，并在 wx.onSocketOpen 回调之后才能发送。
-*
-* **示例代码**
-*
-*
-* ```js
-let socketOpen = false
-const socketMsgQueue = []
-wx.connectSocket({
+         *
+         * 通过 WebSocket 连接发送数据。需要先 wx.connectSocket，并在 wx.onSocketOpen 回调之后才能发送。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         let socketOpen = false
+         const socketMsgQueue = []
+         wx.connectSocket({
   url: 'test.php'
 })
 
-wx.onSocketOpen(function(res) {
+         wx.onSocketOpen(function(res) {
   socketOpen = true
   for (let i = 0; i < socketMsgQueue.length; i++){
     sendSocketMessage(socketMsgQueue[i])
@@ -12004,7 +13689,7 @@ wx.onSocketOpen(function(res) {
   socketMsgQueue = []
 })
 
-function sendSocketMessage(msg) {
+         function sendSocketMessage(msg) {
   if (socketOpen) {
     wx.sendSocketMessage({
       data:msg
@@ -12013,58 +13698,74 @@ function sendSocketMessage(msg) {
     socketMsgQueue.push(msg)
   }
 }
-``` */
-        sendSocketMessage(option: SendSocketMessageOption): void
+         ``` */
+        sendSocketMessage<TOption extends SendSocketMessageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SendSocketMessageOption>
+        /** [wx.setBLEMTU(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.setBLEMTU.html)
+         *
+         * 设置蓝牙最大传输单元。需在 wx.createBLEConnection调用成功后调用，mtu 设置范围 (22,512)。安卓5.1以上有效。
+         *
+         * 最低基础库： `2.11.0` */
+        setBLEMTU<TOption extends SetBLEMTUOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetBLEMTUOption>
         /** [wx.setBackgroundColor(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/background/wx.setBackgroundColor.html)
-*
-* 动态设置窗口的背景色
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setBackgroundColor({
+         *
+         * 动态设置窗口的背景色
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setBackgroundColor({
   backgroundColor: '#ffffff', // 窗口的背景色为白色
 })
 
-wx.setBackgroundColor({
+         wx.setBackgroundColor({
   backgroundColorTop: '#ffffff', // 顶部窗口的背景色为白色
   backgroundColorBottom: '#ffffff', // 底部窗口的背景色为白色
 })
-```
-*
-* 最低基础库： `2.1.0` */
-        setBackgroundColor(option: SetBackgroundColorOption): void
+         ```
+         *
+         * 最低基础库： `2.1.0` */
+        setBackgroundColor<TOption extends SetBackgroundColorOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetBackgroundColorOption>
         /** [wx.setBackgroundFetchToken(object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/background-fetch/wx.setBackgroundFetchToken.html)
          *
          * 设置自定义登录态，在周期性拉取数据时带上，便于第三方服务器验证请求合法性
          *
          * 最低基础库： `2.8.0` */
-        setBackgroundFetchToken(option: SetBackgroundFetchTokenOption): void
+        setBackgroundFetchToken<TOption extends SetBackgroundFetchTokenOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetBackgroundFetchTokenOption>
         /** [wx.setBackgroundTextStyle(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/background/wx.setBackgroundTextStyle.html)
-*
-* 动态设置下拉背景字体、loading 图的样式
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setBackgroundTextStyle({
+         *
+         * 动态设置下拉背景字体、loading 图的样式
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setBackgroundTextStyle({
   textStyle: 'dark' // 下拉背景字体、loading 图的样式为dark
 })
-```
-*
-* 最低基础库： `2.1.0` */
-        setBackgroundTextStyle(option: SetBackgroundTextStyleOption): void
+         ```
+         *
+         * 最低基础库： `2.1.0` */
+        setBackgroundTextStyle<TOption extends SetBackgroundTextStyleOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetBackgroundTextStyleOption>
         /** [wx.setClipboardData(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/clipboard/wx.setClipboardData.html)
-*
-* 设置系统剪贴板的内容。调用成功后，会弹出 toast 提示"内容已复制"，持续 1.5s
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setClipboardData({
+         *
+         * 设置系统剪贴板的内容。调用成功后，会弹出 toast 提示"内容已复制"，持续 1.5s
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setClipboardData({
   data: 'data',
   success (res) {
     wx.getClipboardData({
@@ -12074,213 +13775,237 @@ wx.setClipboardData({
     })
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        setClipboardData(option: SetClipboardDataOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        setClipboardData<TOption extends SetClipboardDataOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetClipboardDataOption>
         /** [wx.setEnableDebug(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/base/debug/wx.setEnableDebug.html)
-*
-* 设置是否打开调试开关。此开关对正式版也能生效。
-*
-* **示例代码**
-*
-*
-* ```javascript
-// 打开调试
-wx.setEnableDebug({
+         *
+         * 设置是否打开调试开关。此开关对正式版也能生效。
+         *
+         * **示例代码**
+         *
+         *
+         * ```javascript
+         // 打开调试
+         wx.setEnableDebug({
   enableDebug: true
 })
 
-// 关闭调试
-wx.setEnableDebug({
+         // 关闭调试
+         wx.setEnableDebug({
   enableDebug: false
 })
-```
-*
-* **Tips**
-*
-*
-* - 在正式版打开调试还有一种方法，就是先在开发版或体验版打开调试，再切到正式版就能看到vConsole。
-*
-* 最低基础库： `1.4.0` */
-        setEnableDebug(option: SetEnableDebugOption): void
+         ```
+         *
+         * **Tips**
+         *
+         *
+         * - 在正式版打开调试还有一种方法，就是先在开发版或体验版打开调试，再切到正式版就能看到vConsole。
+         *
+         * 最低基础库： `1.4.0` */
+        setEnableDebug<TOption extends SetEnableDebugOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetEnableDebugOption>
         /** [wx.setInnerAudioOption(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.setInnerAudioOption.html)
          *
          * 设置 [InnerAudioContext](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/InnerAudioContext.html) 的播放选项。设置之后对当前小程序全局生效。
          *
          * 最低基础库： `2.3.0` */
-        setInnerAudioOption(option: SetInnerAudioOption): void
+        setInnerAudioOption<TOption extends SetInnerAudioOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetInnerAudioOption>
         /** [wx.setKeepScreenOn(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/screen/wx.setKeepScreenOn.html)
-*
-* 设置是否保持常亮状态。仅在当前小程序生效，离开小程序后设置失效。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setKeepScreenOn({
+         *
+         * 设置是否保持常亮状态。仅在当前小程序生效，离开小程序后设置失效。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setKeepScreenOn({
   keepScreenOn: true
 })
-```
-*
-* 最低基础库： `1.4.0` */
-        setKeepScreenOn(option: SetKeepScreenOnOption): void
+         ```
+         *
+         * 最低基础库： `1.4.0` */
+        setKeepScreenOn<TOption extends SetKeepScreenOnOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetKeepScreenOnOption>
         /** [wx.setNavigationBarColor(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/navigation-bar/wx.setNavigationBarColor.html)
          *
          * 设置页面导航条颜色
          *
          * 最低基础库： `1.4.0` */
-        setNavigationBarColor(option: SetNavigationBarColorOption): void
+        setNavigationBarColor<TOption extends SetNavigationBarColorOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetNavigationBarColorOption>
         /** [wx.setNavigationBarTitle(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/navigation-bar/wx.setNavigationBarTitle.html)
-*
-* 动态设置当前页面的标题
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setNavigationBarTitle({
+         *
+         * 动态设置当前页面的标题
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setNavigationBarTitle({
   title: '当前页面'
 })
-``` */
-        setNavigationBarTitle(option: SetNavigationBarTitleOption): void
+         ``` */
+        setNavigationBarTitle<TOption extends SetNavigationBarTitleOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetNavigationBarTitleOption>
         /** [wx.setScreenBrightness(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/screen/wx.setScreenBrightness.html)
          *
          * 设置屏幕亮度
          *
          * 最低基础库： `1.2.0` */
-        setScreenBrightness(option: SetScreenBrightnessOption): void
+        setScreenBrightness<TOption extends SetScreenBrightnessOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetScreenBrightnessOption>
         /** [wx.setStorage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.setStorage.html)
-*
-* 将数据存储在本地缓存中指定的 key 中。会覆盖掉原来该 key 对应的内容。除非用户主动删除或因存储空间原因被系统清理，否则数据都一直可用。单个 key 允许存储的最大数据长度为 1MB，所有数据存储上限为 10MB。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setStorage({
+         *
+         * 将数据存储在本地缓存中指定的 key 中。会覆盖掉原来该 key 对应的内容。除非用户主动删除或因存储空间原因被系统清理，否则数据都一直可用。单个 key 允许存储的最大数据长度为 1MB，所有数据存储上限为 10MB。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setStorage({
   key:"key",
   data:"value"
 })
-```
-* ```js
-try {
+         ```
+         * ```js
+         try {
   wx.setStorageSync('key', 'value')
 } catch (e) { }
-``` */
-        setStorage(option: SetStorageOption): void
+         ``` */
+        setStorage<TOption extends SetStorageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetStorageOption>
         /** [wx.setStorageSync(string key, any data)](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.setStorageSync.html)
-*
-* [wx.setStorage](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.setStorage.html) 的同步版本
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setStorage({
+         *
+         * [wx.setStorage](https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.setStorage.html) 的同步版本
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setStorage({
   key:"key",
   data:"value"
 })
-```
-* ```js
-try {
+         ```
+         * ```js
+         try {
   wx.setStorageSync('key', 'value')
 } catch (e) { }
-``` */
+         ``` */
         setStorageSync(
             /** 本地缓存中指定的 key */
             key: string,
             /** 需要存储的内容。只支持原生类型、Date、及能够通过`JSON.stringify`序列化的对象。 */
-            data: any,
+            data: any
         ): void
         /** [wx.setTabBarBadge(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/tab-bar/wx.setTabBarBadge.html)
-*
-* 为 tabBar 某一项的右上角添加文本
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setTabBarBadge({
+         *
+         * 为 tabBar 某一项的右上角添加文本
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setTabBarBadge({
   index: 0,
   text: '1'
 })
-```
-*
-* 最低基础库： `1.9.0` */
-        setTabBarBadge(option: SetTabBarBadgeOption): void
+         ```
+         *
+         * 最低基础库： `1.9.0` */
+        setTabBarBadge<TOption extends SetTabBarBadgeOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetTabBarBadgeOption>
         /** [wx.setTabBarItem(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/tab-bar/wx.setTabBarItem.html)
-*
-* 动态设置 tabBar 某一项的内容，`2.7.0` 起图片支持临时文件和网络文件。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setTabBarItem({
+         *
+         * 动态设置 tabBar 某一项的内容，`2.7.0` 起图片支持临时文件和网络文件。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setTabBarItem({
   index: 0,
   text: 'text',
   iconPath: '/path/to/iconPath',
   selectedIconPath: '/path/to/selectedIconPath'
 })
-```
-*
-* 最低基础库： `1.9.0` */
-        setTabBarItem(option: SetTabBarItemOption): void
+         ```
+         *
+         * 最低基础库： `1.9.0` */
+        setTabBarItem<TOption extends SetTabBarItemOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetTabBarItemOption>
         /** [wx.setTabBarStyle(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/tab-bar/wx.setTabBarStyle.html)
-*
-* 动态设置 tabBar 的整体样式
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setTabBarStyle({
+         *
+         * 动态设置 tabBar 的整体样式
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setTabBarStyle({
   color: '#FF0000',
   selectedColor: '#00FF00',
   backgroundColor: '#0000FF',
   borderStyle: 'white'
 })
-```
-*
-* 最低基础库： `1.9.0` */
-        setTabBarStyle(option?: SetTabBarStyleOption): void
+         ```
+         *
+         * 最低基础库： `1.9.0` */
+        setTabBarStyle<TOption extends SetTabBarStyleOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, SetTabBarStyleOption>
         /** [wx.setTopBarText(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/sticky/wx.setTopBarText.html)
-*
-* 动态设置置顶栏文字内容。只有当前小程序被置顶时能生效，如果当前小程序没有被置顶，也能调用成功，但是不会立即生效，只有在用户将这个小程序置顶后才换上设置的文字内容.
-*
-* **示例代码**
-*
-*
-* ```js
-wx.setTopBarText({
+         *
+         * 动态设置置顶栏文字内容。只有当前小程序被置顶时能生效，如果当前小程序没有被置顶，也能调用成功，但是不会立即生效，只有在用户将这个小程序置顶后才换上设置的文字内容.
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.setTopBarText({
   text: 'hello, world!'
 })
-```
-*
-* **注意**
-*
-*
-* - 调用成功后，需间隔 5s 才能再次调用此接口，如果在 5s 内再次调用此接口，会回调 fail，errMsg："setTopBarText: fail invoke too frequently"
-*
-* 最低基础库： `1.4.3` */
-        setTopBarText(option: SetTopBarTextOption): void
+         ```
+         *
+         * **注意**
+         *
+         *
+         * - 调用成功后，需间隔 5s 才能再次调用此接口，如果在 5s 内再次调用此接口，会回调 fail，errMsg："setTopBarText: fail invoke too frequently"
+         *
+         * 最低基础库： `1.4.3` */
+        setTopBarText<TOption extends SetTopBarTextOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetTopBarTextOption>
         /** [wx.setWifiList(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.setWifiList.html)
-*
-* 设置 `wifiList` 中 AP 的相关信息。在 `onGetWifiList` 回调后调用，**iOS特有接口**。
-*
-* **注意**
-*
-*
-* - 该接口只能在 `onGetWifiList` 回调之后才能调用。
-* - 此时客户端会挂起，等待小程序设置 Wi-Fi 信息，请务必尽快调用该接口，若无数据请传入一个空数组。
-* - 有可能随着周边 Wi-Fi 列表的刷新，单个流程内收到多次带有存在重复的 Wi-Fi 列表的回调。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.onGetWifiList(function(res) {
+         *
+         * 设置 `wifiList` 中 AP 的相关信息。在 `onGetWifiList` 回调后调用，**iOS特有接口**。
+         *
+         * **注意**
+         *
+         *
+         * - 该接口只能在 `onGetWifiList` 回调之后才能调用。
+         * - 此时客户端会挂起，等待小程序设置 Wi-Fi 信息，请务必尽快调用该接口，若无数据请传入一个空数组。
+         * - 有可能随着周边 Wi-Fi 列表的刷新，单个流程内收到多次带有存在重复的 Wi-Fi 列表的回调。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.onGetWifiList(function(res) {
   if (res.wifiList.length) {
     wx.setWifiList({
       wifiList: [{
@@ -12295,20 +14020,28 @@ wx.onGetWifiList(function(res) {
     })
   }
 })
-wx.getWifiList()
-```
-*
-* 最低基础库： `1.6.0` */
-        setWifiList(option: SetWifiListOption): void
+         wx.getWifiList()
+         ```
+         *
+         * 最低基础库： `1.6.0` */
+        setWifiList<TOption extends SetWifiListOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SetWifiListOption>
+        /** [wx.setWindowSize(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/window/wx.setWindowSize.html)
+         *
+         * 设置窗口大小，该接口仅适用于 PC 平台，使用细则请参见指南
+         *
+         * 最低基础库： `2.10.1` */
+        setWindowSize(option: SetWindowSizeOption): void
         /** [wx.showActionSheet(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showActionSheet.html)
-*
-* 显示操作菜单
-*
-* **示例代码**
-*
-*
-* ```js
-wx.showActionSheet({
+         *
+         * 显示操作菜单
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.showActionSheet({
   itemList: ['A', 'B', 'C'],
   success (res) {
     console.log(res.tapIndex)
@@ -12317,48 +14050,52 @@ wx.showActionSheet({
     console.log(res.errMsg)
   }
 })
-```
-*
-* **注意**
-*
-*
-* - Android 6.7.2 以下版本，点击取消或蒙层时，回调 fail, errMsg 为 "fail cancel"；
-* - Android 6.7.2 及以上版本 和 iOS 点击蒙层不会关闭模态弹窗，所以尽量避免使用「取消」分支中实现业务逻辑 */
-        showActionSheet(option: ShowActionSheetOption): void
+         ```
+         *
+         * **注意**
+         *
+         *
+         * - Android 6.7.2 以下版本，点击取消或蒙层时，回调 fail, errMsg 为 "fail cancel"；
+         * - Android 6.7.2 及以上版本 和 iOS 点击蒙层不会关闭模态弹窗，所以尽量避免使用「取消」分支中实现业务逻辑 */
+        showActionSheet<TOption extends ShowActionSheetOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ShowActionSheetOption>
         /** [wx.showLoading(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showLoading.html)
-*
-* 显示 loading 提示框。需主动调用 wx.hideLoading 才能关闭提示框
-*
-* **示例代码**
-*
-*
-* ```js
-wx.showLoading({
+         *
+         * 显示 loading 提示框。需主动调用 wx.hideLoading 才能关闭提示框
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.showLoading({
   title: '加载中',
 })
 
-setTimeout(function () {
+         setTimeout(function () {
   wx.hideLoading()
 }, 2000)
-```
-*
-* **注意**
-*
-*
-* - [wx.showLoading](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showLoading.html) 和 [wx.showToast](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showToast.html) 同时只能显示一个
-* - [wx.showLoading](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showLoading.html) 应与 [wx.hideLoading](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.hideLoading.html) 配对使用
-*
-* 最低基础库： `1.1.0` */
-        showLoading(option: ShowLoadingOption): void
+         ```
+         *
+         * **注意**
+         *
+         *
+         * - [wx.showLoading](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showLoading.html) 和 [wx.showToast](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showToast.html) 同时只能显示一个
+         * - [wx.showLoading](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showLoading.html) 应与 [wx.hideLoading](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.hideLoading.html) 配对使用
+         *
+         * 最低基础库： `1.1.0` */
+        showLoading<TOption extends ShowLoadingOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ShowLoadingOption>
         /** [wx.showModal(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showModal.html)
-*
-* 显示模态对话框
-*
-* **示例代码**
-*
-*
-* ```js
-wx.showModal({
+         *
+         * 显示模态对话框
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.showModal({
   title: '提示',
   content: '这是一个模态弹窗',
   success (res) {
@@ -12369,169 +14106,205 @@ wx.showModal({
     }
   }
 })
-```
-*
-* **注意**
-*
-*
-* - Android 6.7.2 以下版本，点击取消或蒙层时，回调 fail, errMsg 为 "fail cancel"；
-* - Android 6.7.2 及以上版本 和 iOS 点击蒙层不会关闭模态弹窗，所以尽量避免使用「取消」分支中实现业务逻辑 */
-        showModal(option: ShowModalOption): void
+         ```
+         *
+         * **注意**
+         *
+         *
+         * - Android 6.7.2 以下版本，点击取消或蒙层时，回调 fail, errMsg 为 "fail cancel"；
+         * - Android 6.7.2 及以上版本 和 iOS 点击蒙层不会关闭模态弹窗，所以尽量避免使用「取消」分支中实现业务逻辑 */
+        showModal<TOption extends ShowModalOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ShowModalOption>
         /** [wx.showNavigationBarLoading(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/navigation-bar/wx.showNavigationBarLoading.html)
          *
          * 在当前页面显示导航条加载动画 */
-        showNavigationBarLoading(option?: ShowNavigationBarLoadingOption): void
+        showNavigationBarLoading<
+            TOption extends ShowNavigationBarLoadingOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, ShowNavigationBarLoadingOption>
+        /** [wx.showRedPackage(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/redpackage/wx.showRedPackage.html)
+         *
+         * 拉取h5领取红包封面页。获取参考红包封面地址参考 [微信红包封面开发平台](https://cover.weixin.qq.com/cgi-bin/mmcover-bin/readtemplate?t=page%2Fdoc%2Fguide%2Fintroduce.html)。
+         *
+         * 最低基础库： `2.10.0` */
+        showRedPackage<TOption extends ShowRedPackageOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ShowRedPackageOption>
         /** [wx.showShareMenu(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/share/wx.showShareMenu.html)
-*
-* 显示当前页面的转发按钮
-*
-* **示例代码**
-*
-*
-* ```js
-wx.showShareMenu({
+         *
+         * 显示当前页面的转发按钮
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.showShareMenu({
   withShareTicket: true
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        showShareMenu(option: ShowShareMenuOption): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        showShareMenu<TOption extends ShowShareMenuOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ShowShareMenuOption>
         /** [wx.showTabBar(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/tab-bar/wx.showTabBar.html)
          *
          * 显示 tabBar
          *
          * 最低基础库： `1.9.0` */
-        showTabBar(option: ShowTabBarOption): void
+        showTabBar<TOption extends ShowTabBarOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ShowTabBarOption>
         /** [wx.showTabBarRedDot(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/tab-bar/wx.showTabBarRedDot.html)
          *
          * 显示 tabBar 某一项的右上角的红点
          *
          * 最低基础库： `1.9.0` */
-        showTabBarRedDot(option: ShowTabBarRedDotOption): void
+        showTabBarRedDot<TOption extends ShowTabBarRedDotOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ShowTabBarRedDotOption>
         /** [wx.showToast(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showToast.html)
-*
-* 显示消息提示框
-*
-* **示例代码**
-*
-*
-* ```js
-wx.showToast({
+         *
+         * 显示消息提示框
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.showToast({
   title: '成功',
   icon: 'success',
   duration: 2000
 })
-```
-*
-* **注意**
-*
-*
-* - [wx.showLoading](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showLoading.html) 和 [wx.showToast](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showToast.html) 同时只能显示一个
-* - [wx.showToast](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showToast.html) 应与 [wx.hideToast](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.hideToast.html) 配对使用 */
-        showToast(option: ShowToastOption): void
+         ```
+         *
+         * **注意**
+         *
+         *
+         * - [wx.showLoading](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showLoading.html) 和 [wx.showToast](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showToast.html) 同时只能显示一个
+         * - [wx.showToast](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.showToast.html) 应与 [wx.hideToast](https://developers.weixin.qq.com/miniprogram/dev/api/ui/interaction/wx.hideToast.html) 配对使用 */
+        showToast<TOption extends ShowToastOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, ShowToastOption>
         /** [wx.startAccelerometer(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/accelerometer/wx.startAccelerometer.html)
-*
-* 开始监听加速度数据。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startAccelerometer({
+         *
+         * 开始监听加速度数据。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startAccelerometer({
   interval: 'game'
 })
-```
-*
-* **注意**
-*
-*
-* - 根据机型性能、当前 CPU 与内存的占用情况，`interval` 的设置与实际 `wx.onAccelerometerChange()` 回调函数的执行频率会有一些出入。
-*
-* 最低基础库： `1.1.0` */
-        startAccelerometer(option: StartAccelerometerOption): void
+         ```
+         *
+         * **注意**
+         *
+         *
+         * - 根据机型性能、当前 CPU 与内存的占用情况，`interval` 的设置与实际 `wx.onAccelerometerChange()` 回调函数的执行频率会有一些出入。
+         *
+         * 最低基础库： `1.1.0` */
+        startAccelerometer<TOption extends StartAccelerometerOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, StartAccelerometerOption>
         /** [wx.startBeaconDiscovery(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/ibeacon/wx.startBeaconDiscovery.html)
-*
-* 开始搜索附近的 iBeacon 设备
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startBeaconDiscovery({
+         *
+         * 开始搜索附近的 iBeacon 设备
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startBeaconDiscovery({
   success(res) { }
 })
-```
-*
-* 最低基础库： `1.2.0` */
-        startBeaconDiscovery(option: StartBeaconDiscoveryOption): void
+         ```
+         *
+         * 最低基础库： `1.2.0` */
+        startBeaconDiscovery<TOption extends StartBeaconDiscoveryOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, StartBeaconDiscoveryOption>
         /** [wx.startBluetoothDevicesDiscovery(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.startBluetoothDevicesDiscovery.html)
-*
-* 开始搜寻附近的蓝牙外围设备。**此操作比较耗费系统资源，请在搜索并连接到设备后调用 [wx.stopBluetoothDevicesDiscovery](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.stopBluetoothDevicesDiscovery.html) 方法停止搜索。**
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-*
-* ```js
-// 以微信硬件平台的蓝牙智能灯为例，主服务的 UUID 是 FEE7。传入这个参数，只搜索主服务 UUID 为 FEE7 的设备
-wx.startBluetoothDevicesDiscovery({
+         *
+         * 开始搜寻附近的蓝牙外围设备。**此操作比较耗费系统资源，请在搜索并连接到设备后调用 [wx.stopBluetoothDevicesDiscovery](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.stopBluetoothDevicesDiscovery.html) 方法停止搜索。**
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         *
+         * ```js
+         // 以微信硬件平台的蓝牙智能灯为例，主服务的 UUID 是 FEE7。传入这个参数，只搜索主服务 UUID 为 FEE7 的设备
+         wx.startBluetoothDevicesDiscovery({
   services: ['FEE7'],
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        startBluetoothDevicesDiscovery(
-            option: StartBluetoothDevicesDiscoveryOption,
-        ): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        startBluetoothDevicesDiscovery<
+            TOption extends StartBluetoothDevicesDiscoveryOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<TOption, StartBluetoothDevicesDiscoveryOption>
         /** [wx.startCompass(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/compass/wx.startCompass.html)
-*
-* 开始监听罗盘数据
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startCompass()
-```
-*
-* 最低基础库： `1.1.0` */
-        startCompass(option?: StartCompassOption): void
+         *
+         * 开始监听罗盘数据
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startCompass()
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        startCompass<TOption extends StartCompassOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StartCompassOption>
         /** [wx.startDeviceMotionListening(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/motion/wx.startDeviceMotionListening.html)
          *
          * 开始监听设备方向的变化。
          *
          * 最低基础库： `2.3.0` */
-        startDeviceMotionListening(
-            option: StartDeviceMotionListeningOption,
-        ): void
+        startDeviceMotionListening<
+            TOption extends StartDeviceMotionListeningOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<TOption, StartDeviceMotionListeningOption>
         /** [wx.startGyroscope(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/gyroscope/wx.startGyroscope.html)
          *
          * 开始监听陀螺仪数据。
          *
          * 最低基础库： `2.3.0` */
-        startGyroscope(option: StartGyroscopeOption): void
+        startGyroscope<TOption extends StartGyroscopeOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, StartGyroscopeOption>
         /** [wx.startHCE(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/nfc/wx.startHCE.html)
-*
-* 初始化 NFC 模块。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startHCE({
+         *
+         * 初始化 NFC 模块。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startHCE({
   aid_list: ['F222222222'],
   success (res) {
     console.log(res.errMsg)
   }
 })
-```
-*
-* 最低基础库： `1.7.0` */
-        startHCE(option: StartHCEOption): void
+         ```
+         *
+         * 最低基础库： `1.7.0` */
+        startHCE<TOption extends StartHCEOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, StartHCEOption>
         /** [wx.startLocalServiceDiscovery(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.startLocalServiceDiscovery.html)
          *
          * 开始搜索局域网下的 mDNS 服务。搜索的结果会通过 wx.onLocalService* 事件返回。
@@ -12543,9 +14316,11 @@ wx.startHCE({
          * 2. 在调用 wx.startLocalServiceDiscovery 后，在这次搜索行为停止后才能发起下次 wx.startLocalServiceDiscovery。停止本次搜索行为的操作包括调用 wx.stopLocalServiceDiscovery 和 30 秒后系统自动 stop 本次搜索。
          *
          * 最低基础库： `2.4.0` */
-        startLocalServiceDiscovery(
-            option: StartLocalServiceDiscoveryOption,
-        ): void
+        startLocalServiceDiscovery<
+            TOption extends StartLocalServiceDiscoveryOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<TOption, StartLocalServiceDiscoveryOption>
         /** [wx.startLocationUpdate(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.startLocationUpdate.html)
          *
          * 开启小程序进入前台时接收位置消息
@@ -12556,7 +14331,9 @@ wx.startHCE({
          * - 获取位置信息需配置[地理位置用途说明](https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/app.html#permission)。
          *
          * 最低基础库： `2.8.0` */
-        startLocationUpdate(option?: StartLocationUpdateOption): void
+        startLocationUpdate<TOption extends StartLocationUpdateOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StartLocationUpdateOption>
         /** [wx.startLocationUpdateBackground(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.startLocationUpdateBackground.html)
          *
          * 开启小程序进入前后台时均接收位置消息，需引导用户开启[授权]((open-ability/authorize#后台定位))。授权以后，小程序在运行中或进入后台均可接受位置消息变化。
@@ -12569,62 +14346,68 @@ wx.startHCE({
          * - 获取位置信息需配置[地理位置用途说明](https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/app.html#permission)。
          *
          * 最低基础库： `2.8.0` */
-        startLocationUpdateBackground(
-            option?: StartLocationUpdateBackgroundOption,
-        ): void
+        startLocationUpdateBackground<
+            TOption extends StartLocationUpdateBackgroundOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StartLocationUpdateBackgroundOption>
         /** [wx.startPullDownRefresh(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/pull-down-refresh/wx.startPullDownRefresh.html)
-*
-* 开始下拉刷新。调用后触发下拉刷新动画，效果与用户手动下拉刷新一致。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startPullDownRefresh()
-```
-*
-* 最低基础库： `1.5.0` */
-        startPullDownRefresh(option?: StartPullDownRefreshOption): void
+         *
+         * 开始下拉刷新。调用后触发下拉刷新动画，效果与用户手动下拉刷新一致。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startPullDownRefresh()
+         ```
+         *
+         * 最低基础库： `1.5.0` */
+        startPullDownRefresh<TOption extends StartPullDownRefreshOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StartPullDownRefreshOption>
         /** [wx.startRecord(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/wx.startRecord.html)
-*
-* 开始录音。当主动调用 [wx.stopRecord](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/wx.stopRecord.html)，或者录音超过1分钟时自动结束录音。当用户离开小程序时，此接口无法调用。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startRecord({
+         *
+         * 开始录音。当主动调用 [wx.stopRecord](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/wx.stopRecord.html)，或者录音超过1分钟时自动结束录音。当用户离开小程序时，此接口无法调用。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startRecord({
   success (res) {
     const tempFilePath = res.tempFilePath
   }
 })
-setTimeout(function () {
+         setTimeout(function () {
   wx.stopRecord() // 结束录音
 }, 10000)
-``` */
-        startRecord(option: WxStartRecordOption): void
+         ``` */
+        startRecord<TOption extends WxStartRecordOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, WxStartRecordOption>
         /** [wx.startSoterAuthentication(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/soter/wx.startSoterAuthentication.html)
-*
-* 开始 SOTER 生物认证。验证流程请参考[说明](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/bio-auth.html)。
-*
-* **resultJSON 说明**
-*
-*
-* 此数据为设备TEE中，将传入的challenge和TEE内其他安全信息组成的数据进行组装而来的JSON，对下述字段的解释如下表。例子如下：
-* | 字段名  | 说明                                                                                      |
-* |---------|-------------------------------------------------------------------------------------------|
-* | raw     | 调用者传入的challenge                                                                     |
-* | fid     | （仅Android支持）本次生物识别认证的生物信息编号（如指纹识别则是指纹信息在本设备内部编号） |
-* | counter | 防重放特征参数                                                                            |
-* | tee_n   | TEE名称（如高通或者trustonic等）                                                          |
-* | tee_v   | TEE版本号                                                                                 |
-* | fp_n    | 指纹以及相关逻辑模块提供商（如FPC等）                                                     |
-* | fp_v    | 指纹以及相关模块版本号                                                                    |
-* | cpu_id  | 机器唯一识别ID                                                                            |
-* | uid     | 概念同Android系统定义uid，即应用程序编号                                                  |
-*
-* ```json
-{
+         *
+         * 开始 SOTER 生物认证。验证流程请参考[说明](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/bio-auth.html)。
+         *
+         * **resultJSON 说明**
+         *
+         *
+         * 此数据为设备TEE中，将传入的challenge和TEE内其他安全信息组成的数据进行组装而来的JSON，对下述字段的解释如下表。例子如下：
+         * | 字段名  | 说明                                                                                      |
+         * |---------|-------------------------------------------------------------------------------------------|
+         * | raw     | 调用者传入的challenge                                                                     |
+         * | fid     | （仅Android支持）本次生物识别认证的生物信息编号（如指纹识别则是指纹信息在本设备内部编号） |
+         * | counter | 防重放特征参数                                                                            |
+         * | tee_n   | TEE名称（如高通或者trustonic等）                                                          |
+         * | tee_v   | TEE版本号                                                                                 |
+         * | fp_n    | 指纹以及相关逻辑模块提供商（如FPC等）                                                     |
+         * | fp_v    | 指纹以及相关模块版本号                                                                    |
+         * | cpu_id  | 机器唯一识别ID                                                                            |
+         * | uid     | 概念同Android系统定义uid，即应用程序编号                                                  |
+         *
+         * ```json
+         {
   "raw":"msg",
   "fid":"2",
   "counter":123,
@@ -12635,194 +14418,224 @@ setTimeout(function () {
   "cpu_id":"CPU Id",
   "uid":"21"
 }
-```
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/q3tCKkmJ7g2e)
-* ```js
-wx.startSoterAuthentication({
+         ```
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/q3tCKkmJ7g2e)
+         * ```js
+         wx.startSoterAuthentication({
    requestAuthModes: ['fingerPrint'],
    challenge: '123456',
    authContent: '请用指纹解锁',
    success(res) {
    }
 })
-```
-*
-* 最低基础库： `1.5.0` */
-        startSoterAuthentication(option: StartSoterAuthenticationOption): void
+         ```
+         *
+         * 最低基础库： `1.5.0` */
+        startSoterAuthentication<
+            TOption extends StartSoterAuthenticationOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<TOption, StartSoterAuthenticationOption>
         /** [wx.startWifi(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.startWifi.html)
-*
-* 初始化 Wi-Fi 模块。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/8P7zrkmd7r2n)
-* ```js
-wx.startWifi({
+         *
+         * 初始化 Wi-Fi 模块。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/8P7zrkmd7r2n)
+         * ```js
+         wx.startWifi({
   success (res) {
     console.log(res.errMsg)
   }
 })
-```
-*
-* 最低基础库： `1.6.0` */
-        startWifi(option?: StartWifiOption): void
+         ```
+         *
+         * 最低基础库： `1.6.0` */
+        startWifi<TOption extends StartWifiOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StartWifiOption>
         /** [wx.stopAccelerometer(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/accelerometer/wx.stopAccelerometer.html)
-*
-* 停止监听加速度数据。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.stopAccelerometer()
-```
-*
-* 最低基础库： `1.1.0` */
-        stopAccelerometer(option?: StopAccelerometerOption): void
+         *
+         * 停止监听加速度数据。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.stopAccelerometer()
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        stopAccelerometer<TOption extends StopAccelerometerOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopAccelerometerOption>
         /** [wx.stopBackgroundAudio(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/background-audio/wx.stopBackgroundAudio.html)
-*
-* 停止播放音乐。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.stopBackgroundAudio()
-``` */
-        stopBackgroundAudio(option?: StopBackgroundAudioOption): void
+         *
+         * 停止播放音乐。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.stopBackgroundAudio()
+         ``` */
+        stopBackgroundAudio<TOption extends StopBackgroundAudioOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopBackgroundAudioOption>
         /** [wx.stopBeaconDiscovery(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/ibeacon/wx.stopBeaconDiscovery.html)
          *
          * 停止搜索附近的 iBeacon 设备
          *
          * 最低基础库： `1.2.0` */
-        stopBeaconDiscovery(option?: StopBeaconDiscoveryOption): void
+        stopBeaconDiscovery<TOption extends StopBeaconDiscoveryOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopBeaconDiscoveryOption>
         /** [wx.stopBluetoothDevicesDiscovery(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth/wx.stopBluetoothDevicesDiscovery.html)
-*
-* 停止搜寻附近的蓝牙外围设备。若已经找到需要的蓝牙设备并不需要继续搜索时，建议调用该接口停止蓝牙搜索。
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-wx.stopBluetoothDevicesDiscovery({
+         *
+         * 停止搜寻附近的蓝牙外围设备。若已经找到需要的蓝牙设备并不需要继续搜索时，建议调用该接口停止蓝牙搜索。
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         wx.stopBluetoothDevicesDiscovery({
   success (res) {
     console.log(res)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        stopBluetoothDevicesDiscovery(
-            option?: StopBluetoothDevicesDiscoveryOption,
-        ): void
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        stopBluetoothDevicesDiscovery<
+            TOption extends StopBluetoothDevicesDiscoveryOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopBluetoothDevicesDiscoveryOption>
         /** [wx.stopCompass(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/compass/wx.stopCompass.html)
-*
-* 停止监听罗盘数据
-*
-* **示例代码**
-*
-*
-* ```js
-wx.stopCompass()
-```
-*
-* 最低基础库： `1.1.0` */
-        stopCompass(option?: StopCompassOption): void
+         *
+         * 停止监听罗盘数据
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.stopCompass()
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        stopCompass<TOption extends StopCompassOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopCompassOption>
         /** [wx.stopDeviceMotionListening(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/motion/wx.stopDeviceMotionListening.html)
          *
          * 停止监听设备方向的变化。
          *
          * 最低基础库： `2.3.0` */
-        stopDeviceMotionListening(
-            option?: StopDeviceMotionListeningOption,
-        ): void
+        stopDeviceMotionListening<
+            TOption extends StopDeviceMotionListeningOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopDeviceMotionListeningOption>
         /** [wx.stopGyroscope(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/gyroscope/wx.stopGyroscope.html)
          *
          * 停止监听陀螺仪数据。
          *
          * 最低基础库： `2.3.0` */
-        stopGyroscope(option?: StopGyroscopeOption): void
+        stopGyroscope<TOption extends StopGyroscopeOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopGyroscopeOption>
         /** [wx.stopHCE(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/nfc/wx.stopHCE.html)
-*
-* 关闭 NFC 模块。仅在安卓系统下有效。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.stopHCE({
+         *
+         * 关闭 NFC 模块。仅在安卓系统下有效。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.stopHCE({
   success (res) {
     console.log(res.errMsg)
   }
 })
-```
-*
-* 最低基础库： `1.7.0` */
-        stopHCE(option?: StopHCEOption): void
+         ```
+         *
+         * 最低基础库： `1.7.0` */
+        stopHCE<TOption extends StopHCEOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopHCEOption>
         /** [wx.stopLocalServiceDiscovery(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/network/mdns/wx.stopLocalServiceDiscovery.html)
          *
          * 停止搜索 mDNS 服务
          *
          * 最低基础库： `2.4.0` */
-        stopLocalServiceDiscovery(
-            option?: StopLocalServiceDiscoveryOption,
-        ): void
+        stopLocalServiceDiscovery<
+            TOption extends StopLocalServiceDiscoveryOption
+            >(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopLocalServiceDiscoveryOption>
         /** [wx.stopLocationUpdate(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/location/wx.stopLocationUpdate.html)
          *
          * 关闭监听实时位置变化，前后台都停止消息接收
          *
          * 最低基础库： `2.8.0` */
-        stopLocationUpdate(option?: StopLocationUpdateOption): void
+        stopLocationUpdate<TOption extends StopLocationUpdateOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopLocationUpdateOption>
         /** [wx.stopPullDownRefresh(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/ui/pull-down-refresh/wx.stopPullDownRefresh.html)
-*
-* 停止当前页面下拉刷新。
-*
-* **示例代码**
-*
-*
-* ```js
-Page({
+         *
+         * 停止当前页面下拉刷新。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         Page({
   onPullDownRefresh () {
     wx.stopPullDownRefresh()
   }
 })
-```
-*
-* 最低基础库： `1.5.0` */
-        stopPullDownRefresh(option?: StopPullDownRefreshOption): void
+         ```
+         *
+         * 最低基础库： `1.5.0` */
+        stopPullDownRefresh<TOption extends StopPullDownRefreshOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopPullDownRefreshOption>
         /** [wx.stopRecord(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/recorder/wx.stopRecord.html)
-*
-* 停止录音。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startRecord({
+         *
+         * 停止录音。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startRecord({
   success (res) {
     const tempFilePath = res.tempFilePath
   }
 })
-setTimeout(function () {
+         setTimeout(function () {
   wx.stopRecord() // 结束录音
 }, 10000)
-``` */
-        stopRecord(option?: WxStopRecordOption): void
+         ``` */
+        stopRecord<TOption extends WxStopRecordOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, WxStopRecordOption>
         /** [wx.stopVoice(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.stopVoice.html)
-*
-* 结束播放语音。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.startRecord({
+         *
+         * 结束播放语音。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.startRecord({
   success (res) {
     const tempFilePath = res.tempFilePath
     wx.playVoice({
@@ -12832,34 +14645,38 @@ wx.startRecord({
     setTimeout(() => { wx.stopVoice() }, 5000)
   }
 })
-``` */
-        stopVoice(option?: StopVoiceOption): void
+         ``` */
+        stopVoice<TOption extends StopVoiceOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopVoiceOption>
         /** [wx.stopWifi(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/wifi/wx.stopWifi.html)
-*
-* 关闭 Wi-Fi 模块。
-*
-* **示例代码**
-*
-*
-* ```js
-wx.stopWifi({
+         *
+         * 关闭 Wi-Fi 模块。
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.stopWifi({
   success (res) {
     console.log(res.errMsg)
   }
 })
-```
-*
-* 最低基础库： `1.6.0` */
-        stopWifi(option?: StopWifiOption): void
+         ```
+         *
+         * 最低基础库： `1.6.0` */
+        stopWifi<TOption extends StopWifiOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, StopWifiOption>
         /** [wx.switchTab(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/route/wx.switchTab.html)
-*
-* 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
-*
-* **示例代码**
-*
-*
-* ```json
-{
+         *
+         * 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
+         *
+         * **示例代码**
+         *
+         *
+         * ```json
+         {
   "tabBar": {
     "list": [{
       "pagePath": "index",
@@ -12870,65 +14687,73 @@ wx.stopWifi({
     }]
   }
 }
-```
-*
-* ```js
-wx.switchTab({
+         ```
+         *
+         * ```js
+         wx.switchTab({
   url: '/index'
 })
-``` */
-        switchTab(option: SwitchTabOption): void
+         ``` */
+        switchTab<TOption extends SwitchTabOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, SwitchTabOption>
         /** [wx.updateShareMenu(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/share/wx.updateShareMenu.html)
-*
-* 更新转发属性
-*
-* **示例代码**
-*
-*
-* ```js
-wx.updateShareMenu({
+         *
+         * 更新转发属性
+         *
+         * **示例代码**
+         *
+         *
+         * ```js
+         wx.updateShareMenu({
   withShareTicket: true,
   success () { }
 })
-```
-*
-* 最低基础库： `1.2.0` */
-        updateShareMenu(option: UpdateShareMenuOption): void
+         ```
+         *
+         * 最低基础库： `1.2.0` */
+        updateShareMenu<TOption extends UpdateShareMenuOption>(
+            option: TOption
+        ): PromisifySuccessResult<TOption, UpdateShareMenuOption>
         /** [wx.vibrateLong(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/vibrate/wx.vibrateLong.html)
          *
          * 使手机发生较长时间的振动（400 ms)
          *
          * 最低基础库： `1.2.0` */
-        vibrateLong(option?: VibrateLongOption): void
+        vibrateLong<TOption extends VibrateLongOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, VibrateLongOption>
         /** [wx.vibrateShort(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/vibrate/wx.vibrateShort.html)
          *
          * 使手机发生较短时间的振动（15 ms）。仅在 iPhone `7 / 7 Plus` 以上及 Android 机型生效
          *
          * 最低基础库： `1.2.0` */
-        vibrateShort(option?: VibrateShortOption): void
+        vibrateShort<TOption extends VibrateShortOption>(
+            option?: TOption
+        ): PromisifySuccessResult<TOption, VibrateShortOption>
         /** [wx.writeBLECharacteristicValue(Object object)](https://developers.weixin.qq.com/miniprogram/dev/api/device/bluetooth-ble/wx.writeBLECharacteristicValue.html)
-*
-* 向低功耗蓝牙设备特征值中写入二进制数据。注意：必须设备的特征值支持 write 才可以成功调用。
-*
-* **注意**
-*
-*
-* - 并行调用多次会存在写失败的可能性。
-* - 小程序不会对写入数据包大小做限制，但系统与蓝牙设备会限制蓝牙4.0单次传输的数据大小，超过最大字节数后会发生写入错误，建议每次写入不超过20字节。
-* - 若单次写入数据过长，iOS 上存在系统不会有任何回调的情况（包括错误回调）。
-* - 安卓平台上，在调用 `notifyBLECharacteristicValueChange` 成功后立即调用 `writeBLECharacteristicValue` 接口，在部分机型上会发生 10008 系统错误
-*
-* **示例代码**
-*
-*
-* [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
-* ```js
-// 向蓝牙设备发送一个0x00的16进制数据
-let buffer = new ArrayBuffer(1)
-let dataView = new DataView(buffer)
-dataView.setUint8(0, 0)
+         *
+         * 向低功耗蓝牙设备特征值中写入二进制数据。注意：必须设备的特征值支持 write 才可以成功调用。
+         *
+         * **注意**
+         *
+         *
+         * - 并行调用多次会存在写失败的可能性。
+         * - 小程序不会对写入数据包大小做限制，但系统与蓝牙设备会限制蓝牙4.0单次传输的数据大小，超过最大字节数后会发生写入错误，建议每次写入不超过20字节。
+         * - 若单次写入数据过长，iOS 上存在系统不会有任何回调的情况（包括错误回调）。
+         * - 安卓平台上，在调用 `notifyBLECharacteristicValueChange` 成功后立即调用 `writeBLECharacteristicValue` 接口，在部分机型上会发生 10008 系统错误
+         *
+         * **示例代码**
+         *
+         *
+         * [在微信开发者工具中查看示例](https://developers.weixin.qq.com/s/pQU51zmz7a3K)
+         * ```js
+         // 向蓝牙设备发送一个0x00的16进制数据
+         let buffer = new ArrayBuffer(1)
+         let dataView = new DataView(buffer)
+         dataView.setUint8(0, 0)
 
-wx.writeBLECharacteristicValue({
+         wx.writeBLECharacteristicValue({
   // 这里的 deviceId 需要在 getBluetoothDevices 或 onBluetoothDeviceFound 接口中获取
   deviceId,
   // 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
@@ -12941,17 +14766,22 @@ wx.writeBLECharacteristicValue({
     console.log('writeBLECharacteristicValue success', res.errMsg)
   }
 })
-```
-*
-* 最低基础库： `1.1.0` */
-        writeBLECharacteristicValue(
-            option: WriteBLECharacteristicValueOption,
-        ): void /**
-小程序云开发
-*/
+         ```
+         *
+         * 最低基础库： `1.1.0` */
+        writeBLECharacteristicValue<
+            TOption extends WriteBLECharacteristicValueOption
+            >(
+            option: TOption
+        ): PromisifySuccessResult<
+            TOption,
+            WriteBLECharacteristicValueOption
+            > /**
+         小程序云开发
+         */
         cloud: WxCloud /**
-文件系统中的用户目录路径
-*/
+         文件系统中的用户目录路径
+         */
         env: { USER_DATA_PATH: string }
     }
 
@@ -12974,6 +14804,12 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type AddPhoneContactSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type AddServiceCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type AddServiceFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type AddServiceSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type AppendFileCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type AppendFileFailCallback = (result: AppendFileFailCallbackResult) => void
@@ -12987,43 +14823,39 @@ wx.writeBLECharacteristicValue({
     type AuthorizeSuccessCallback = (res: GeneralCallbackResult) => void
     /** 背景音频进入可播放状态事件的回调函数 */
     type BackgroundAudioManagerOnCanplayCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 背景音频自然播放结束事件的回调函数 */
     type BackgroundAudioManagerOnEndedCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 背景音频播放错误事件的回调函数 */
     type BackgroundAudioManagerOnErrorCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 背景音频暂停事件的回调函数 */
     type BackgroundAudioManagerOnPauseCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 背景音频播放事件的回调函数 */
     type BackgroundAudioManagerOnPlayCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 背景音频完成跳转操作事件的回调函数 */
     type BackgroundAudioManagerOnSeekedCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 背景音频开始跳转操作事件的回调函数 */
     type BackgroundAudioManagerOnSeekingCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 背景音频停止事件的回调函数 */
     type BackgroundAudioManagerOnStopCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 背景音频播放进度更新事件的回调函数 */
     type BackgroundAudioManagerOnTimeUpdateCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 音频加载中事件的回调函数 */
-    type BackgroundAudioManagerOnWaitingCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type BlurCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13033,109 +14865,69 @@ wx.writeBLECharacteristicValue({
     type BlurSuccessCallback = (res: GeneralCallbackResult) => void
     /** 回调函数，在执行 `SelectorQuery.exec` 方法后，节点信息会在 `callback` 中返回。 */
     type BoundingClientRectCallback = (
-        result: BoundingClientRectCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type CameraContextStartRecordCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type CameraContextStartRecordFailCallback = (
-        res: GeneralCallbackResult,
+        result: BoundingClientRectCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type CameraContextStartRecordSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type CameraContextStopRecordCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type CameraContextStopRecordFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type CameraContextStopRecordSuccessCallback = (
-        result: StopRecordSuccessCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type CameraFrameListenerStartCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type CameraFrameListenerStartFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type CameraFrameListenerStartSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type CameraFrameListenerStopCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type CameraFrameListenerStopFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type CameraFrameListenerStopSuccessCallback = (
-        res: GeneralCallbackResult,
+        result: StopRecordSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type CanvasGetImageDataCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type CanvasGetImageDataFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type CanvasGetImageDataSuccessCallback = (
-        result: CanvasGetImageDataSuccessCallbackResult,
+        result: CanvasGetImageDataSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type CanvasPutImageDataCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type CanvasPutImageDataFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type CanvasPutImageDataSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type CanvasToTempFilePathCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type CanvasToTempFilePathFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type CanvasToTempFilePathSuccessCallback = (
-        result: CanvasToTempFilePathSuccessCallbackResult,
+        result: CanvasToTempFilePathSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type CheckIsSoterEnrolledInDeviceCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type CheckIsSoterEnrolledInDeviceFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type CheckIsSoterEnrolledInDeviceSuccessCallback = (
-        result: CheckIsSoterEnrolledInDeviceSuccessCallbackResult,
+        result: CheckIsSoterEnrolledInDeviceSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type CheckIsSupportSoterAuthenticationCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type CheckIsSupportSoterAuthenticationFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type CheckIsSupportSoterAuthenticationSuccessCallback = (
-        result: CheckIsSupportSoterAuthenticationSuccessCallbackResult,
+        result: CheckIsSupportSoterAuthenticationSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type CheckSessionCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13149,7 +14941,7 @@ wx.writeBLECharacteristicValue({
     type ChooseAddressFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ChooseAddressSuccessCallback = (
-        result: ChooseAddressSuccessCallbackResult,
+        result: ChooseAddressSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ChooseImageCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13157,7 +14949,7 @@ wx.writeBLECharacteristicValue({
     type ChooseImageFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ChooseImageSuccessCallback = (
-        result: ChooseImageSuccessCallbackResult,
+        result: ChooseImageSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ChooseInvoiceCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13165,17 +14957,17 @@ wx.writeBLECharacteristicValue({
     type ChooseInvoiceFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ChooseInvoiceSuccessCallback = (
-        result: ChooseInvoiceSuccessCallbackResult,
+        result: ChooseInvoiceSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ChooseInvoiceTitleCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type ChooseInvoiceTitleFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ChooseInvoiceTitleSuccessCallback = (
-        result: ChooseInvoiceTitleSuccessCallbackResult,
+        result: ChooseInvoiceTitleSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ChooseLocationCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13183,17 +14975,25 @@ wx.writeBLECharacteristicValue({
     type ChooseLocationFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ChooseLocationSuccessCallback = (
-        result: ChooseLocationSuccessCallbackResult,
+        result: ChooseLocationSuccessCallbackResult
+    ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type ChooseMediaCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type ChooseMediaFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type ChooseMediaSuccessCallback = (
+        result: ChooseMediaSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ChooseMessageFileCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type ChooseMessageFileFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ChooseMessageFileSuccessCallback = (
-        result: ChooseMessageFileSuccessCallbackResult,
+        result: ChooseMessageFileSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ChooseVideoCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13201,7 +15001,7 @@ wx.writeBLECharacteristicValue({
     type ChooseVideoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ChooseVideoSuccessCallback = (
-        result: ChooseVideoSuccessCallbackResult,
+        result: ChooseVideoSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ClearCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13245,7 +15045,15 @@ wx.writeBLECharacteristicValue({
     type CompressImageFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type CompressImageSuccessCallback = (
-        result: CompressImageSuccessCallbackResult,
+        result: CompressImageSuccessCallbackResult
+    ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type CompressVideoCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type CompressVideoFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type CompressVideoSuccessCallback = (
+        result: CompressVideoSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ConnectSocketCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13274,28 +15082,32 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type CreateBLEConnectionSuccessCallback = (res: BluetoothError) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type CreateBLEPeripheralServerCompleteCallback = (
+        res: GeneralCallbackResult
+    ) => void
+    /** 接口调用失败的回调函数 */
+    type CreateBLEPeripheralServerFailCallback = (
+        res: GeneralCallbackResult
+    ) => void
+    /** 接口调用成功的回调函数 */
+    type CreateBLEPeripheralServerSuccessCallback = (
+        result: CreateBLEPeripheralServerSuccessCallbackResult
+    ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type DownloadFileCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type DownloadFileFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type DownloadFileSuccessCallback = (
-        result: DownloadFileSuccessCallbackResult,
-    ) => void
-    /** HTTP Response Header 事件的回调函数 */
-    type DownloadTaskOffHeadersReceivedCallback = (
-        res: GeneralCallbackResult,
+        result: DownloadFileSuccessCallbackResult
     ) => void
     /** 下载进度变化事件的回调函数 */
     type DownloadTaskOffProgressUpdateCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** HTTP Response Header 事件的回调函数 */
-    type DownloadTaskOnHeadersReceivedCallback = (
-        result: DownloadTaskOnHeadersReceivedCallbackResult,
+        result: DownloadTaskOnProgressUpdateCallbackResult
     ) => void
     /** 下载进度变化事件的回调函数 */
     type DownloadTaskOnProgressUpdateCallback = (
-        result: DownloadTaskOnProgressUpdateCallbackResult,
+        result: DownloadTaskOnProgressUpdateCallbackResult
     ) => void
     /** 事件监听函数 */
     type EventCallback = (
@@ -13308,80 +15120,74 @@ wx.writeBLECharacteristicValue({
     type ExitFullScreenFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ExitFullScreenSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type ExitPictureInPictureCompleteCallback = (
+        res: GeneralCallbackResult
+    ) => void
+    /** 接口调用失败的回调函数 */
+    type ExitPictureInPictureFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type ExitPictureInPictureSuccessCallback = (
+        res: GeneralCallbackResult
+    ) => void
     /** 回调函数 */
     type FieldsCallback = (
         /** 节点的相关信息 */
-        res: IAnyObject,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type FileSystemManagerGetFileInfoCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: IAnyObject
     ) => void
     /** 接口调用失败的回调函数 */
     type FileSystemManagerGetFileInfoFailCallback = (
-        result: GetFileInfoFailCallbackResult,
+        result: GetFileInfoFailCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type FileSystemManagerGetFileInfoSuccessCallback = (
-        result: FileSystemManagerGetFileInfoSuccessCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type FileSystemManagerGetSavedFileListCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type FileSystemManagerGetSavedFileListFailCallback = (
-        res: GeneralCallbackResult,
+        result: FileSystemManagerGetFileInfoSuccessCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type FileSystemManagerGetSavedFileListSuccessCallback = (
-        result: FileSystemManagerGetSavedFileListSuccessCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type FileSystemManagerRemoveSavedFileCompleteCallback = (
-        res: GeneralCallbackResult,
+        result: FileSystemManagerGetSavedFileListSuccessCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type FileSystemManagerRemoveSavedFileFailCallback = (
-        result: RemoveSavedFileFailCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type FileSystemManagerRemoveSavedFileSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type FileSystemManagerSaveFileCompleteCallback = (
-        res: GeneralCallbackResult,
+        result: RemoveSavedFileFailCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type FileSystemManagerSaveFileFailCallback = (
-        result: SaveFileFailCallbackResult,
+        result: SaveFileFailCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type FileSystemManagerSaveFileSuccessCallback = (
-        result: FileSystemManagerSaveFileSuccessCallbackResult,
+        result: FileSystemManagerSaveFileSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetAvailableAudioSourcesCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type GetAvailableAudioSourcesFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type GetAvailableAudioSourcesSuccessCallback = (
-        result: GetAvailableAudioSourcesSuccessCallbackResult,
+        result: GetAvailableAudioSourcesSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBLEDeviceCharacteristicsCompleteCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用失败的回调函数 */
     type GetBLEDeviceCharacteristicsFailCallback = (res: BluetoothError) => void
     /** 接口调用成功的回调函数 */
     type GetBLEDeviceCharacteristicsSuccessCallback = (
-        result: GetBLEDeviceCharacteristicsSuccessCallbackResult,
+        result: GetBLEDeviceCharacteristicsSuccessCallbackResult
+    ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type GetBLEDeviceRSSICompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type GetBLEDeviceRSSIFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type GetBLEDeviceRSSISuccessCallback = (
+        result: GetBLEDeviceRSSISuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBLEDeviceServicesCompleteCallback = (res: BluetoothError) => void
@@ -13389,43 +15195,43 @@ wx.writeBLECharacteristicValue({
     type GetBLEDeviceServicesFailCallback = (res: BluetoothError) => void
     /** 接口调用成功的回调函数 */
     type GetBLEDeviceServicesSuccessCallback = (
-        result: GetBLEDeviceServicesSuccessCallbackResult,
+        result: GetBLEDeviceServicesSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBackgroundAudioPlayerStateCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type GetBackgroundAudioPlayerStateFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type GetBackgroundAudioPlayerStateSuccessCallback = (
-        result: GetBackgroundAudioPlayerStateSuccessCallbackResult,
+        result: GetBackgroundAudioPlayerStateSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBackgroundFetchDataCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type GetBackgroundFetchDataFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type GetBackgroundFetchDataSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBackgroundFetchTokenCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type GetBackgroundFetchTokenFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type GetBackgroundFetchTokenSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBatteryInfoCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13433,7 +15239,7 @@ wx.writeBLECharacteristicValue({
     type GetBatteryInfoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetBatteryInfoSuccessCallback = (
-        result: GetBatteryInfoSuccessCallbackResult,
+        result: GetBatteryInfoSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBeaconsCompleteCallback = (res: IBeaconError) => void
@@ -13441,17 +15247,17 @@ wx.writeBLECharacteristicValue({
     type GetBeaconsFailCallback = (res: IBeaconError) => void
     /** 接口调用成功的回调函数 */
     type GetBeaconsSuccessCallback = (
-        result: GetBeaconsSuccessCallbackResult,
+        result: GetBeaconsSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBluetoothAdapterStateCompleteCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用失败的回调函数 */
     type GetBluetoothAdapterStateFailCallback = (res: BluetoothError) => void
     /** 接口调用成功的回调函数 */
     type GetBluetoothAdapterStateSuccessCallback = (
-        result: GetBluetoothAdapterStateSuccessCallbackResult,
+        result: GetBluetoothAdapterStateSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetBluetoothDevicesCompleteCallback = (res: BluetoothError) => void
@@ -13459,17 +15265,17 @@ wx.writeBLECharacteristicValue({
     type GetBluetoothDevicesFailCallback = (res: BluetoothError) => void
     /** 接口调用成功的回调函数 */
     type GetBluetoothDevicesSuccessCallback = (
-        result: GetBluetoothDevicesSuccessCallbackResult,
+        result: GetBluetoothDevicesSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetCenterLocationCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type GetCenterLocationFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetCenterLocationSuccessCallback = (
-        result: GetCenterLocationSuccessCallbackResult,
+        result: GetCenterLocationSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetClipboardDataCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13477,19 +15283,19 @@ wx.writeBLECharacteristicValue({
     type GetClipboardDataFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetClipboardDataSuccessCallback = (
-        option: GetClipboardDataSuccessCallbackOption,
+        option: GetClipboardDataSuccessCallbackOption
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetConnectedBluetoothDevicesCompleteCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用失败的回调函数 */
     type GetConnectedBluetoothDevicesFailCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用成功的回调函数 */
     type GetConnectedBluetoothDevicesSuccessCallback = (
-        result: GetConnectedBluetoothDevicesSuccessCallbackResult,
+        result: GetConnectedBluetoothDevicesSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetConnectedWifiCompleteCallback = (res: WifiError) => void
@@ -13497,22 +15303,26 @@ wx.writeBLECharacteristicValue({
     type GetConnectedWifiFailCallback = (res: WifiError) => void
     /** 接口调用成功的回调函数 */
     type GetConnectedWifiSuccessCallback = (
-        result: GetConnectedWifiSuccessCallbackResult,
+        result: GetConnectedWifiSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetContentsCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type GetContentsFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
-    type GetContentsSuccessCallback = (res: GeneralCallbackResult) => void
+    type GetContentsSuccessCallback = (
+        result: GetContentsSuccessCallbackResult
+    ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetExtConfigCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type GetExtConfigFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetExtConfigSuccessCallback = (
-        result: GetExtConfigSuccessCallbackResult,
+        result: GetExtConfigSuccessCallbackResult
     ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type GetFileInfoCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetHCEStateCompleteCallback = (res: NFCError) => void
     /** 接口调用失败的回调函数 */
@@ -13525,7 +15335,7 @@ wx.writeBLECharacteristicValue({
     type GetImageInfoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetImageInfoSuccessCallback = (
-        result: GetImageInfoSuccessCallbackResult,
+        result: GetImageInfoSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetLocationCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13533,7 +15343,7 @@ wx.writeBLECharacteristicValue({
     type GetLocationFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetLocationSuccessCallback = (
-        result: GetLocationSuccessCallbackResult,
+        result: GetLocationSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetNetworkTypeCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13541,7 +15351,7 @@ wx.writeBLECharacteristicValue({
     type GetNetworkTypeFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetNetworkTypeSuccessCallback = (
-        result: GetNetworkTypeSuccessCallbackResult,
+        result: GetNetworkTypeSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetRegionCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13549,7 +15359,7 @@ wx.writeBLECharacteristicValue({
     type GetRegionFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetRegionSuccessCallback = (
-        result: GetRegionSuccessCallbackResult,
+        result: GetRegionSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetRotateCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13557,7 +15367,7 @@ wx.writeBLECharacteristicValue({
     type GetRotateFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetRotateSuccessCallback = (
-        result: GetRotateSuccessCallbackResult,
+        result: GetRotateSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetSavedFileInfoCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13565,35 +15375,47 @@ wx.writeBLECharacteristicValue({
     type GetSavedFileInfoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetSavedFileInfoSuccessCallback = (
-        result: GetSavedFileInfoSuccessCallbackResult,
+        result: GetSavedFileInfoSuccessCallbackResult
     ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type GetSavedFileListCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type GetSavedFileListFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetScaleCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type GetScaleFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetScaleSuccessCallback = (
-        result: GetScaleSuccessCallbackResult,
+        result: GetScaleSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetScreenBrightnessCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type GetScreenBrightnessFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetScreenBrightnessSuccessCallback = (
-        option: GetScreenBrightnessSuccessCallbackOption,
+        option: GetScreenBrightnessSuccessCallbackOption
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetSelectedTextRangeCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type GetSelectedTextRangeFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetSelectedTextRangeSuccessCallback = (
-        result: GetSelectedTextRangeSuccessCallbackResult,
+        result: GetSelectedTextRangeSuccessCallbackResult
+    ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type GetSelectionTextCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type GetSelectionTextFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type GetSelectionTextSuccessCallback = (
+        result: GetSelectionTextSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetSettingCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13601,7 +15423,7 @@ wx.writeBLECharacteristicValue({
     type GetSettingFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetSettingSuccessCallback = (
-        result: GetSettingSuccessCallbackResult,
+        result: GetSettingSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetShareInfoCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13609,7 +15431,7 @@ wx.writeBLECharacteristicValue({
     type GetShareInfoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetShareInfoSuccessCallback = (
-        result: GetShareInfoSuccessCallbackResult,
+        result: GetShareInfoSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetSkewCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13627,11 +15449,11 @@ wx.writeBLECharacteristicValue({
     type GetStorageInfoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetStorageInfoSuccessCallback = (
-        option: GetStorageInfoSuccessCallbackOption,
+        option: GetStorageInfoSuccessCallbackOption
     ) => void
     /** 接口调用成功的回调函数 */
     type GetStorageSuccessCallback = (
-        result: GetStorageSuccessCallbackResult,
+        result: GetStorageSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetSystemInfoCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13639,7 +15461,7 @@ wx.writeBLECharacteristicValue({
     type GetSystemInfoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetSystemInfoSuccessCallback = (
-        result: GetSystemInfoSuccessCallbackResult,
+        result: GetSystemInfoSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetUserInfoCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13647,7 +15469,15 @@ wx.writeBLECharacteristicValue({
     type GetUserInfoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetUserInfoSuccessCallback = (
-        result: GetUserInfoSuccessCallbackResult,
+        result: GetUserInfoSuccessCallbackResult
+    ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type GetVideoInfoCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type GetVideoInfoFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type GetVideoInfoSuccessCallback = (
+        result: GetVideoInfoSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetWeRunDataCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13655,7 +15485,7 @@ wx.writeBLECharacteristicValue({
     type GetWeRunDataFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type GetWeRunDataSuccessCallback = (
-        result: GetWeRunDataSuccessCallbackResult,
+        result: GetWeRunDataSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type GetWifiListCompleteCallback = (res: WifiError) => void
@@ -13683,15 +15513,15 @@ wx.writeBLECharacteristicValue({
     type HideLoadingSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type HideNavigationBarLoadingCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type HideNavigationBarLoadingFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type HideNavigationBarLoadingSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type HideShareMenuCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13725,17 +15555,17 @@ wx.writeBLECharacteristicValue({
     type IncludePointsSuccessCallback = (res: GeneralCallbackResult) => void
     /** 音频播放错误事件的回调函数 */
     type InnerAudioContextOffErrorCallback = (
-        res: GeneralCallbackResult,
+        result: InnerAudioContextOnErrorCallbackResult
     ) => void
     /** 音频进入可以播放状态的事件的回调函数 */
     type InnerAudioContextOnCanplayCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 音频自然播放至结束的事件的回调函数 */
     type InnerAudioContextOnEndedCallback = (res: GeneralCallbackResult) => void
     /** 音频播放错误事件的回调函数 */
     type InnerAudioContextOnErrorCallback = (
-        result: InnerAudioContextOnErrorCallbackResult,
+        result: InnerAudioContextOnErrorCallbackResult
     ) => void
     /** 音频暂停事件的回调函数 */
     type InnerAudioContextOnPauseCallback = (res: GeneralCallbackResult) => void
@@ -13743,21 +15573,17 @@ wx.writeBLECharacteristicValue({
     type InnerAudioContextOnPlayCallback = (res: GeneralCallbackResult) => void
     /** 音频完成跳转操作的事件的回调函数 */
     type InnerAudioContextOnSeekedCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 音频进行跳转操作的事件的回调函数 */
     type InnerAudioContextOnSeekingCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 音频停止事件的回调函数 */
     type InnerAudioContextOnStopCallback = (res: GeneralCallbackResult) => void
     /** 音频播放进度更新事件的回调函数 */
     type InnerAudioContextOnTimeUpdateCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 音频加载中事件的回调函数 */
-    type InnerAudioContextOnWaitingCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type InsertDividerCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13780,136 +15606,30 @@ wx.writeBLECharacteristicValue({
     /** 插屏广告关闭事件的回调函数 */
     type InterstitialAdOffCloseCallback = (res: GeneralCallbackResult) => void
     /** 插屏错误事件的回调函数 */
-    type InterstitialAdOffErrorCallback = (res: GeneralCallbackResult) => void
+    type InterstitialAdOffErrorCallback = (
+        result: InterstitialAdOnErrorCallbackResult
+    ) => void
     /** 插屏广告加载事件的回调函数 */
     type InterstitialAdOffLoadCallback = (res: GeneralCallbackResult) => void
     /** 插屏广告关闭事件的回调函数 */
     type InterstitialAdOnCloseCallback = (res: GeneralCallbackResult) => void
     /** 插屏错误事件的回调函数 */
     type InterstitialAdOnErrorCallback = (
-        result: InterstitialAdOnErrorCallbackResult,
+        result: InterstitialAdOnErrorCallbackResult
     ) => void
     /** 插屏广告加载事件的回调函数 */
     type InterstitialAdOnLoadCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePlayerContextPauseCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePlayerContextPauseFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePlayerContextPauseSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePlayerContextResumeCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePlayerContextResumeFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePlayerContextResumeSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePlayerContextSnapshotCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePlayerContextSnapshotFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePlayerContextSnapshotSuccessCallback = (
-        result: SnapshotSuccessCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePlayerContextStopCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePlayerContextStopFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePlayerContextStopSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePusherContextPauseCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePusherContextPauseFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePusherContextPauseSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePusherContextResumeCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePusherContextResumeFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePusherContextResumeSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePusherContextSnapshotCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePusherContextSnapshotFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePusherContextSnapshotSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePusherContextStartCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePusherContextStartFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePusherContextStartSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type LivePusherContextStopCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type LivePusherContextStopFailCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用成功的回调函数 */
-    type LivePusherContextStopSuccessCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type LoadFontFaceCompleteCallback = (
-        result: LoadFontFaceCompleteCallbackResult,
+        result: LoadFontFaceCompleteCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type LoadFontFaceFailCallback = (
-        result: LoadFontFaceFailCallbackResult,
+        result: LoadFontFaceCompleteCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type LoadFontFaceSuccessCallback = (
-        result: LoadFontFaceSuccessCallbackResult,
+        result: LoadFontFaceCompleteCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type LoginCompleteCallback = (res: GeneralCallbackResult) => void
@@ -13947,15 +15667,15 @@ wx.writeBLECharacteristicValue({
     type NavigateBackFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type NavigateBackMiniProgramCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type NavigateBackMiniProgramFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type NavigateBackMiniProgramSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type NavigateBackSuccessCallback = (res: GeneralCallbackResult) => void
@@ -13965,86 +15685,98 @@ wx.writeBLECharacteristicValue({
     type NavigateToFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type NavigateToMiniProgramCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type NavigateToMiniProgramFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type NavigateToMiniProgramSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type NavigateToSuccessCallback = (
-        result: NavigateToSuccessCallbackResult,
+        result: NavigateToSuccessCallbackResult
     ) => void
     /** 回调函数，在执行 `SelectorQuery.exec` 方法后，返回节点信息。 */
     type NodeCallback = (result: NodeCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type NotifyBLECharacteristicValueChangeCompleteCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用失败的回调函数 */
     type NotifyBLECharacteristicValueChangeFailCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用成功的回调函数 */
     type NotifyBLECharacteristicValueChangeSuccessCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 监听相交状态变化的回调函数 */
     type ObserveCallback = (result: ObserveCallbackResult) => void
-    /** 加速度数据事件的回调函数 */
-    type OffAccelerometerChangeCallback = (res: GeneralCallbackResult) => void
     /** 小程序切后台事件的回调函数 */
     type OffAppHideCallback = (res: GeneralCallbackResult) => void
     /** 小程序切前台事件的回调函数 */
-    type OffAppShowCallback = (res: GeneralCallbackResult) => void
+    type OffAppShowCallback = (result: OnAppShowCallbackResult) => void
     /** 音频因为受到系统占用而被中断开始事件的回调函数 */
     type OffAudioInterruptionBeginCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 音频中断结束事件的回调函数 */
     type OffAudioInterruptionEndCallback = (res: GeneralCallbackResult) => void
+    /** 当前外围设备被连接或断开连接事件的回调函数 */
+    type OffBLEPeripheralConnectionStateChangedCallback = (
+        result: OnBLEPeripheralConnectionStateChangedCallbackResult
+    ) => void
     /** iBeacon 服务状态变化事件的回调函数 */
     type OffBeaconServiceChangeCallback = (res: GeneralCallbackResult) => void
     /** iBeacon 设备更新事件的回调函数 */
     type OffBeaconUpdateCallback = (res: GeneralCallbackResult) => void
     /** 音频进入可以播放状态的事件的回调函数 */
     type OffCanplayCallback = (res: GeneralCallbackResult) => void
-    /** 罗盘数据变化事件的回调函数 */
-    type OffCompassChangeCallback = (res: GeneralCallbackResult) => void
-    /** 设备方向变化事件的回调函数 */
-    type OffDeviceMotionChangeCallback = (res: GeneralCallbackResult) => void
+    /** 已连接的设备请求读当前外围设备的特征值事件的回调函数 */
+    type OffCharacteristicReadRequestCallback = (
+        result: OnCharacteristicReadRequestCallbackResult
+    ) => void
+    /** 已连接的设备请求写当前外围设备的特征值事件的回调函数 */
+    type OffCharacteristicWriteRequestCallback = (
+        result: OnCharacteristicWriteRequestCallbackResult
+    ) => void
     /** 音频自然播放至结束的事件的回调函数 */
     type OffEndedCallback = (res: GeneralCallbackResult) => void
-    /** 陀螺仪数据变化事件的回调函数 */
-    type OffGyroscopeChangeCallback = (res: GeneralCallbackResult) => void
-    /** 接收 NFC 设备消息事件的回调函数 */
-    type OffHCEMessageCallback = (res: GeneralCallbackResult) => void
+    /** HTTP Response Header 事件的回调函数 */
+    type OffHeadersReceivedCallback = (
+        result: OnHeadersReceivedCallbackResult
+    ) => void
     /** 开始监听数据包消息的事件的回调函数 */
     type OffListeningCallback = (res: GeneralCallbackResult) => void
     /** mDNS 服务停止搜索的事件的回调函数 */
     type OffLocalServiceDiscoveryStopCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** mDNS 服务发现的事件的回调函数 */
-    type OffLocalServiceFoundCallback = (res: GeneralCallbackResult) => void
+    type OffLocalServiceFoundCallback = (
+        result: OnLocalServiceFoundCallbackResult
+    ) => void
     /** mDNS 服务离开的事件的回调函数 */
-    type OffLocalServiceLostCallback = (res: GeneralCallbackResult) => void
+    type OffLocalServiceLostCallback = (
+        result: OnLocalServiceLostCallbackResult
+    ) => void
     /** mDNS 服务解析失败的事件的回调函数 */
     type OffLocalServiceResolveFailCallback = (
-        res: GeneralCallbackResult,
+        result: OnLocalServiceLostCallbackResult
     ) => void
     /** 实时地理位置变化事件的回调函数 */
-    type OffLocationChangeCallback = (res: GeneralCallbackResult) => void
+    type OffLocationChangeCallback = (
+        result: OnLocationChangeCallbackResult
+    ) => void
     /** 收到消息的事件的回调函数 */
-    type OffMessageCallback = (res: GeneralCallbackResult) => void
-    /** 网络状态变化事件的回调函数 */
-    type OffNetworkStatusChangeCallback = (res: GeneralCallbackResult) => void
+    type OffMessageCallback = (result: UDPSocketOnMessageCallbackResult) => void
     /** 小程序要打开的页面不存在事件的回调函数 */
-    type OffPageNotFoundCallback = (res: GeneralCallbackResult) => void
+    type OffPageNotFoundCallback = (
+        result: OnPageNotFoundCallbackResult
+    ) => void
     /** 音频暂停事件的回调函数 */
     type OffPauseCallback = (res: GeneralCallbackResult) => void
     /** 音频播放事件的回调函数 */
@@ -14055,22 +15787,28 @@ wx.writeBLECharacteristicValue({
     type OffSeekingCallback = (res: GeneralCallbackResult) => void
     /** 音频停止事件的回调函数 */
     type OffStopCallback = (res: GeneralCallbackResult) => void
+    /** 系统主题改变事件的回调函数 */
+    type OffThemeChangeCallback = (result: OnThemeChangeCallbackResult) => void
     /** 音频播放进度更新事件的回调函数 */
     type OffTimeUpdateCallback = (res: GeneralCallbackResult) => void
-    /** 用户主动截屏事件的回调函数 */
-    type OffUserCaptureScreenCallback = (res: GeneralCallbackResult) => void
+    /** 未处理的 Promise 拒绝事件的回调函数 */
+    type OffUnhandledRejectionCallback = (
+        result: OnUnhandledRejectionCallbackResult
+    ) => void
     /** 音频加载中事件的回调函数 */
     type OffWaitingCallback = (res: GeneralCallbackResult) => void
     /** 窗口尺寸变化事件的回调函数 */
-    type OffWindowResizeCallback = (res: GeneralCallbackResult) => void
+    type OffWindowResizeCallback = (
+        result: OnWindowResizeCallbackResult
+    ) => void
     /** 加速度数据事件的回调函数 */
     type OnAccelerometerChangeCallback = (
-        result: OnAccelerometerChangeCallbackResult,
+        result: OnAccelerometerChangeCallbackResult
     ) => void
     /** 小程序错误事件的回调函数 */
     type OnAppErrorCallback = (
         /** 错误信息，包含堆栈 */
-        error: string,
+        error: string
     ) => void
     /** 小程序切后台事件的回调函数 */
     type OnAppHideCallback = (res: GeneralCallbackResult) => void
@@ -14082,11 +15820,15 @@ wx.writeBLECharacteristicValue({
     type OnAudioInterruptionEndCallback = (res: GeneralCallbackResult) => void
     /** 低功耗蓝牙设备的特征值变化事件的回调函数 */
     type OnBLECharacteristicValueChangeCallback = (
-        result: OnBLECharacteristicValueChangeCallbackResult,
+        result: OnBLECharacteristicValueChangeCallbackResult
     ) => void
     /** 低功耗蓝牙连接状态的改变事件的回调函数 */
     type OnBLEConnectionStateChangeCallback = (
-        result: OnBLEConnectionStateChangeCallbackResult,
+        result: OnBLEConnectionStateChangeCallbackResult
+    ) => void
+    /** 当前外围设备被连接或断开连接事件的回调函数 */
+    type OnBLEPeripheralConnectionStateChangedCallback = (
+        result: OnBLEPeripheralConnectionStateChangedCallbackResult
     ) => void
     /** 音乐暂停事件的回调函数 */
     type OnBackgroundAudioPauseCallback = (res: GeneralCallbackResult) => void
@@ -14096,92 +15838,104 @@ wx.writeBLECharacteristicValue({
     type OnBackgroundAudioStopCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type OnBackgroundFetchDataCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type OnBackgroundFetchDataFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type OnBackgroundFetchDataSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** iBeacon 服务状态变化事件的回调函数 */
     type OnBeaconServiceChangeCallback = (
-        result: OnBeaconServiceChangeCallbackResult,
+        result: OnBeaconServiceChangeCallbackResult
     ) => void
     /** iBeacon 设备更新事件的回调函数 */
     type OnBeaconUpdateCallback = (result: OnBeaconUpdateCallbackResult) => void
     /** 蓝牙适配器状态变化事件的回调函数 */
     type OnBluetoothAdapterStateChangeCallback = (
-        result: OnBluetoothAdapterStateChangeCallbackResult,
+        result: OnBluetoothAdapterStateChangeCallbackResult
     ) => void
     /** 寻找到新设备的事件的回调函数 */
     type OnBluetoothDeviceFoundCallback = (
-        result: OnBluetoothDeviceFoundCallbackResult,
+        result: OnBluetoothDeviceFoundCallbackResult
     ) => void
     /** 回调函数 */
     type OnCameraFrameCallback = (result: OnCameraFrameCallbackResult) => void
+    /** 已连接的设备请求读当前外围设备的特征值事件的回调函数 */
+    type OnCharacteristicReadRequestCallback = (
+        result: OnCharacteristicReadRequestCallbackResult
+    ) => void
+    /** 已连接的设备请求写当前外围设备的特征值事件的回调函数 */
+    type OnCharacteristicWriteRequestCallback = (
+        result: OnCharacteristicWriteRequestCallbackResult
+    ) => void
     /** 向微信后台请求检查更新结果事件的回调函数 */
     type OnCheckForUpdateCallback = (
-        result: OnCheckForUpdateCallbackResult,
+        result: OnCheckForUpdateCallbackResult
     ) => void
     /** 罗盘数据变化事件的回调函数 */
     type OnCompassChangeCallback = (
-        result: OnCompassChangeCallbackResult,
+        result: OnCompassChangeCallbackResult
     ) => void
     /** 设备方向变化事件的回调函数 */
     type OnDeviceMotionChangeCallback = (
-        result: OnDeviceMotionChangeCallbackResult,
+        result: OnDeviceMotionChangeCallbackResult
     ) => void
     /** 已录制完指定帧大小的文件事件的回调函数 */
     type OnFrameRecordedCallback = (
-        result: OnFrameRecordedCallbackResult,
+        result: OnFrameRecordedCallbackResult
     ) => void
     /** 获取到 Wi-Fi 列表数据事件的回调函数 */
     type OnGetWifiListCallback = (result: OnGetWifiListCallbackResult) => void
     /** 陀螺仪数据变化事件的回调函数 */
     type OnGyroscopeChangeCallback = (
-        result: OnGyroscopeChangeCallbackResult,
+        result: OnGyroscopeChangeCallbackResult
     ) => void
     /** 接收 NFC 设备消息事件的回调函数 */
     type OnHCEMessageCallback = (result: OnHCEMessageCallbackResult) => void
+    /** HTTP Response Header 事件的回调函数 */
+    type OnHeadersReceivedCallback = (
+        result: OnHeadersReceivedCallbackResult
+    ) => void
     /** 录音因为受到系统占用而被中断开始事件的回调函数 */
     type OnInterruptionBeginCallback = (res: GeneralCallbackResult) => void
     /** 录音中断结束事件的回调函数 */
     type OnInterruptionEndCallback = (res: GeneralCallbackResult) => void
     type OnKeyboardHeightChangeCallback = (
-        result: OnKeyboardHeightChangeCallbackResult,
+        result: OnKeyboardHeightChangeCallbackResult
     ) => void
     /** 开始监听数据包消息的事件的回调函数 */
     type OnListeningCallback = (res: GeneralCallbackResult) => void
     /** mDNS 服务停止搜索的事件的回调函数 */
     type OnLocalServiceDiscoveryStopCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** mDNS 服务发现的事件的回调函数 */
     type OnLocalServiceFoundCallback = (
-        result: OnLocalServiceFoundCallbackResult,
+        result: OnLocalServiceFoundCallbackResult
     ) => void
     /** mDNS 服务离开的事件的回调函数 */
     type OnLocalServiceLostCallback = (
-        result: OnLocalServiceLostCallbackResult,
+        result: OnLocalServiceLostCallbackResult
     ) => void
     /** mDNS 服务解析失败的事件的回调函数 */
     type OnLocalServiceResolveFailCallback = (
-        result: OnLocalServiceResolveFailCallbackResult,
+        result: OnLocalServiceLostCallbackResult
     ) => void
     /** 实时地理位置变化事件的回调函数 */
     type OnLocationChangeCallback = (
-        result: OnLocationChangeCallbackResult,
+        result: OnLocationChangeCallbackResult
     ) => void
     /** 内存不足告警事件的回调函数 */
     type OnMemoryWarningCallback = (
-        result: OnMemoryWarningCallbackResult,
+        result: OnMemoryWarningCallbackResult
     ) => void
     /** 网络状态变化事件的回调函数 */
     type OnNetworkStatusChangeCallback = (
-        result: OnNetworkStatusChangeCallbackResult,
+        result: OnNetworkStatusChangeCallbackResult
     ) => void
     /** 用户在系统音乐播放面板点击下一曲事件的回调函数 */
     type OnNextCallback = (res: GeneralCallbackResult) => void
@@ -14194,26 +15948,38 @@ wx.writeBLECharacteristicValue({
     /** 录音继续事件的回调函数 */
     type OnResumeCallback = (res: GeneralCallbackResult) => void
     /** WebSocket 连接关闭事件的回调函数 */
-    type OnSocketCloseCallback = (result: OnSocketCloseCallbackResult) => void
+    type OnSocketCloseCallback = (
+        result: SocketTaskOnCloseCallbackResult
+    ) => void
     /** WebSocket 错误事件的回调函数 */
-    type OnSocketErrorCallback = (res: GeneralCallbackResult) => void
+    type OnSocketErrorCallback = (
+        result: UDPSocketOnErrorCallbackResult
+    ) => void
     /** WebSocket 接受到服务器的消息事件的回调函数 */
     type OnSocketMessageCallback = (
-        result: OnSocketMessageCallbackResult,
+        result: SocketTaskOnMessageCallbackResult
     ) => void
     /** WebSocket 连接打开事件的回调函数 */
     type OnSocketOpenCallback = (result: OnSocketOpenCallbackResult) => void
     /** 录音开始事件的回调函数 */
     type OnStartCallback = (res: GeneralCallbackResult) => void
+    /** 系统主题改变事件的回调函数 */
+    type OnThemeChangeCallback = (result: OnThemeChangeCallbackResult) => void
+    /** 未处理的 Promise 拒绝事件的回调函数 */
+    type OnUnhandledRejectionCallback = (
+        result: OnUnhandledRejectionCallbackResult
+    ) => void
     /** 小程序更新失败事件的回调函数 */
     type OnUpdateFailedCallback = (res: GeneralCallbackResult) => void
     /** 小程序有版本更新事件的回调函数 */
     type OnUpdateReadyCallback = (res: GeneralCallbackResult) => void
     /** 用户主动截屏事件的回调函数 */
     type OnUserCaptureScreenCallback = (res: GeneralCallbackResult) => void
+    /** 音频加载中事件的回调函数 */
+    type OnWaitingCallback = (res: GeneralCallbackResult) => void
     /** 连接上 Wi-Fi 的事件的回调函数 */
     type OnWifiConnectedCallback = (
-        result: OnWifiConnectedCallbackResult,
+        result: OnWifiConnectedCallbackResult
     ) => void
     /** 窗口尺寸变化事件的回调函数 */
     type OnWindowResizeCallback = (result: OnWindowResizeCallbackResult) => void
@@ -14247,7 +16013,7 @@ wx.writeBLECharacteristicValue({
     type OpenSettingFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type OpenSettingSuccessCallback = (
-        result: OpenSettingSuccessCallbackResult,
+        result: OpenSettingSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type PageScrollToCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14263,14 +16029,20 @@ wx.writeBLECharacteristicValue({
     type PauseBGMSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type PauseBackgroundAudioCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type PauseBackgroundAudioFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type PauseBackgroundAudioSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type PauseCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type PauseFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type PauseSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type PauseVoiceCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
@@ -14285,13 +16057,13 @@ wx.writeBLECharacteristicValue({
     type PlayBGMSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type PlayBackgroundAudioCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type PlayBackgroundAudioFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type PlayBackgroundAudioSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type PlayCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14319,13 +16091,13 @@ wx.writeBLECharacteristicValue({
     type ReLaunchSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ReadBLECharacteristicValueCompleteCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用失败的回调函数 */
     type ReadBLECharacteristicValueFailCallback = (res: BluetoothError) => void
     /** 接口调用成功的回调函数 */
     type ReadBLECharacteristicValueSuccessCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ReadFileCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14333,7 +16105,7 @@ wx.writeBLECharacteristicValue({
     type ReadFileFailCallback = (result: ReadFileFailCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ReadFileSuccessCallback = (
-        result: ReadFileSuccessCallbackResult,
+        result: ReadFileSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ReaddirCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14343,7 +16115,7 @@ wx.writeBLECharacteristicValue({
     type ReaddirSuccessCallback = (result: ReaddirSuccessCallbackResult) => void
     /** 录音错误事件的回调函数 */
     type RecorderManagerOnErrorCallback = (
-        result: RecorderManagerOnErrorCallbackResult,
+        result: UDPSocketOnErrorCallbackResult
     ) => void
     /** 录音暂停事件的回调函数 */
     type RecorderManagerOnPauseCallback = (res: GeneralCallbackResult) => void
@@ -14368,6 +16140,16 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type RemoveFormatSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type RemoveSavedFileCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type RemoveSavedFileSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type RemoveServiceCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type RemoveServiceFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type RemoveServiceSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type RemoveStorageCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type RemoveStorageFailCallback = (res: GeneralCallbackResult) => void
@@ -14375,7 +16157,7 @@ wx.writeBLECharacteristicValue({
     type RemoveStorageSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type RemoveTabBarBadgeCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type RemoveTabBarBadgeFailCallback = (res: GeneralCallbackResult) => void
@@ -14393,7 +16175,7 @@ wx.writeBLECharacteristicValue({
     type RequestFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type RequestFullScreenCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type RequestFullScreenFailCallback = (res: GeneralCallbackResult) => void
@@ -14405,35 +16187,49 @@ wx.writeBLECharacteristicValue({
     type RequestPaymentFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type RequestPaymentSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type RequestSubscribeMessageCompleteCallback = (
+        res: GeneralCallbackResult
+    ) => void
+    /** 接口调用失败的回调函数 */
+    type RequestSubscribeMessageFailCallback = (
+        result: RequestSubscribeMessageFailCallbackResult
+    ) => void
+    /** 接口调用成功的回调函数 */
+    type RequestSubscribeMessageSuccessCallback = (
+        result: RequestSubscribeMessageSuccessCallbackResult
+    ) => void
     /** 接口调用成功的回调函数 */
     type RequestSuccessCallback = (result: RequestSuccessCallbackResult) => void
-    /** HTTP Response Header 事件的回调函数 */
-    type RequestTaskOffHeadersReceivedCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** HTTP Response Header 事件的回调函数 */
-    type RequestTaskOnHeadersReceivedCallback = (
-        result: RequestTaskOnHeadersReceivedCallbackResult,
-    ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ResumeBGMCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type ResumeBGMFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ResumeBGMSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type ResumeCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type ResumeFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type ResumeSuccessCallback = (res: GeneralCallbackResult) => void
     /** 用户点击 `关闭广告` 按钮的事件的回调函数 */
-    type RewardedVideoAdOffCloseCallback = (res: GeneralCallbackResult) => void
+    type RewardedVideoAdOffCloseCallback = (
+        result: RewardedVideoAdOnCloseCallbackResult
+    ) => void
     /** 激励视频错误事件的回调函数 */
-    type RewardedVideoAdOffErrorCallback = (res: GeneralCallbackResult) => void
+    type RewardedVideoAdOffErrorCallback = (
+        result: RewardedVideoAdOnErrorCallbackResult
+    ) => void
     /** 激励视频广告加载事件的回调函数 */
     type RewardedVideoAdOffLoadCallback = (res: GeneralCallbackResult) => void
     /** 用户点击 `关闭广告` 按钮的事件的回调函数 */
     type RewardedVideoAdOnCloseCallback = (
-        result: RewardedVideoAdOnCloseCallbackResult,
+        result: RewardedVideoAdOnCloseCallbackResult
     ) => void
     /** 激励视频错误事件的回调函数 */
     type RewardedVideoAdOnErrorCallback = (
-        result: RewardedVideoAdOnErrorCallbackResult,
+        result: RewardedVideoAdOnErrorCallbackResult
     ) => void
     /** 激励视频广告加载事件的回调函数 */
     type RewardedVideoAdOnLoadCallback = (res: GeneralCallbackResult) => void
@@ -14444,28 +16240,36 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type RmdirSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type SaveFileCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type SaveFileToDiskCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type SaveFileToDiskFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type SaveFileToDiskSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SaveImageToPhotosAlbumCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SaveImageToPhotosAlbumFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type SaveImageToPhotosAlbumSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SaveVideoToPhotosAlbumCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SaveVideoToPhotosAlbumFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type SaveVideoToPhotosAlbumSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ScanCodeCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14473,19 +16277,19 @@ wx.writeBLECharacteristicValue({
     type ScanCodeFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ScanCodeSuccessCallback = (
-        result: ScanCodeSuccessCallbackResult,
+        result: ScanCodeSuccessCallbackResult
     ) => void
     /** 回调函数，在执行 `SelectorQuery.exec` 方法后，节点信息会在 `callback` 中返回。 */
     type ScrollOffsetCallback = (result: ScrollOffsetCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SeekBackgroundAudioCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SeekBackgroundAudioFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type SeekBackgroundAudioSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SendCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14499,7 +16303,7 @@ wx.writeBLECharacteristicValue({
     type SendHCEMessageSuccessCallback = (res: NFCError) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SendSocketMessageCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SendSocketMessageFailCallback = (res: GeneralCallbackResult) => void
@@ -14514,39 +16318,51 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type SetBGMVolumeSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type SetBLEMTUCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type SetBLEMTUFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type SetBLEMTUSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetBackgroundColorCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SetBackgroundColorFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type SetBackgroundColorSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetBackgroundFetchTokenCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SetBackgroundFetchTokenFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type SetBackgroundFetchTokenSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetBackgroundTextStyleCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SetBackgroundTextStyleFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type SetBackgroundTextStyleSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type SetCenterOffsetCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type SetCenterOffsetFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type SetCenterOffsetSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetClipboardDataCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
@@ -14567,13 +16383,13 @@ wx.writeBLECharacteristicValue({
     type SetEnableDebugSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetInnerAudioOptionCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SetInnerAudioOptionFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type SetInnerAudioOptionSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetKeepScreenOnCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14582,38 +16398,44 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type SetKeepScreenOnSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type SetMICVolumeCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type SetMICVolumeFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type SetMICVolumeSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetNavigationBarColorCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SetNavigationBarColorFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type SetNavigationBarColorSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetNavigationBarTitleCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SetNavigationBarTitleFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type SetNavigationBarTitleSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetScreenBrightnessCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type SetScreenBrightnessFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type SetScreenBrightnessSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type SetStorageCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14652,12 +16474,24 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type SetWifiListSuccessCallback = (res: WifiError) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type SetWindowSizeCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type SetWindowSizeFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type SetWindowSizeSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type SetZoomCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type SetZoomFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type SetZoomSuccessCallback = (result: SetZoomSuccessCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ShowActionSheetCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type ShowActionSheetFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ShowActionSheetSuccessCallback = (
-        result: ShowActionSheetSuccessCallbackResult,
+        result: ShowActionSheetSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ShowLoadingCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14671,20 +16505,26 @@ wx.writeBLECharacteristicValue({
     type ShowModalFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type ShowModalSuccessCallback = (
-        result: ShowModalSuccessCallbackResult,
+        result: ShowModalSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ShowNavigationBarLoadingCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type ShowNavigationBarLoadingFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type ShowNavigationBarLoadingSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type ShowRedPackageCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type ShowRedPackageFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type ShowRedPackageSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ShowShareMenuCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
@@ -14711,25 +16551,25 @@ wx.writeBLECharacteristicValue({
     type ShowToastSuccessCallback = (res: GeneralCallbackResult) => void
     /** WebSocket 连接关闭事件的回调函数 */
     type SocketTaskOnCloseCallback = (
-        result: SocketTaskOnCloseCallbackResult,
+        result: SocketTaskOnCloseCallbackResult
     ) => void
     /** WebSocket 错误事件的回调函数 */
     type SocketTaskOnErrorCallback = (
-        result: SocketTaskOnErrorCallbackResult,
+        result: UDPSocketOnErrorCallbackResult
     ) => void
     /** WebSocket 接受到服务器的消息事件的回调函数 */
     type SocketTaskOnMessageCallback = (
-        result: SocketTaskOnMessageCallbackResult,
+        result: SocketTaskOnMessageCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartAccelerometerCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StartAccelerometerFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type StartAccelerometerSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartBeaconDiscoveryCompleteCallback = (res: IBeaconError) => void
@@ -14739,15 +16579,15 @@ wx.writeBLECharacteristicValue({
     type StartBeaconDiscoverySuccessCallback = (res: IBeaconError) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartBluetoothDevicesDiscoveryCompleteCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用失败的回调函数 */
     type StartBluetoothDevicesDiscoveryFailCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用成功的回调函数 */
     type StartBluetoothDevicesDiscoverySuccessCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartCompassCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14756,17 +16596,21 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type StartCompassSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type StartCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartDeviceMotionListeningCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StartDeviceMotionListeningFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type StartDeviceMotionListeningSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
+    /** 接口调用失败的回调函数 */
+    type StartFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartGyroscopeCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
@@ -14781,37 +16625,37 @@ wx.writeBLECharacteristicValue({
     type StartHCESuccessCallback = (res: NFCError) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartLocalServiceDiscoveryCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StartLocalServiceDiscoveryFailCallback = (
-        result: StartLocalServiceDiscoveryFailCallbackResult,
+        result: StartLocalServiceDiscoveryFailCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type StartLocalServiceDiscoverySuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartLocationUpdateBackgroundCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StartLocationUpdateBackgroundFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type StartLocationUpdateBackgroundSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartLocationUpdateCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StartLocationUpdateFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type StartLocationUpdateSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartPreviewCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14821,30 +16665,36 @@ wx.writeBLECharacteristicValue({
     type StartPreviewSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartPullDownRefreshCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StartPullDownRefreshFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type StartPullDownRefreshSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type StartRecordCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type StartRecordFailCallback = (res: GeneralCallbackResult) => void
     /** 超过30s或页面 `onHide` 时会结束录像 */
     type StartRecordTimeoutCallback = (
-        result: StartRecordTimeoutCallbackResult,
+        result: StartRecordTimeoutCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartSoterAuthenticationCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StartSoterAuthenticationFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type StartSoterAuthenticationSuccessCallback = (
-        result: StartSoterAuthenticationSuccessCallbackResult,
+        result: StartSoterAuthenticationSuccessCallbackResult
     ) => void
+    /** 接口调用成功的回调函数 */
+    type StartSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StartWifiCompleteCallback = (res: WifiError) => void
     /** 接口调用失败的回调函数 */
@@ -14859,12 +16709,18 @@ wx.writeBLECharacteristicValue({
     type StatSuccessCallback = (result: StatSuccessCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopAccelerometerCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StopAccelerometerFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type StopAccelerometerSuccessCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type StopAdvertisingCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type StopAdvertisingFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type StopAdvertisingSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopBGMCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
@@ -14873,13 +16729,13 @@ wx.writeBLECharacteristicValue({
     type StopBGMSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopBackgroundAudioCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StopBackgroundAudioFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type StopBackgroundAudioSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopBeaconDiscoveryCompleteCallback = (res: IBeaconError) => void
@@ -14889,15 +16745,15 @@ wx.writeBLECharacteristicValue({
     type StopBeaconDiscoverySuccessCallback = (res: IBeaconError) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopBluetoothDevicesDiscoveryCompleteCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用失败的回调函数 */
     type StopBluetoothDevicesDiscoveryFailCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用成功的回调函数 */
     type StopBluetoothDevicesDiscoverySuccessCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopCompassCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14906,17 +16762,21 @@ wx.writeBLECharacteristicValue({
     /** 接口调用成功的回调函数 */
     type StopCompassSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type StopCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopDeviceMotionListeningCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StopDeviceMotionListeningFailCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type StopDeviceMotionListeningSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
+    /** 接口调用失败的回调函数 */
+    type StopFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopGyroscopeCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
@@ -14931,25 +16791,25 @@ wx.writeBLECharacteristicValue({
     type StopHCESuccessCallback = (res: NFCError) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopLocalServiceDiscoveryCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StopLocalServiceDiscoveryFailCallback = (
-        result: StopLocalServiceDiscoveryFailCallbackResult,
+        result: StopLocalServiceDiscoveryFailCallbackResult
     ) => void
     /** 接口调用成功的回调函数 */
     type StopLocalServiceDiscoverySuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopLocationUpdateCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StopLocationUpdateFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type StopLocationUpdateSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopPreviewCompleteCallback = (res: GeneralCallbackResult) => void
@@ -14959,14 +16819,20 @@ wx.writeBLECharacteristicValue({
     type StopPreviewSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopPullDownRefreshCompleteCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type StopPullDownRefreshFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type StopPullDownRefreshSuccessCallback = (
-        res: GeneralCallbackResult,
+        res: GeneralCallbackResult
     ) => void
+    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+    type StopRecordCompleteCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用失败的回调函数 */
+    type StopRecordFailCallback = (res: GeneralCallbackResult) => void
+    /** 接口调用成功的回调函数 */
+    type StopSuccessCallback = (res: GeneralCallbackResult) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type StopVoiceCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
@@ -14997,7 +16863,7 @@ wx.writeBLECharacteristicValue({
     type TakePhotoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type TakePhotoSuccessCallback = (
-        result: TakePhotoSuccessCallbackResult,
+        result: TakePhotoSuccessCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type ToggleTorchCompleteCallback = (res: GeneralCallbackResult) => void
@@ -15014,16 +16880,18 @@ wx.writeBLECharacteristicValue({
     /** 关闭事件的回调函数 */
     type UDPSocketOffCloseCallback = (res: GeneralCallbackResult) => void
     /** 错误事件的回调函数 */
-    type UDPSocketOffErrorCallback = (res: GeneralCallbackResult) => void
+    type UDPSocketOffErrorCallback = (
+        result: UDPSocketOnErrorCallbackResult
+    ) => void
     /** 关闭事件的回调函数 */
     type UDPSocketOnCloseCallback = (res: GeneralCallbackResult) => void
     /** 错误事件的回调函数 */
     type UDPSocketOnErrorCallback = (
-        result: UDPSocketOnErrorCallbackResult,
+        result: UDPSocketOnErrorCallbackResult
     ) => void
     /** 收到消息的事件的回调函数 */
     type UDPSocketOnMessageCallback = (
-        result: UDPSocketOnMessageCallbackResult,
+        result: UDPSocketOnMessageCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type UndoCompleteCallback = (res: GeneralCallbackResult) => void
@@ -15055,23 +16923,15 @@ wx.writeBLECharacteristicValue({
     type UploadFileFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type UploadFileSuccessCallback = (
-        result: UploadFileSuccessCallbackResult,
-    ) => void
-    /** HTTP Response Header 事件的回调函数 */
-    type UploadTaskOffHeadersReceivedCallback = (
-        res: GeneralCallbackResult,
+        result: UploadFileSuccessCallbackResult
     ) => void
     /** 上传进度变化事件的回调函数 */
     type UploadTaskOffProgressUpdateCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** HTTP Response Header 事件的回调函数 */
-    type UploadTaskOnHeadersReceivedCallback = (
-        result: UploadTaskOnHeadersReceivedCallbackResult,
+        result: UploadTaskOnProgressUpdateCallbackResult
     ) => void
     /** 上传进度变化事件的回调函数 */
     type UploadTaskOnProgressUpdateCallback = (
-        result: UploadTaskOnProgressUpdateCallbackResult,
+        result: UploadTaskOnProgressUpdateCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type VibrateLongCompleteCallback = (res: GeneralCallbackResult) => void
@@ -15087,17 +16947,17 @@ wx.writeBLECharacteristicValue({
     type VibrateShortSuccessCallback = (res: GeneralCallbackResult) => void
     /** 主线程/Worker 线程向当前线程发送的消息的事件的回调函数 */
     type WorkerOnMessageCallback = (
-        result: WorkerOnMessageCallbackResult,
+        result: WorkerOnMessageCallbackResult
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type WriteBLECharacteristicValueCompleteCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用失败的回调函数 */
     type WriteBLECharacteristicValueFailCallback = (res: BluetoothError) => void
     /** 接口调用成功的回调函数 */
     type WriteBLECharacteristicValueSuccessCallback = (
-        res: BluetoothError,
+        res: BluetoothError
     ) => void
     /** 接口调用结束的回调函数（调用成功、失败都会执行） */
     type WriteFileCompleteCallback = (res: GeneralCallbackResult) => void
@@ -15105,52 +16965,28 @@ wx.writeBLECharacteristicValue({
     type WriteFileFailCallback = (result: WriteFileFailCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type WriteFileSuccessCallback = (res: GeneralCallbackResult) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type WxGetFileInfoCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type WxGetFileInfoFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type WxGetFileInfoSuccessCallback = (
-        result: WxGetFileInfoSuccessCallbackResult,
+        result: WxGetFileInfoSuccessCallbackResult
     ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type WxGetSavedFileListCompleteCallback = (
-        res: GeneralCallbackResult,
-    ) => void
-    /** 接口调用失败的回调函数 */
-    type WxGetSavedFileListFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type WxGetSavedFileListSuccessCallback = (
-        result: WxGetSavedFileListSuccessCallbackResult,
-    ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type WxRemoveSavedFileCompleteCallback = (
-        res: GeneralCallbackResult,
+        result: WxGetSavedFileListSuccessCallbackResult
     ) => void
     /** 接口调用失败的回调函数 */
     type WxRemoveSavedFileFailCallback = (res: GeneralCallbackResult) => void
-    /** 接口调用成功的回调函数 */
-    type WxRemoveSavedFileSuccessCallback = (res: GeneralCallbackResult) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type WxSaveFileCompleteCallback = (res: GeneralCallbackResult) => void
     /** 接口调用失败的回调函数 */
     type WxSaveFileFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type WxSaveFileSuccessCallback = (
-        result: WxSaveFileSuccessCallbackResult,
+        result: WxSaveFileSuccessCallbackResult
     ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type WxStartRecordCompleteCallback = (res: GeneralCallbackResult) => void
-    /** 接口调用失败的回调函数 */
-    type WxStartRecordFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type WxStartRecordSuccessCallback = (
-        result: StartRecordSuccessCallbackResult,
+        result: StartRecordSuccessCallbackResult
     ) => void
-    /** 接口调用结束的回调函数（调用成功、失败都会执行） */
-    type WxStopRecordCompleteCallback = (res: GeneralCallbackResult) => void
-    /** 接口调用失败的回调函数 */
-    type WxStopRecordFailCallback = (res: GeneralCallbackResult) => void
     /** 接口调用成功的回调函数 */
     type WxStopRecordSuccessCallback = (res: GeneralCallbackResult) => void
 }
@@ -15165,7 +17001,14 @@ declare let exports: any
  * 取消由 setInterval 设置的定时器。 */
 declare function clearInterval(
     /** 要取消的定时器的 ID */
-    intervalID: number,
+    intervalID: number
+): void
+/** [clearTimeout(number timeoutID)](https://developers.weixin.qq.com/miniprogram/dev/api/base/timer/clearTimeout.html)
+ *
+ * 取消由 setTimeout 设置的定时器。 */
+declare function clearTimeout(
+    /** 要取消的定时器的 ID */
+    timeoutID: number
 ): void
 /** [number setInterval(function callback, number delay, any rest)](https://developers.weixin.qq.com/miniprogram/dev/api/base/timer/setInterval.html)
  *
@@ -15176,15 +17019,8 @@ declare function setInterval(
     /** 执行回调函数之间的时间间隔，单位 ms。 */
     delay?: number,
     /** param1, param2, ..., paramN 等附加参数，它们会作为参数传递给回调函数。 */
-    rest?: any,
+    rest?: any
 ): number
-/** [clearTimeout(number timeoutID)](https://developers.weixin.qq.com/miniprogram/dev/api/base/timer/clearTimeout.html)
- *
- * 取消由 setTimeout 设置的定时器。 */
-declare function clearTimeout(
-    /** 要取消的定时器的 ID */
-    timeoutID: number,
-): void
 /** [number setTimeout(function callback, number delay, any rest)](https://developers.weixin.qq.com/miniprogram/dev/api/base/timer/setTimeout.html)
  *
  * 设定一个定时器。在定时到期以后执行注册的回调函数 */
@@ -15194,5 +17030,5 @@ declare function setTimeout(
     /** 延迟的时间，函数的调用会在该延迟之后发生，单位 ms。 */
     delay?: number,
     /** param1, param2, ..., paramN 等附加参数，它们会作为参数传递给回调函数。 */
-    rest?: any,
+    rest?: any
 ): number

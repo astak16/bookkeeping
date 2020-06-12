@@ -4,6 +4,7 @@
     "noImplicitAny": true,
     "module": "CommonJS",
     "target": "ES5",
+    "lib": ["es6"],
     "allowJs": false,
     "experimentalDecorators": true,
     "noImplicitThis": true,
@@ -18,10 +19,7 @@
     "removeComments": true,
     "pretty": true,
     "strictPropertyInitialization": true,
-    "lib": ["es5"],
-    "typeRoots": [
-      "./typings"
-    ]
+    "typeRoots": [ "./node_modules/**/*.d.ts" ]
   },
   "include": [
     "./**/*.ts"
