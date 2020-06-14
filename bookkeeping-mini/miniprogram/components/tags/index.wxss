@@ -1,0 +1,46 @@
+.tags-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 20rpx 0;
+  box-sizing:border-box;
+}
+
+.tagGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  width:100%;
+  height:100%;
+}
+
+.tags{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  padding: 0 20rpx;
+}
+
+.tags .tag-icon {
+  width: 16.66%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.tags-indicators {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+}
+
+.indicator {
+  height: 12rpx;
+  width: 12rpx;
+  background-color: rgb(208, 208, 208);
+  border-radius: 50%;
+  margin:0 10rpx;
+}

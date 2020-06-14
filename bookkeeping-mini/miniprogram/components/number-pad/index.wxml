@@ -1,0 +1,28 @@
+<view class="container">
+  <view class="edit-bar">
+    <view class="time">
+      <view class="year">2020</view>
+      <view class="date">今天</view>
+    </view>
+    <image class="edit" src="/images/edit.png" mode="widthFix"></image>
+  </view>
+  <view class="buttons">
+    <view class="numbers">
+      <view class="button" catch:tap="buttonContent">1</view>
+      <view class="button" catch:tap="buttonContent">2</view>
+      <view class="button" catch:tap="buttonContent">3</view>
+      <view class="button" catch:tap="buttonContent">4</view>
+      <view class="button" catch:tap="buttonContent">5</view>
+      <view class="button" catch:tap="buttonContent">6</view>
+      <view class="button" catch:tap="buttonContent">7</view>
+      <view class="button" catch:tap="buttonContent">8</view>
+      <view class="button" catch:tap="buttonContent">9</view>
+      <view class="button zero" catch:tap="buttonContent">0</view>
+      <view class="button dot" catch:tap="buttonContent">.</view>
+    </view>
+    <view class="options">
+      <view class="button clear" catch:tap="removePrice">清零</view>
+      <view class="button ok" catch:tap="submitPrice">OK</view>
+    </view>
+  </view>
+</view>

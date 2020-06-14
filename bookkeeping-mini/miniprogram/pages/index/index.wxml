@@ -1,2 +1,3 @@
-<view catch:tap="onClick">{{aa}}</view>
-<u-tag b="uccs"/>
+<!--<view catch:tap="onClick">{{aa}}</view>-->
+<!--<u-tag b="uccs"/>-->
+<u-banner></u-banner>

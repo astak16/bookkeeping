@@ -1,0 +1,6 @@
+<view class="container">
+  <image class="banner" mode="aspectFill" src="/images/banner.jpg"/>
+  <u-icon class="add-icon" iconId="add" u-class="icon"
+          catch:utap="onAddClick"
+  ></u-icon>
+</view>

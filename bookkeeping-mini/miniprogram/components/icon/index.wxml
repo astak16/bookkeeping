@@ -1,0 +1,4 @@
+<view class="icon {{placement ? placement : ''}} u-class " catch:tap="onIconClick">
+  <image src="{{imgSrc}}" style="width: {{width + 'rpx'}};" mode="widthFix"/>
+  <view class="text color">{{name}}</view>
+</view>

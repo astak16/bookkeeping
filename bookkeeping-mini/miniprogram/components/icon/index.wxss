@@ -1,0 +1,44 @@
+.icon {
+  line-height: 1;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: rgba(93, 92, 96, 1);
+}
+
+.icon image {
+  width: 80rpx;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.icon .text {
+  text-align: center;
+  
+  white-space: nowrap;
+}
+
+.icon.right,
+.icon.left{
+  flex-direction: row;
+}
+
+.icon.right .text {
+  margin-left: 12rpx;
+}
+
+.icon.top .text {
+  margin-bottom: 12rpx;
+}
+
+.icon.left .text {
+  margin-right: 12rpx;
+}
+
+.icon.bottom .text {
+  margin-top: 12rpx;
+}
+

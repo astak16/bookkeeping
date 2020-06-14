@@ -1,0 +1,16 @@
+.tabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+  font-size: 44rpx;
+}
+
+.tabs .tab {
+  padding: 24rpx 20rpx;
+  color: rgb(146, 146, 146)
+}
+
+.tabs .tab.highlight {
+  color: rgb(209, 171, 122)
+}

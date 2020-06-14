@@ -5,7 +5,7 @@
 	},
 	"miniprogramRoot": "miniprogram/",
 	"compileType": "miniprogram",
-	"libVersion": "2.8.2",
+	"libVersion": "2.11.2",
 	"projectname": "bookkeeping-mini",
 	"scripts": {
 		"beforeCompile": "npm run tsc",
@@ -35,13 +35,45 @@
 			"disablePlugins": [],
 			"outputPath": ""
 		},
+		"bundle": true,
 		"useIsolateContext": true,
-		"useCompilerModule": true,
-		"userConfirmedUseCompilerModuleSwitch": false,
-		"bundle": true
+		"useCompilerModule": false,
+		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"appid": "wx06303c91ce488e22",
-	"condition": {}
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"current": -1,
+			"list": []
+		},
+		"gamePlugin": {
+			"current": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": [
+				{
+					"id": -1,
+					"name": "pages/bill/bill",
+					"pathName": "pages/bill/bill",
+					"scene": null
+				}
+			]
+		}
+	}
 }

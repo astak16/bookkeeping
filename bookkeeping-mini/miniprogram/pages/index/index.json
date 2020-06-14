@@ -1,5 +1,5 @@
 {
   "usingComponents": {
-    "u-tag": "/components/tag/index"
+    "u-banner": "/components/banner/index"
   }
 }

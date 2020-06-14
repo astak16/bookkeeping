@@ -1,0 +1,6 @@
+<view class="container">
+  <u-tabs></u-tabs>
+  <u-output></u-output>
+  <u-tags class="tags"></u-tags>
+  <u-number-pad class="number-pad"></u-number-pad>
+</view>

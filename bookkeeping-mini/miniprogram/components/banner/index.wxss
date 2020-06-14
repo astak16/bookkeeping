@@ -1,0 +1,22 @@
+.container {
+  position: relative;
+}
+
+.container .banner {
+  width: 100%;
+  height: 400rpx;
+  vertical-align: middle;
+}
+
+.container .icon {
+  width: 240rpx !important;
+}
+
+.container .add-icon {
+  border-radius: 50% !important;
+  background-color: white;
+  position: absolute;
+  left: 50%;
+  bottom: -120rpx;
+  transform: translateX(-50%);
+}

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "u-tabs": "/components/tabs/index",
+    "u-tags": "/components/tags/index",
+    "u-output": "/components/output/index",
+    "u-number-pad": "/components/number-pad/index"
+  }
+}
