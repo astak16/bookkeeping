@@ -1,9 +1,9 @@
-.container{
+.calender{
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-.container .tags{
+.calender .tags{
   flex-grow: 1;
 }

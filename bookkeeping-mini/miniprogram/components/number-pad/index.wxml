@@ -1,4 +1,4 @@
-<view class="container">
+<view class="calender">
   <view class="edit-bar">
     <view class="time">
       <view class="year">2020</view>

@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "u-calendar": "/components/calendar/index"
+  }
+}

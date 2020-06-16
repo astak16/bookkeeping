@@ -1,18 +1,18 @@
-.container {
+.calender {
   position: relative;
 }
 
-.container .banner {
+.calender .banner {
   width: 100%;
   height: 400rpx;
   vertical-align: middle;
 }
 
-.container .icon {
+.calender .icon {
   width: 240rpx !important;
 }
 
-.container .add-icon {
+.calender .add-icon {
   border-radius: 50% !important;
   background-color: white;
   position: absolute;

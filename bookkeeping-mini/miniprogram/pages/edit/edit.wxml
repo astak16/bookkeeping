@@ -1,0 +1,4 @@
+<view>
+  <view catch:tap="onCalendarClick">按钮</view>
+  <u-calendar value="{{date}}" show="{{show}}"></u-calendar>
+</view>

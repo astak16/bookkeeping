@@ -1,2 +1,38 @@
-<!--components/calendar/calender.wxml-->
-<text>components/calendar/calender.wxml</text>
+<view class="container {{show ? 'show' : ''}}" catch:tap="onClickMask">
+
+</view>
+<view class="calender {{onceShow ? 'show' : ''}} {{show ? 'enter' : 'leave'}}">
+  <view class="header">
+    <view class="header-title">
+      <view catch:tap="onToggleMonthClick" data-type="prev">上月</view>
+      <view class="title">{{year}}年{{month+1}}月</view>
+      <view catch:tap="onToggleMonthClick" data-type="next">下月</view>
+    </view>
+    <view class="weekdays">
+      <view class="weekday">日</view>
+      <view class="weekday">一</view>
+      <view class="weekday">二</view>
+      <view class="weekday">三</view>
+      <view class="weekday">四</view>
+      <view class="weekday">五</view>
+      <view class="weekday">六</view>
+    </view>
+  </view>
+  <view class="body">
+    <view class="month">
+      <view class="dates">
+        <block wx:for="{{thisMonthDates}}" wx:key="*this">
+          <view
+              class="date {{item.isToday ? 'today' :''}} {{item.isSelectedDate ? 'selected-date' : ''}} {{item.isEmptyDate ? 'empty-date' : ''}}"
+              data-index="{{index}}"
+              data-type="{{item.monthState}}"
+              data-formatDate="{{item.formatDate}}"
+              catch:tap="onSelectDateClick"
+          >{{item.date}}
+          </view>
+        </block>
+      </view>
+    </view>
+    <view class="footer">确定</view>
+  </view>
+</view>

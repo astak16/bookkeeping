@@ -1,4 +1,4 @@
-<view class="container">
+<view class="calender">
   <u-tabs></u-tabs>
   <u-output></u-output>
   <u-tags class="tags"></u-tags>
