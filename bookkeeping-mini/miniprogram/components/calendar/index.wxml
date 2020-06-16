@@ -23,7 +23,7 @@
       <view class="dates">
         <block wx:for="{{thisMonthDates}}" wx:key="*this">
           <view
-              class="date {{item.isToday ? 'today' :''}} {{item.isSelectedDate ? 'selected-date' : ''}} {{item.isEmptyDate ? 'empty-date' : ''}}"
+              class="date {{item.defaultHighlight ? 'defaultHighlight' :''}} {{item.isSelectedDate ? 'selected-date' : ''}} {{item.isEmptyDate ? 'empty-date' : ''}}"
               data-index="{{index}}"
               data-type="{{item.monthState}}"
               data-formatDate="{{item.formatDate}}"
@@ -33,6 +33,6 @@
         </block>
       </view>
     </view>
-    <view class="footer">确定</view>
+    <view class="footer" catch:tap="onConfirmClick">确定</view>
   </view>
 </view>

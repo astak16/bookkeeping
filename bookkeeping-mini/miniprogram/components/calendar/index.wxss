@@ -72,7 +72,7 @@
   align-items: center;
 }
 
-.calender .body .date.today {
+.calender .body .date.defaultHighlight {
   color: rgb(209, 171, 122);
 }
 

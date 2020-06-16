@@ -42,11 +42,14 @@ Component(new class Calendar extends BaseComponent {
         const date = +(value.split("-")[2])
         _this.data.selectedDate = value
         _this.setData({year, month, date}, () => {
-          _this.initDate()
+          // _this.initDate()
           _this.createDays()
           _this.createEmptyDays()
         })
       }
+    },
+    isToday: {
+      type: Boolean,
     }
   }
 
@@ -55,9 +58,9 @@ Component(new class Calendar extends BaseComponent {
       const _this = this as any
       let {year, month, date} = _this.data
       if (year && month && date) return
-      year = new Date().getFullYear()
-      month = new Date().getMonth()
-      date = new Date().getDate()
+      {
+      }
+
       _this.data.selectedDate = _this.formatDate({year, month, date})
       _this.setData({year, month, date})
     },
@@ -68,7 +71,7 @@ Component(new class Calendar extends BaseComponent {
       if (formatdate === selectedDate) return
       _this.toggleMonth(type)
       _this.setSelectedDateGrid(formatdate)
-          console.log(formatdate)
+      console.log(formatdate)
     },
     onToggleMonthClick(e: Event) {
       const _this = this as any
@@ -86,6 +89,16 @@ Component(new class Calendar extends BaseComponent {
       } else if (type === MonthState.Next) {
         _this.nextMonth()
       }
+    },
+    onConfirmClick() {
+      const _this = this as any
+      const {selectedDate} = _this.data
+
+      _this.triggerEvent('utap', {
+        formatDate: selectedDate,
+        timestamp: new Date(selectedDate).getTime()
+      })
+      _this.onClickMask()
     },
     prevMonth() {
       const _this = this as any
@@ -147,8 +160,8 @@ Component(new class Calendar extends BaseComponent {
       const {nextYear, nextMonth} = _this.nextYear(year, month)
 
       const nextMonthDay = 42 - thisMonthTotalDate - firstDayWeek - 7 >= 0 ?
-          42 - thisMonthTotalDate - firstDayWeek - 7 :
-          42 - thisMonthTotalDate - firstDayWeek
+        42 - thisMonthTotalDate - firstDayWeek - 7 :
+        42 - thisMonthTotalDate - firstDayWeek
       for (let date = 1; date <= nextMonthDay; date++) {
         const monthGrid = _this.formatMonthGrid({year: nextYear, month: nextMonth, date}, MonthState.Next)
         emptyGridsAfter.push(monthGrid)
@@ -161,7 +174,7 @@ Component(new class Calendar extends BaseComponent {
       const isSelectedDate = _this.defaultSelectedDateGrid(formatDate, state)
       const isEmptyDate = _this.isEmptyDateGrid(month)
       const week = _this.getThisDateWeek({year, month, date})
-      const isToday = _this.aa(formatDate)
+      const defaultHighlight = _this.setHighlight(formatDate)
       return {
         year,
         month,
@@ -170,7 +183,7 @@ Component(new class Calendar extends BaseComponent {
         week,
         isSelectedDate,
         isEmptyDate,
-        isToday,
+        defaultHighlight,
         monthState: state
       }
     },
@@ -195,9 +208,13 @@ Component(new class Calendar extends BaseComponent {
       // 只高亮当月，上月和下月的不高亮
       return formatDate === selectedDate && !state
     },
-    aa(formatDate: string) {
+    setHighlight(formatDate: string) {
       const _this = this as any
-      const {value} = _this.data
+      let {value, isToday} = _this.data
+      if (isToday) {
+        const {year, month, date} = _this.getThisDate()
+        value = _this.formatDate({year, month, date})
+      }
       return value === formatDate
     },
 
@@ -227,6 +244,12 @@ Component(new class Calendar extends BaseComponent {
     },
     getThisMonthDays(year: number, month: number) {
       return new Date(year, month + 1, 0).getDate()
+    },
+    getThisDate() {
+      const year = new Date().getFullYear()
+      const month = new Date().getMonth()
+      const date = new Date().getDate()
+      return {year, month, date}
     }
   }
 })

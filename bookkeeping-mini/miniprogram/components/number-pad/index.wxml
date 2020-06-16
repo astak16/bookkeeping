@@ -1,8 +1,13 @@
-<view class="calender">
+<view class="container">
   <view class="edit-bar">
     <view class="time">
-      <view class="year">2020</view>
-      <view class="date">今天</view>
+      <u-calendar class="calender" value="{{formatDate}}" show="{{show}}"
+                  isToday="true"
+                  catch:tap="onCalendarShowClick"
+                  catch:utap="onCalendarClick"
+      ></u-calendar>
+      <view class="year {{highlight ? 'highlight' : ''}}">{{year}}</view>
+      <view class="date {{highlight ? 'highlight' : ''}}">{{month}}月{{date}}日</view>
     </view>
     <image class="edit" src="/images/edit.png" mode="widthFix"></image>
   </view>
