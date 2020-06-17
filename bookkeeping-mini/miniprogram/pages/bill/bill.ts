@@ -4,7 +4,7 @@ Page(new class Bill extends BasePage {
   tagsHeight!: number
 
   onLoad() {
-    super.onLoad();
+    // super.onLoad();
   }
 
   onShow() {

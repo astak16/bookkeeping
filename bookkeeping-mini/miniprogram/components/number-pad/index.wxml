@@ -9,7 +9,9 @@
       <view class="year {{highlight ? 'highlight' : ''}}">{{year}}</view>
       <view class="date {{highlight ? 'highlight' : ''}}">{{month}}月{{date}}日</view>
     </view>
-    <image class="edit" src="/images/edit.png" mode="widthFix"></image>
+    <image class="edit" src="/images/edit.png" mode="widthFix"
+           catch:tap="onEditClick"
+    ></image>
   </view>
   <view class="buttons">
     <view class="numbers">

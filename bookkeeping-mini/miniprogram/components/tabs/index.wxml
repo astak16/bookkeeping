@@ -1,4 +1,5 @@
 <view class="tabs">
+  <view class="icon close" catch:tap="onCloseClick"></view>
   <block wx:for="{{tabs}}"  wx:key="*this">
     <view class="tab light {{item.type === currentType ? 'highlight' : ''}}" data-type="{{item.type}}"
           catch:tap="onTabClick">

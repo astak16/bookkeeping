@@ -4,6 +4,7 @@
   align-items: center;
   line-height: 1;
   font-size: 44rpx;
+  position: relative;
 }
 
 .tabs .tab {
@@ -13,4 +14,30 @@
 
 .tabs .tab.highlight {
   color: rgb(209, 171, 122)
+}
+
+.tabs .close {
+  position: absolute;
+  left: 26rpx;
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.tabs .close::before,
+.tabs .close::after {
+  content: "";
+  height: 4rpx;
+  width: 50rpx;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  background-color: rgb(214, 214, 214);
+}
+
+.tabs .close::before {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.tabs .close::after {
+  transform: translateY(-50%) rotate(-45deg);
 }

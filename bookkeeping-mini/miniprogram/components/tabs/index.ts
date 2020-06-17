@@ -20,6 +20,9 @@ Component(new class Tabs extends BaseComponent {
       _this.setData({currentType: type})
       // app.globalData.record.type = type
       // console.log(app)
+    },
+    onCloseClick(){
+      wx.navigateBack({delta: 1})
     }
   }
 })

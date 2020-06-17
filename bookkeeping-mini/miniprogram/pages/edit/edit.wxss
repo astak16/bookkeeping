@@ -1,1 +1,89 @@
-/* miniprogram/pages/edit/edit.wxss */
+.container .header {
+  font-size: 40rpx;
+  text-align: center;
+  border-bottom: 2rpx solid rgb(214, 214, 214);
+  padding: 0 16rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.container .header .title {
+  padding: 30rpx 0;
+}
+
+.container .header .close {
+  position: absolute;
+  left:26rpx;
+  width: 50rpx;
+  height:50rpx;
+}
+
+.container .header .close::before,
+.container .header .close::after {
+  content: "";
+  height: 4rpx;
+  width: 50rpx;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  background-color: rgb(214, 214, 214);
+}
+
+.container .header .close::before {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.container .header .close::after {
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+.container .body {
+  padding: 20rpx;
+}
+
+.container .body .date {
+  padding-bottom: 10rpx;
+  font-size: 28rpx;
+}
+
+.container .body .textarea {
+  font-size: 36rpx;
+  caret-color: rgb(209, 171, 122);
+  width: 100%;
+  text-align: justify;
+}
+
+.container .footer {
+  position: fixed;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16rpx 40rpx;
+  line-height: 1;
+}
+
+.container .footer .icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 36rpx;
+  color: transparent;
+}
+
+.container .footer .icon.finish {
+  border: 1px solid rgb(214, 214, 214);
+  color: rgb(209, 171, 122);
+  padding: 14rpx 20rpx;
+  border-radius: 10rpx;
+}
+
+.container .footer {
+  font-size: 28rpx;
+  color: rgb(214, 214, 214)
+}

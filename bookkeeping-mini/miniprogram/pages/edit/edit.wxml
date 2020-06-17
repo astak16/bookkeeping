@@ -1,4 +1,16 @@
-<view>
-  <view catch:tap="onCalendarClick">按钮</view>
-  <u-calendar value="{{date}}" show="{{show}}"></u-calendar>
+<view class="container">
+  <view class="header">
+    <view class="icon close" catch:tap="onCloseClick"></view>
+    <view class="title">备注</view>
+  </view>
+  <view class="body">
+    <view class="date">{{date}}</view>
+    <textarea class="textarea" placeholder="记录花销更记录生活" auto-focus
+              catch:input="onChange"></textarea>
+  </view>
+  <view class="footer" style="bottom:{{height+'rpx'}};padding-bottom:{{paddingBottom+'rpx'}}">
+    <view class="icon">完成</view>
+    <view>{{length}}/140</view>
+    <view class="icon finish" catch:tap="onFinishClick">完成</view>
+  </view>
 </view>

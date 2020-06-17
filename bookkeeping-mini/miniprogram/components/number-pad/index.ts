@@ -29,6 +29,13 @@ Component(new class NumberPad extends BaseComponent {
         highlight: true
       })
     },
+    onEditClick(){
+      const _this = this as any
+      const {formatDate} = _this.data
+      wx.navigateTo({
+        url:`/pages/edit/edit?date=${formatDate}`
+      })
+    },
     initDate() {
       const _this = this as any
       const year = new Date().getFullYear()
