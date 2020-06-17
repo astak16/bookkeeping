@@ -1,0 +1,35 @@
+<view class="container">
+  <view class="edit-bar">
+    <view class="time">
+      <u-calendar class="calender" value="{{formatDate}}" show="{{show}}"
+                  isToday="true"
+                  catch:tap="onCalendarShowClick"
+                  catch:utap="onCalendarClick"
+      ></u-calendar>
+      <view class="year {{highlight ? 'highlight' : ''}}">{{year}}</view>
+      <view class="date {{highlight ? 'highlight' : ''}}">{{month}}月{{date}}日</view>
+    </view>
+    <image class="edit" src="/images/edit.png" mode="widthFix"
+           catch:tap="onEditClick"
+    ></image>
+  </view>
+  <view class="buttons">
+    <view class="numbers">
+      <view class="button" catch:tap="onButtonContentClick" data-content="1">1</view>
+      <view class="button" catch:tap="onButtonContentClick" data-content="2">2</view>
+      <view class="button" catch:tap="onButtonContentClick" data-content="3">3</view>
+      <view class="button" catch:tap="onButtonContentClick" data-content="4">4</view>
+      <view class="button" catch:tap="onButtonContentClick" data-content="5">5</view>
+      <view class="button" catch:tap="onButtonContentClick" data-content="6">6</view>
+      <view class="button" catch:tap="onButtonContentClick" data-content="7">7</view>
+      <view class="button" catch:tap="onButtonContentClick" data-content="8">8</view>
+      <view class="button" catch:tap="onButtonContentClick" data-content="9">9</view>
+      <view class="button zero" catch:tap="onButtonContentClick" data-content="0">0</view>
+      <view class="button dot" catch:tap="onButtonContentClick" data-content=".">.</view>
+    </view>
+    <view class="options">
+      <view class="button clear" catch:tap="onrButtonResetClick">清零</view>
+      <view class="button ok" catch:tap="onButtonOKClick">OK</view>
+    </view>
+  </view>
+</view>

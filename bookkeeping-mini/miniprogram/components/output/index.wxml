@@ -1,7 +1,0 @@
-<view class="output">
-  <u-icon class="icon" u-class="name"
-          iconId="1" name="早餐" placement="right"
-          width="86"
-  ></u-icon>
-  <view class="price">￥0.00</view>
-</view>

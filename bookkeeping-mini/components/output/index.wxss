@@ -1,0 +1,21 @@
+.output {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #72A39F;
+  padding: 10rpx 20rpx;
+}
+
+.output .icon {
+  flex-shrink: 0;
+}
+
+.output .price{
+  font-size: 40rpx;
+  color: white;
+}
+
+.name {
+  color: white !important;
+  font-size:36rpx !important;
+}

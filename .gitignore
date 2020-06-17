@@ -22,3 +22,5 @@ yarn-error.log*
 
 #leancloud.ts
 leancloud.ts
+
+bookkeeping-mini/**/*.js
