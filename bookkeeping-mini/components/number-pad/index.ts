@@ -1,7 +1,7 @@
 import {BaseComponent} from "../../utils/BaseComponent";
 import Event = WechatMiniprogram.Event;
 import {EventBus, zeroPrice} from "../../utils/util";
-import DataOption = WechatMiniprogram.Behavior.DataOption;
+import DataOption = WechatMiniprogram.Component.DataOption;
 
 const computedBehavior = require('miniprogram-computed')
 
@@ -19,7 +19,7 @@ Component(new class NumberPad extends BaseComponent {
     price(data: DataOption) {
       const {price} = data
       const handlePrice = zeroPrice(price)
-      EventBus.emit('price', {price: handlePrice})
+      EventBus.emit('recordPrice', {price: handlePrice})
       return price
     }
   }

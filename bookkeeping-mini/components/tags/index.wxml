@@ -1,11 +1,11 @@
-<view class="tags-wrap" data-type="22">
+<view class="tags-wrap">
 <!--  <view class="">-->
     <swiper class="tagGroup" indicator-dots	indicator-active-color="#000">
       <block wx:for="{{tagGroup}}" wx:for-item="tag" wx:key="*this">
         <swiper-item>
           <view class="tags">
-            <block wx:for="{{tag}}" wx:key="*this" data-type="2">
-              <u-icon iconId="{{iconId}}" name="{{name}}" class="tag-icon"></u-icon>
+            <block wx:for="{{tag}}" wx:key="*this">
+              <u-icon iconId="{{item.iconId}}" name="{{item.name}}" class="tag-icon"></u-icon>
             </block>
           </view>
         </swiper-item>

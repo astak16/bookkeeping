@@ -33,6 +33,22 @@ export const zeroPrice = (price: string) => {
   return item
 }
 
+export class MonkeyTest {
+
+  public static readonly default_threshold = 200;
+
+  private static last = new Date().getTime();
+
+  static isMonkey(threshold: number = MonkeyTest.default_threshold) {
+    let now = new Date().getTime();
+    if (now - MonkeyTest.last <= threshold)
+      return true;
+    MonkeyTest.last = now;
+    return false;
+  }
+
+}
+
 export class EventBus {
   private static bus: { [key: string]: <T>(param: T) => void } = {}
   private static instance: EventBus

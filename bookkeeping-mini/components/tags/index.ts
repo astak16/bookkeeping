@@ -1,22 +1,31 @@
 import {BaseComponent} from "../../utils/BaseComponent";
+import DataOption = WechatMiniprogram.Component.DataOption;
+import PropertyOption = WechatMiniprogram.Component.PropertyOption;
+import {EventBus} from "../../utils/util";
+import {record_type} from "../../model";
+// import {record_type} from "../tabs";
 
 Component(new class Tag extends BaseComponent {
-  data = {
-    tags: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+  data: DataOption = {
+    tags: [],
     indicatorsCount: 1,
     tagGroup: [],
 
+    recordType: record_type.pay,
     tagCount: 24
   }
 
-  properties = {}
+  properties: PropertyOption = {}
 
   attached() {
     const _this = this as any
     _this.setTagCount()
     _this.getTags()
-    _this.calcIndicatorsCount()
-    _this.getTagsGroup()
+    EventBus.on('recordType', (data: any) => {
+      _this.setData({recordType: data.type}, () => {
+        _this.getTags()
+      })
+    })
   }
 
 
@@ -29,7 +38,9 @@ Component(new class Tag extends BaseComponent {
     },
     getTags() {
       const _this = this as any
-      _this.setData({iconId: 1, name: "早餐"})
+      _this.toggleTags()
+      _this.calcIndicatorsCount()
+      _this.getTagsGroup()
     },
     calcIndicatorsCount() {
       const _this = this as any
@@ -46,5 +57,24 @@ Component(new class Tag extends BaseComponent {
       }
       _this.setData({tagGroup})
     },
+    toggleTags() {
+      const _this = this as any
+      const {recordType} = _this.data
+      const tags: any[] = []
+
+      if (recordType === record_type.pay) {
+        for (let i = 1; i <= 32; i++) {
+          tags.push({iconId: 1, name: "早餐"})
+        }
+      } else if (recordType === record_type.add) {
+        for (let i = 1; i <= 32; i++) {
+          tags.push({iconId: 2, name: "工资"})
+        }
+      }
+      _this.setData({tags})
+      console.log(tags[0].name)
+      EventBus.emit("recordTag", {tag: tags[0]})
+
+    }
   }
 })

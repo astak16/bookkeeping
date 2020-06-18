@@ -1,27 +1,30 @@
 import {BaseComponent} from "../../utils/BaseComponent";
 import Event = WechatMiniprogram.Event;
-// const app = getApp()
+import DataOption = WechatMiniprogram.Component.DataOption;
+import {EventBus, MonkeyTest} from "../../utils/util";
+import {record_type, RecordType} from "../../model";
+
 
 Component(new class Tabs extends BaseComponent {
-  data = {
+  data: DataOption = {
     tabs: [{
       text: "收入",
-      type: "+"
+      type: record_type.add
     }, {
       text: "支出",
-      type: "-"
+      type: record_type.pay
     }],
-    currentType:'-'
+    currentType: record_type.pay
   }
   methods = {
     onTabClick(e: Event) {
+      if(MonkeyTest.isMonkey())return
       const _this = this as any
-      const {type} = e.currentTarget.dataset
+      const type = e.currentTarget.dataset.type as RecordType
       _this.setData({currentType: type})
-      // app.globalData.record.type = type
-      // console.log(app)
+      EventBus.emit("recordType", <{ type: RecordType }>{type})
     },
-    onCloseClick(){
+    onCloseClick() {
       wx.navigateBack({delta: 1})
     }
   }
