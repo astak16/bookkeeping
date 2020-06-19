@@ -52,18 +52,26 @@ Component(new class Tag extends BaseComponent {
     async toggleTags() {
       const _this = this as any
       const recordType: RecordType = _this.data.recordType
-      const tags = await _this.asyncGetTags(encodeURIComponent(recordType))
-      _this.setData({tags},()=>{
+      let tags = wx.getStorageSync(`tags-${recordType}`)
+      if (!tags) {
+        tags = await _this.asyncGetTags(encodeURIComponent(recordType))
+        wx.setStorageSync(`tags-${recordType}`, tags)
+      }
+      _this.setData({tags}, () => {
         EventBus.emit("recordTag", {tag: tags[0]})
       })
     },
-    onIconClick(e:any){
-      const {name,id,color} = e.detail
-      EventBus.emit("recordTag", {tag: {name,id,color}})
+    onIconClick(e: any) {
+      const {name, id, color} = e.detail
+      if (id === 'add')
+        return
+      EventBus.emit("recordTag", {tag: {name, id, color}})
     },
     async asyncGetTags(type: RecordType) {
       const http = new HTTP()
-      return await http.request({url: `/tag?type=${type}`, data: {}, method: "GET"})
+      const tags: any = await http.request({url: `/tag?type=${type}`, data: {}, method: "GET"})
+      tags.push({id: 'add', name: "添加"})
+      return tags
     }
   }
 })
