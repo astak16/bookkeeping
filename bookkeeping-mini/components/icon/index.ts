@@ -29,6 +29,7 @@ Component(new class Icon extends BaseComponent {
           _this.setData({mt: true})
       }
     },
+    color:String,
     placement: {
       type: String,
       value: "bottom",
@@ -51,8 +52,8 @@ Component(new class Icon extends BaseComponent {
     onIconClick() {
       const _this = this as any
       // console.log(_this.properties.name,_this.properties.iconId);
-      const {name, iconId} = _this.properties
-      _this.triggerEvent("utap", {name, iconId})
+      const {name, iconId,color} = _this.properties
+      _this.triggerEvent("utap", {name, id:iconId,color})
     }
   }
 })

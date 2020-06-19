@@ -18,7 +18,15 @@ class RecordValidator extends PositiveIntegerValidator {
   }
 }
 
+class TagValidator extends LinValidator{
+  constructor() {
+    super();
+    // this.type
+  }
+}
+
 module.exports = {
   PositiveIntegerValidator,
-  RecordValidator
+  RecordValidator,
+  TagValidator
 }

@@ -11,6 +11,7 @@
 
 .icon image {
   width: 80rpx;
+  height: 80rpx;
   flex-shrink: 0;
   vertical-align: middle;
 }

@@ -1,6 +1,6 @@
-<view class="output">
+<view class="output" style="background-color: {{tag.color}}">
   <u-icon class="icon" u-class="name"
-          iconId="{{tag.iconId}}" name="{{tag.name}}" placement="right"
+          iconId="{{tag.id}}" name="{{tag.name}}" placement="right"
           width="86"
   ></u-icon>
   <view class="price">￥{{price}}</view>
