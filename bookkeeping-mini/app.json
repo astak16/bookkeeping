@@ -1,9 +1,9 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/logs/logs",
     "pages/bill/bill",
-    "pages/edit/edit"
+    "pages/edit/edit",
+    "pages/edit-tag/edit-tag"
   ],
   "window": {
     "backgroundTextStyle": "light",

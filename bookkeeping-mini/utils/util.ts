@@ -18,6 +18,10 @@ const formatNumber = (n: number) => {
   return s[1] ? s : '0' + s
 }
 
+export const clone = <T>(obj: T):T => {
+  return JSON.parse(JSON.stringify(obj))
+}
+
 export const zeroPrice = (price: string) => {
   let item = price
   if (price.indexOf('.') > -1) {

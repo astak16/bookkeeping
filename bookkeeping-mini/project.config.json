@@ -79,6 +79,13 @@
 					"pathName": "pages/edit/edit",
 					"query": "date=2020-5-6",
 					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "pages/edit-tag/edit-tag",
+					"pathName": "pages/edit-tag/edit-tag",
+					"query": "recordType=-",
+					"scene": null
 				}
 			]
 		}

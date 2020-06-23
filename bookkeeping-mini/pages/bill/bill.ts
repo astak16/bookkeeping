@@ -17,7 +17,7 @@ Page(new class Bill extends BasePage {
   }
 
   onShow() {
-
+// console.log('adaa')
   }
 
   onReady() {

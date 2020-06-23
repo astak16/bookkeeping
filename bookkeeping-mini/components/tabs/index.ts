@@ -18,7 +18,7 @@ Component(new class Tabs extends BaseComponent {
   }
   methods = {
     onTabClick(e: Event) {
-      if(MonkeyTest.isMonkey())return
+      if (MonkeyTest.isMonkey()) return
       const _this = this as any
       const type = e.currentTarget.dataset.type as RecordType
       _this.setData({currentType: type})

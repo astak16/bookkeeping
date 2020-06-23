@@ -1,0 +1,21 @@
+<view class="container">
+  <view class="header">
+    <view class="icon close" catch:tap="onCloseClick"></view>
+    <view class="title">编辑分类</view>
+  </view>
+  <view class="body">
+    <scroll-view class="scroll-area" scroll-y>
+      <block wx:for="{{tags}}" wx:key="*this">
+        <view class="tag">
+          <u-icon iconId="{{item.id}}" name="{{item.name}}" placement="right" u-class="tag-icon"/>
+          <view class="state" data-id="{{item.id}}" data-type="{{item.checked}}"
+                catch:tap="onStateClick">
+            <image wx:if="{{!item.checked}}" src="/images/circle.png" mode="widthFix"></image>
+            <image wx:else src="/images/hook.png" mode="widthFix"></image>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+  <view class="footer">添加分类</view>
+</view>

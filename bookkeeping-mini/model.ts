@@ -3,3 +3,11 @@ export const record_type = Object.freeze({
   add: "+",
   pay: "-"
 })
+export type Tag = {
+  id: number,
+  name: string,
+  number: number,
+  color: string,
+  type: string,
+  checked: number
+}

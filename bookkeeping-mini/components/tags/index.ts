@@ -2,14 +2,12 @@ import {BaseComponent} from "../../utils/BaseComponent";
 import DataOption = WechatMiniprogram.Component.DataOption;
 import PropertyOption = WechatMiniprogram.Component.PropertyOption;
 import {EventBus} from "../../utils/util";
-import {record_type, RecordType} from "../../model";
+import {record_type, RecordType, Tag} from "../../model";
 import {HTTP} from "../../utils/http-p";
-// import {record_type} from "../tabs";
 
-Component(new class Tag extends BaseComponent {
+Component(new class Tags extends BaseComponent {
   data: DataOption = {
     tags: [],
-    // indicatorsCount: 1,
     tagGroup: [],
 
     recordType: record_type.pay,
@@ -21,10 +19,17 @@ Component(new class Tag extends BaseComponent {
   attached() {
     const _this = this as any
     _this.setTagCount()
-    _this.getTags()
+    console.log('getTags')
     EventBus.on('recordType', (data: any) => {
       _this.setData({recordType: data.type}, () => _this.getTags())
     })
+  }
+
+  pageLifetimes = {
+    show() {
+      const _this = this as any
+      _this.getTags()
+    }
   }
 
   methods = {
@@ -52,7 +57,7 @@ Component(new class Tag extends BaseComponent {
     async toggleTags() {
       const _this = this as any
       const recordType: RecordType = _this.data.recordType
-      let tags = wx.getStorageSync(`tags-${recordType}`)
+      let tags: Tag[] = wx.getStorageSync(`tags-${recordType}`)
       if (!tags) {
         tags = await _this.asyncGetTags(encodeURIComponent(recordType))
         wx.setStorageSync(`tags-${recordType}`, tags)
@@ -62,15 +67,21 @@ Component(new class Tag extends BaseComponent {
       })
     },
     onIconClick(e: any) {
+      const _this = this as any
       const {name, id, color} = e.detail
-      if (id === 'add')
-        return
-      EventBus.emit("recordTag", {tag: {name, id, color}})
+      if (id === 'add') {
+        const recordType: RecordType = _this.data.recordType
+        wx.navigateTo({
+          url: `/pages/edit-tag/edit-tag?recordType=${encodeURIComponent(recordType)}`
+        })
+      } else {
+        EventBus.emit("recordTag", {tag: {name, id, color}})
+      }
     },
     async asyncGetTags(type: RecordType) {
       const http = new HTTP()
       const tags: any = await http.request({url: `/tag?type=${type}`, data: {}, method: "GET"})
-      tags.push({id: 'add', name: "添加"})
+      tags.push({id: 'add', name: "编辑", checked: 1})
       return tags
     }
   }

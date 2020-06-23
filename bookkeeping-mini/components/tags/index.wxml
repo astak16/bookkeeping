@@ -4,8 +4,9 @@
       <swiper-item>
         <view class="tags">
           <block wx:for="{{tag}}" wx:key="*this">
-            <u-icon class="tag-icon" iconId="{{item.id}}" name="{{item.name}}" color="{{item.color}}"
-            catch:utap="onIconClick"></u-icon>
+            <u-icon class="tag-icon" wx:if="{{item.checked}}"
+                    iconId="{{item.id}}" name="{{item.name}}" color="{{item.color}}"
+                    catch:utap="onIconClick"></u-icon>
           </block>
         </view>
       </swiper-item>

@@ -13,7 +13,7 @@
 }
 
 .tabs .tab.highlight {
-  color: rgb(209, 171, 122)
+  color: rgb(209, 171, 122);
 }
 
 .tabs .close {
@@ -31,7 +31,7 @@
   position: absolute;
   left: 0;
   top: 50%;
-  background-color: rgb(214, 214, 214);
+  background-color: #eaeaea;
 }
 
 .tabs .close::before {
