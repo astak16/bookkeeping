@@ -9,8 +9,8 @@
   text-align: center;
   border-bottom: 2rpx solid #eaeaea;
   padding: 0 16rpx;
-  color: rgb(146, 146, 146);
   display: flex;
+  color:rgb(146, 146, 146);
   justify-content: space-between;
   align-items: center;
   position: relative;
@@ -25,11 +25,6 @@
   position: relative;
   width: 50rpx;
   height: 50rpx;
-}
-
-
-.container .header .finished {
-  opacity: 0;
 }
 
 .container .header .close::before,
@@ -51,44 +46,28 @@
   transform: translateY(-50%) rotate(-45deg);
 }
 
-.container .body {
-  flex-grow: 1;
-  overflow: hidden;
-}
-
-.container .body .scroll-area {
-  height: 100%;
-}
-
-.container .body .tag {
+.container .body .add-tag {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20rpx 40rpx 20rpx 40rpx;
   border-bottom: 2rpx solid #eaeaea;
+  height: 104rpx;
+  padding: 10rpx 20rpx;
 }
 
-.container .body .tag .tag-icon {
-  font-size: 28rpx !important;
+.container .body .input {
+  margin-left: 20rpx;
 }
 
-.container .body .tag .state {
-  height: 46rpx;
-  width: 46rpx;
+.container .body .tags {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20rpx;
 }
 
-.container .body .tag .state > image {
-  height: 100%;
-  width: 100%;
-}
-
-.container .footer {
-  border-top: 2rpx solid #eaeaea;
-  flex-shrink: 0;
-  font-size: 28rpx;
-  height: 120rpx;
-  color: rgb(209, 171, 122);
+.container .body .tags .tag-icon {
+  width: 16.66%;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 30rpx;
 }

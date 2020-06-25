@@ -25,14 +25,15 @@ Component(new class Icon extends BaseComponent {
       type: String,
       observer(name: string) {
         const _this = this as any
+        console.log(name)
         if (name)
           _this.setData({mt: true})
       }
     },
-    color:String,
+    color: String,
     placement: {
       type: String,
-      value: "bottom",
+      value: "",
       observer(placement: string) {
         if (placement === 'right' || placement === 'bottom' || placement === 'top' || placement === 'left') {
           const _this = this as any
@@ -45,15 +46,15 @@ Component(new class Icon extends BaseComponent {
     width: {
       type: String,
       value: '80'
-    }
+    },
+    tag: Object,
   }
 
   methods = {
     onIconClick() {
       const _this = this as any
-      // console.log(_this.properties.name,_this.properties.iconId);
-      const {name, iconId,color} = _this.properties
-      _this.triggerEvent("utap", {name, id:iconId,color})
+      const {name, iconId, color, tag} = _this.data
+      _this.triggerEvent("utap", {name, id: iconId, color, tag})
     }
   }
 })

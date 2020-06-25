@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/bill/bill",
     "pages/edit/edit",
-    "pages/edit-tag/edit-tag"
+    "pages/edit-tag/edit-tag",
+    "pages/add-tag/add-tag"
   ],
   "window": {
     "backgroundTextStyle": "light",

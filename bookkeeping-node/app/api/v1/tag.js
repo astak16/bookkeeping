@@ -5,12 +5,24 @@ const router = new Router({
 const {Tag} = require("../../models/tag")
 
 const {TagValidator} = require("../../validator/validator")
+const {success} = require("../../lib/helper")
 
 router.get("/", async (ctx) => {
   const v = await new TagValidator().validate(ctx)
-  console.log(v.get("query.type"));
-  const tag = await Tag.getAll(v.get("query.type"))
+  const tag = await Tag.getAll(v.get("query.type"), v.get("query.name"))
   ctx.body = tag
+})
+
+router.put('/:id/name', async (ctx) => {
+  const v = await new TagValidator().validate(ctx)
+  await Tag.putName(v.get('path.id'), v.get('body.name'))
+  success()
+})
+
+router.put('/:id/checked', async (ctx) => {
+  const v = await new TagValidator().validate(ctx)
+  await Tag.putChecked(v.get('path.id'), v.get('body.checked'))
+  success()
 })
 
 module.exports = router

@@ -2,7 +2,7 @@ import {BaseComponent} from "../../utils/BaseComponent";
 import DataOption = WechatMiniprogram.Component.DataOption;
 import PropertyOption = WechatMiniprogram.Component.PropertyOption;
 import {EventBus} from "../../utils/util";
-import {record_type, RecordType, Tag} from "../../model";
+import {defaulTag, record_type, RecordType, Tag} from "../../model";
 import {HTTP} from "../../utils/http-p";
 
 Component(new class Tags extends BaseComponent {
@@ -19,7 +19,6 @@ Component(new class Tags extends BaseComponent {
   attached() {
     const _this = this as any
     _this.setTagCount()
-    console.log('getTags')
     EventBus.on('recordType', (data: any) => {
       _this.setData({recordType: data.type}, () => _this.getTags())
     })
@@ -80,8 +79,8 @@ Component(new class Tags extends BaseComponent {
     },
     async asyncGetTags(type: RecordType) {
       const http = new HTTP()
-      const tags: any = await http.request({url: `/tag?type=${type}`, data: {}, method: "GET"})
-      tags.push({id: 'add', name: "编辑", checked: 1})
+      const tags: any = await http.request({url: `/tag?type=${type}&name=1`})
+      tags.push(defaulTag)
       return tags
     }
   }

@@ -86,6 +86,13 @@
 					"pathName": "pages/edit-tag/edit-tag",
 					"query": "recordType=-",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/add-tag/add-tag",
+					"pathName": "pages/add-tag/add-tag",
+					"query": "recordType=-",
+					"scene": null
 				}
 			]
 		}

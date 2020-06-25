@@ -11,7 +11,11 @@ Page(new class EditTag extends BasePage {
   }
 
   onLoad(options: any) {
+    super.onLoad(options)
     this.recordType = <RecordType>decodeURIComponent(options.recordType)
+  }
+
+  onShow() {
     this.initTags()
   }
 
@@ -23,18 +27,42 @@ Page(new class EditTag extends BasePage {
   onStateClick(e: Event) {
     const {id} = e.currentTarget.dataset
     const tags = this.tags
+    let currentTag: Tag
     tags.forEach(tag => {
-      if (tag.id === +id)
+      if (tag.id === +id) {
         tag.checked = +(!tag.checked)
+        currentTag = tag
+      }
     })
     wx.setStorageSync(`tags-${this.recordType}`, tags)
+    // @ts-ignore
+    this.asyncPutTagChecked(currentTag)
     this.setTags()
+  }
+
+  onAddTagClick() {
+    wx.navigateTo({
+      url: `/pages/add-tag/add-tag?recordType=${this.recordType}`
+    })
+  }
+
+  onCloseClick() {
+    wx.navigateBack({delta: 1})
   }
 
   setTags() {
     const tags = clone(this.tags)
     tags.pop()
     this.setData({tags})
+  }
+
+  async asyncPutTagChecked(tag: Tag) {
+    const {id, checked} = tag
+    await this.http.request({
+      url: `/tag/${id}/checked`,
+      method: "PUT",
+      data: JSON.stringify({checked})
+    })
   }
 })
 
