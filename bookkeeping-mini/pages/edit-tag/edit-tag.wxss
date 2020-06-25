@@ -62,7 +62,6 @@
 
 .container .body .tag {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 20rpx 40rpx 20rpx 40rpx;
   border-bottom: 2rpx solid #eaeaea;
@@ -72,9 +71,16 @@
   font-size: 28rpx !important;
 }
 
+.container .body .tag .customize{
+  font-size: 24rpx;
+  margin-left: 10rpx;
+  color: #ddd;
+}
+
 .container .body .tag .state {
   height: 46rpx;
   width: 46rpx;
+  margin-left: auto;
 }
 
 .container .body .tag .state > image {

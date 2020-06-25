@@ -9,7 +9,7 @@
       <block wx:for="{{tags}}" wx:key="*this">
         <view class="tag">
           <u-icon iconId="{{item.id}}" name="{{item.name}}" placement="right" u-class="tag-icon"/>
-          <view wx:if="{{item.customize}}"> - {{item.customize}}</view>
+          <view class="customize" wx:if="{{item.customize}}"> - {{item.customize}}</view>
           <view class="state" data-id="{{item.id}}" data-type="{{item.checked}}"
                 catch:tap="onStateClick">
             <image wx:if="{{!item.checked}}" src="/images/circle.png" mode="widthFix"></image>
