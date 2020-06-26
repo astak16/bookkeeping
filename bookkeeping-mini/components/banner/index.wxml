@@ -1,6 +1,8 @@
 <view class="calender">
   <image class="banner" mode="aspectFill" src="/images/banner.jpg"/>
-  <u-icon class="add-icon" iconId="add" u-class="icon"
-          catch:utap="onAddClick"
-  ></u-icon>
+  <view class="add-icon" class="icon">
+    <u-icon iconId="new"
+            catch:utap="onAddClick"
+    ></u-icon>
+  </view>
 </view>

@@ -1,6 +1,5 @@
 import {BasePage} from "../../utils/BasePage";
-import {RecordType, Tag} from "../../model";
-import {clone} from "../../utils/util";
+import {clone, EventBus} from "../../utils/util";
 import Event = WechatMiniprogram.Event;
 
 Page(new class EditTag extends BasePage {
@@ -35,6 +34,7 @@ Page(new class EditTag extends BasePage {
       }
     })
     wx.setStorageSync(`tags-${this.recordType}`, tags)
+    EventBus.emit('updateTags',{tags})
     // @ts-ignore
     this.asyncPutTagChecked(currentTag)
     this.setTags()

@@ -1,3 +1,19 @@
-<!--<view catch:tap="onClick">{{aa}}</view>-->
-<!--<u-tag b="uccs"/>-->
-<u-banner></u-banner>
+<view class="container">
+  <!--  <u-banner></u-banner>-->
+  <view class="records">
+    <view>
+      <view>25日</view>
+      <view>58.00</view>
+    </view>
+    <view>
+      <u-icon iconId="1"></u-icon>
+      <view>
+        <view>
+          <view>早餐</view>
+          <view>1.00</view>
+        </view>
+        <view>三生三世</view>
+      </view>
+    </view>
+  </view>
+</view>

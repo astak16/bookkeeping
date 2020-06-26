@@ -9,12 +9,12 @@ class PositiveIntegerValidator extends LinValidator {
   }
 }
 
-class RecordValidator extends PositiveIntegerValidator {
+class RecordValidator extends LinValidator{
   constructor() {
     super();
-    this.price = [
-      new Rule("isLength", '价格设置的不对', {min: 3, max: 16})
-    ]
+    // this.price = [
+    //   new Rule("isInt", '需要是正整数')
+    // ]
   }
 }
 

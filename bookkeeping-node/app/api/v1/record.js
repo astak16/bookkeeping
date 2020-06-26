@@ -4,14 +4,18 @@ const router = new Router({
 })
 const {Record} = require("../../models/record")
 const {success} = require("../../lib/helper")
-const {RecordValidator,PositiveIntegerValidator} = require("../../validator/validator")
+const {RecordValidator, PositiveIntegerValidator} = require("../../validator/validator")
 
 router.post("/", async (ctx) => {
-  const v = await new RecordValidator().validate(ctx,{id:"tagId"})
+  const v = await new RecordValidator().validate(ctx, {id: "tagId"})
   const tagId = v.get("body.tagId")
   const price = v.get("body.price")
   const remark = v.get("body.remark")
-  await Record.addRecord({price, remark, tagId})
+  const type = v.get("body.type")
+  const year = v.get("body.year")
+  const month = v.get("body.month")
+  const date = v.get("body.date")
+  await Record.addRecord({price, remark, tagId, type, year, month, date})
   success()
 })
 

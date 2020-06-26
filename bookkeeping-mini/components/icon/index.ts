@@ -25,7 +25,6 @@ Component(new class Icon extends BaseComponent {
       type: String,
       observer(name: string) {
         const _this = this as any
-        console.log(name)
         if (name)
           _this.setData({mt: true})
       }

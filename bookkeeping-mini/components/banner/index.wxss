@@ -9,14 +9,16 @@
 }
 
 .calender .icon {
-  width: 240rpx !important;
-}
-
-.calender .add-icon {
-  border-radius: 50% !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
   background-color: white;
   position: absolute;
   left: 50%;
   bottom: -120rpx;
   transform: translateX(-50%);
+  border: 2rpx solid #777;
 }

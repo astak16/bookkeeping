@@ -1,5 +1,6 @@
 import {BasePage} from "../../utils/BasePage";
 
+const app = getApp()
 Page(new class Edit extends BasePage {
   data = {
     length: 0,
@@ -38,7 +39,7 @@ Page(new class Edit extends BasePage {
 
   onFinishClick() {
     const {text} = this.data
-    console.log(text)
+    app.globalData.record.remark = text
     this.goBack()
   }
 

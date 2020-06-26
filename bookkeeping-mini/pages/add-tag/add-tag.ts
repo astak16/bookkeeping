@@ -1,5 +1,5 @@
 import {BasePage} from "../../utils/BasePage";
-import {defaulTag, RecordType} from "../../model";
+import {defaluTag} from "../../model";
 
 Page(new class AddTag extends BasePage {
   recordType!: RecordType
@@ -37,7 +37,7 @@ Page(new class AddTag extends BasePage {
       return wx.showToast({title: "类别名称不能为空", icon: "none"})
     const tags = wx.getStorageSync(`tags-${this.recordType}`)
     tags.pop()
-    tags.push(tag,defaulTag)
+    tags.push(tag, defaluTag)
     wx.setStorageSync(`tags-${this.recordType}`, tags)
     await this.asyncPutTagName(tag)
     this.onCloseClick()

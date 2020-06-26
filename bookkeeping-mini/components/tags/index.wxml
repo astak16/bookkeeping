@@ -7,7 +7,7 @@
             <u-icon class="tag-icon" wx:if="{{item.checked}}"
                     iconId="{{item.id}}" name="{{item.name}}" color="{{item.color}}"
                     placement="bottom"
-                    catch:utap="onIconClick"></u-icon>
+                    catch:utap="onIconClick" tag="{{item}}"></u-icon>
           </block>
         </view>
       </swiper-item>

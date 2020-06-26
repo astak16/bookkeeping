@@ -2,5 +2,5 @@
   <u-tabs></u-tabs>
   <u-output></u-output>
   <u-tags class="tags"></u-tags>
-  <u-number-pad class="number-pad"></u-number-pad>
+  <u-number-pad class="number-pad" catch:utap="onNumberPadClick"></u-number-pad>
 </view>

@@ -1,9 +1,10 @@
 import {BaseComponent} from "../../utils/BaseComponent";
 import Event = WechatMiniprogram.Event;
-import {EventBus, zeroPrice} from "../../utils/util";
+import {EventBus, formatNumber, zeroPrice} from "../../utils/util";
 import DataOption = WechatMiniprogram.Component.DataOption;
 
 const computedBehavior = require('miniprogram-computed')
+const app = getApp()
 
 Component(new class NumberPad extends BaseComponent {
   data: DataOption = {
@@ -91,14 +92,21 @@ Component(new class NumberPad extends BaseComponent {
     },
     onButtonOKClick() {
       const _this = this as any
-      const {price} = _this.data
-      console.log(price)
+      const {price, formatDate} = _this.data
+      let [year, month, date] = formatDate.split('-')
+      month = formatNumber(month)
+      date = formatNumber(date)
+      app.globalData.record.price = Math.floor(price * 100)
+      app.globalData.record.year = +year
+      app.globalData.record.month = +(`${year}${month}`)
+      app.globalData.record.date = +(`${year}${month}${date}`)
+      _this.triggerEvent('utap')
     },
     onrButtonResetClick() {
       const _this = this as any
       _this.resetPrice()
     },
-    resetPrice(){
+    resetPrice() {
       const _this = this as any
       _this.setData({price: '0'})
     }

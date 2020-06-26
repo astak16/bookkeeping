@@ -1,28 +1,26 @@
 import {BasePage} from "../../utils/BasePage";
 
+const app = getApp()
 Page(new class Bill extends BasePage {
   tagsHeight!: number
 
-  onLoad() {
-    // super.onLoad();
-    // const _this = this as any
-    // const eventChannel = _this.getOpenerEventChannel()
-    //
-    // const eventChannel = _this.getOpenerEventChannel()
-    // eventChannel.emit('price', {a: 1})
-    //
-    // eventChannel.on('price', (data: any) => {
-    //   console.log(data.price)
-    // })
+  onLoad(options: any) {
+    super.onLoad(options)
+
   }
 
-  onShow() {
-// console.log('adaa')
+  onNumberPadClick() {
+    const {record} = app.globalData
+    this.asyncPostRecord(record)
+
   }
 
-  onReady() {
-    // this.getTagsHeight()
-    // console.log(333333)
+  async asyncPostRecord(data: RecordItem) {
+    return await this.http.request({
+      url: `/record`,
+      method: "POST",
+      data: JSON.stringify(data)
+    })
   }
 
 })
