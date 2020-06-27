@@ -1,27 +1,20 @@
 import {BasePage} from "../../utils/BasePage";
 
 Page(new class Index extends BasePage {
-  public data = {
-    aa: '113'
-  };
-
-
-  onLoad() {
-    // this.setData({aa:""})
-    // console.log(1)
-    // wx.request({
-    //   url: "http://localhost:4000/v1/record",
-    //   method: "POST",
-    //   data: {
-    //     remark: '1',
-    //     price: "12.00",
-    //     tagId: '1'
-    //   }
-    // })
-
+  async onLoad(options: any) {
+    super.onLoad(options)
   }
-  onClick(){
-    console.log('page Click')
+
+  async onShow() {
+    await this.asyncGetRecord()
+  }
+
+  async asyncGetRecord() {
+    const records: any = await this.http.request({url: `/record`})
+    records.forEach((item: any) => {
+      item.day = item.date.toString().slice(6)
+    })
+    this.setData({records})
   }
 })
 

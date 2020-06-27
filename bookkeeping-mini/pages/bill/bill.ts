@@ -12,7 +12,7 @@ Page(new class Bill extends BasePage {
   onNumberPadClick() {
     const {record} = app.globalData
     this.asyncPostRecord(record)
-
+    wx.navigateBack({delta: 1})
   }
 
   async asyncPostRecord(data: RecordItem) {
@@ -22,5 +22,4 @@ Page(new class Bill extends BasePage {
       data: JSON.stringify(data)
     })
   }
-
 })

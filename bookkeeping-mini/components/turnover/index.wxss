@@ -1,0 +1,41 @@
+@import "/common/common.wxss";
+
+.container {
+  margin-top: 100rpx;
+  position: relative;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  height: 100rpx;
+  width: 4rpx;
+  background-color: rgb(246, 246, 246);
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.container .info {
+  margin: 0 20rpx;
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.container .info .top {
+  display: flex;
+  color: rgb(137, 143, 147);
+  font-size: 32rpx;
+}
+
+.container .info .price {
+  margin: 0 20rpx;
+}
+
+.container .info .remark {
+  font-size: 24rpx;
+  color: rgb(185, 185, 185);
+  width: 300rpx;
+}

@@ -1,0 +1,14 @@
+<view class="container u-class">
+  <u-icon iconId="{{tag.id}}" width="60"></u-icon>
+  <view class="info">
+    <view class="top">
+      <view class="name">{{tag.name}}</view>
+      <view class="price">{{p.price(record.price)}}</view>
+    </view>
+    <view class="remark one-ellipsis">
+      {{record.remark}}
+    </view>
+  </view>
+</view>
+
+<wxs module="p" src="../../wxs/util.wxs"></wxs>

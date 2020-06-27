@@ -1,5 +1,6 @@
 {
   "usingComponents": {
-    "u-banner": "/components/banner/index"
+    "u-banner": "/components/banner/index",
+    "u-turnover": "/components/turnover/index"
   }
 }
