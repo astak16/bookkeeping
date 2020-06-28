@@ -5,4 +5,17 @@
             catch:utap="onAddClick"
     ></u-icon>
   </view>
+  <view class="bar">
+    <view class="left">
+      <view>当月收入</view>
+      <view>{{p.price(income)}}</view>
+    </view>
+    <view class="right">
+      <view>当月支出</view>
+      <view>{{p.price(pay)}}</view>
+    </view>
+  </view>
 </view>
+
+<wxs module="p" src="../../wxs/util.wxs"></wxs>
+

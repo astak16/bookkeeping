@@ -6,9 +6,16 @@ const {Record} = require("../../models/record")
 const {success} = require("../../lib/helper")
 const {RecordValidator, PositiveIntegerValidator} = require("../../validator/validator")
 
-router.get('/', async (ctx) => {
-  const records = await Record.getAll()
+router.get('/:month', async (ctx) => {
+  const v = await new RecordValidator().validate(ctx)
+  const records = await Record.getAll(v.get("path.month"))
   ctx.body = records
+})
+
+router.get('/:month/price', async (ctx) => {
+  const v = await new RecordValidator().validate(ctx)
+  const price = await Record.getTotalPrice(v.get("path.month"))
+  ctx.body = price
 })
 
 router.post("/", async (ctx) => {

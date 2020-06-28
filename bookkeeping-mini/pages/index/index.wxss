@@ -3,11 +3,11 @@
   /*margin-top:240rpx;*/
 }
 
-.scroll{
-  margin-top: 120rpx;
-  height: calc(100vh - 400rpx - 120rpx);
+.scroll {
+  height: calc(100vh - 508rpx);
   overflow: hidden;
 }
+
 .records {
   display: flex;
   flex-direction: column;

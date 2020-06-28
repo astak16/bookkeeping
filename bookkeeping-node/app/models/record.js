@@ -4,9 +4,12 @@ const {Sequelize, Model, Op} = require("sequelize")
 const {Tag} = require("./tag")
 
 class Record extends Model {
-  static async getAll() {
+  static async getAll(month) {
     const records = await Record.findAll({
-      order:[['date','DESC']]
+      where: {
+        month
+      },
+      order: [['date', 'DESC']]
     })
     let tagIds = [], dates = [], sums = []
     records.forEach(record => {
@@ -52,6 +55,24 @@ class Record extends Model {
     })
     dest.forEach((it, key) => it.price = sums[key])
     return dest
+  }
+
+  static async getTotalPrice(month) {
+    const income = await Record.sum('price', {
+      where: {
+        month,
+        type: "+"
+      }
+    })
+    const pay = await Record.sum('price', {
+      where: {
+        month,
+        type: "-"
+      }
+    })
+    return {
+      pay, income
+    }
   }
 
   static async addRecord({remark, price, tagId, type, year, month, date}) {

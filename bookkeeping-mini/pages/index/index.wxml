@@ -1,10 +1,12 @@
 <view class="container">
-  <u-banner></u-banner>
-  <scroll-view class="scroll" scroll-y enable-flex>
+  <u-banner income="{{price.income}}" pay="{{price.pay}}"></u-banner>
+  <scroll-view class="scroll" scroll-y enable-flex catch:scrolltolower="onScrollToLower"
+               catch:scroll="onScroll"
+               data-a="{{price.income}}">
     <view class="records">
       <block wx:for="{{records}}" wx:key="*this">
         <view class="total">
-          <view class="date">{{item.day}}日</view>
+          <view class="date">{{item.month}}{{item.day}}日</view>
           <view class="price">{{p.price(item.price)}}</view>
         </view>
         <view class="list">

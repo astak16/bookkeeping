@@ -18,7 +18,7 @@ export const formatNumber = (n: number) => {
   return s[1] ? s : '0' + s
 }
 
-export const clone = <T>(obj: T):T => {
+export const clone = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj))
 }
 
@@ -83,4 +83,40 @@ export class EventBus {
   static off(eventName: string) {
     delete this.bus[eventName]
   }
+}
+
+const observe = (obj: any, key: any, watchFun: any, deep: any, page: any) => {
+  let oldVal = obj[key]
+  if (oldVal !== null && typeof oldVal === 'object' && deep) {
+    Object.keys(oldVal).forEach(item => {
+      observe(oldVal, item, watchFun, deep, page)
+    })
+  }
+  Object.defineProperty(obj, key, {
+    configurable: true,
+    enumerable: true,
+    set(value: any) {
+      if (value === oldVal) return
+      watchFun.call(page, value, oldVal)
+      oldVal = value
+      if (deep) {
+        observe(obj, key, watchFun, deep, page)
+      }
+    },
+    get() {
+      return oldVal
+    }
+  })
+}
+
+export const setWatcher = (page: any) => {
+  const data = page.data
+  const watch = page.watch
+  Object.keys(watch).forEach(key => {
+    let targetData = data
+    const targetKey = key
+    const watchFun = watch[key].handler || watch[key]
+    const deep = watch[key].deep
+    observe(targetData, targetKey, watchFun, deep, page)
+  })
 }
