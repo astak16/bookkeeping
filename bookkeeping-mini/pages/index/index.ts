@@ -23,10 +23,11 @@ Page(new class Index extends BasePage {
   watch = {
     currentTop(value: number) {
       const _this = this as any
-      _this.setData({price: _this.scrollPrice[value]})
+      _this.setData({
+        price: _this.scrollPrice[value]
+      })
     }
   }
-
 
   async onShow() {
     this.initInfo()

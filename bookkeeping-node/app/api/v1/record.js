@@ -15,7 +15,7 @@ router.get('/:month', async (ctx) => {
 router.get('/:month/price', async (ctx) => {
   const v = await new RecordValidator().validate(ctx)
   const price = await Record.getTotalPrice(v.get("path.month"))
-  ctx.body = price
+  ctx.body = {...price}
 })
 
 router.post("/", async (ctx) => {

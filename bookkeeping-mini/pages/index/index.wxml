@@ -1,5 +1,5 @@
 <view class="container">
-  <u-banner income="{{price.income}}" pay="{{price.pay}}"></u-banner>
+  <u-banner price="{{price}}"></u-banner>
   <scroll-view class="scroll" scroll-y enable-flex catch:scrolltolower="onScrollToLower"
                catch:scroll="onScroll"
                data-a="{{price.income}}">

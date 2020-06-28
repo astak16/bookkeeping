@@ -3,14 +3,7 @@ import {BaseComponent} from "../../utils/BaseComponent";
 
 Component(new class Banner extends BaseComponent {
   properties = {
-    pay: {
-      type: Number,
-      value: 0
-    },
-    income: {
-      type: Number,
-      value: 0
-    },
+    price: Object
   }
   methods = {
     onAddClick() {

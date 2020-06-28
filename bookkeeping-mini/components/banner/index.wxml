@@ -7,12 +7,12 @@
   </view>
   <view class="bar">
     <view class="left">
-      <view>当月收入</view>
-      <view>{{p.price(income)}}</view>
+      <view>{{price.month}}收入</view>
+      <view>{{p.price(price.income)}}</view>
     </view>
     <view class="right">
-      <view>当月支出</view>
-      <view>{{p.price(pay)}}</view>
+      <view>{{price.month}}支出</view>
+      <view>{{p.price(price.pay)}}</view>
     </view>
   </view>
 </view>

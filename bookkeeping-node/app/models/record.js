@@ -70,8 +70,16 @@ class Record extends Model {
         type: "-"
       }
     })
+    const currentMonth = new Date().getMonth() + 1
+    let _month = ''
+    if (+month.slice(4) === currentMonth) {
+      _month = '当月'
+    } else {
+      _month = +month.slice(4) + '月'
+    }
+
     return {
-      pay, income
+      pay, income, month: _month
     }
   }
 
